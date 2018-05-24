@@ -28,7 +28,7 @@ jobs:
           keys:
           - v1-dependencies-
 
-      - run: ./gradle build
+      - run: ./gradlew build
 
       - save_cache:
           paths:
