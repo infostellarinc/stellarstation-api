@@ -1,0 +1,147 @@
+/*
+ * Copyright 2018 Infostellar, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package stellarstation.api.v1;
+
+option java_multiple_files = true;
+option java_outer_classname = "StellarstationProto";
+option java_package = "com.stellarstation.api.v1";
+
+// The public API service of Stellarstation, a system supporting communication between satellites
+// and groundstations. This API is for use by an operator of a satellite - it is invalid to specify
+// satellites that the operator does not own or passes they have not reserved.
+// Only using IDs shown on the StellarStation Console or returned in API responses will ensure all
+// inputs are valid.
+service StellarStationService {
+  // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
+  // client to send commands to the satellite and data received from the satellite will be returned
+  // as it is made available. All telemetry received from the satellite on reserved passes from this
+  // point on will be returned as soon as this method is called. If
+  // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
+  // stream will be returned as well.
+  //
+  // The stream can be left open for any amount of time and telemetry will be received as available
+  // and returned. When the client is done with the stream, it should close it successfully. If the
+  // stream is cancelled with an unexpected error at any point, telemetry received before the next
+  // call to `OpenSatelliteStream` to resume the stream will be buffered up to 1 minute, and if no
+  // call to `OpenSatelliteStream` is made with `stream_id` specified to resume the stream, it will
+  // expire in 10 minutes and a call to `OpenSatelliteStream` with that `stream_id` will be closed
+  // with a `ABORTED` error.
+  //
+  // If the satellite is not found or the client is not authorized for it, the stream will be closed
+  // with a `NOT_FOUND` error.
+  rpc OpenSatelliteStream (stream SatelliteStreamRequest) returns (stream SatelliteStreamResponse);
+}
+
+// Request for the `OpenSatelliteStream` method.
+message SatelliteStreamRequest {
+  // The ID of the satellite to open a stream with. The ID of a satellite can be found on the
+  // StellarStation Console page for the satellite.
+  string satellite_id = 1;
+
+  // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
+  // specified stream has already expired or been closed, the stream is closed with a `ABORTED`
+  // error.
+  string stream_id = 2;
+
+  // A request to send on the satellite stream. Currently only command sending to the satellite is
+  // supported. The request does not need to be filled on the first request to
+  // `OpenSatelliteStream`.
+  oneof Request {
+    // A request to send commands to the satellite.
+    SendSatelliteCommandsRequest send_satellite_commands_request = 3;
+  }
+}
+
+// A request to send commands to a satellite.
+message SendSatelliteCommandsRequest {
+  // The framing to be applied to `command` before transmission. If `command` has already been
+  // framed, this should be set to RAW and no additional processing will take place before
+  // modulation. When applying framing, each `command` will be treated as a single frame. Framing
+  // parameters used will be the ones registered for the satellite in the StellarStation Console.
+  Framing output_framing = 1;
+
+  // The command frames to send to the satellite. All commands will be transmitted in sequence
+  // immediately, during which time telemetry will not be received. After all commands have been
+  // transmitted, telemetry receive will be immediately re-enabled. Them aximum size of each command
+  // is 2MB. If a command larger than 2MB is received, the stream will be closed with a
+  // `RESOURCE_EXHAUSTED` error.
+  repeated bytes command = 2;
+}
+
+// A type of framing of a binary payload used in satellite communicaation.
+enum Framing {
+  // No framing. For sent payloads, this is usually pre-framed data while for received ones, it is
+  // raw IQ data.
+  RAW = 0;
+
+  // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
+  AX25 = 1;
+}
+
+// A response from the `OpenSatelliteStream` method.
+message SatelliteStreamResponse {
+  // The ID of this stream, which can be used in a subsequent call to `OpenSatelliteStream` to
+  // resume this stream on interruption (e.g., if a network failure causes the connection to be
+  // closed mid-stream). Telemetry received on a previously opened stream with no current listener
+  // will be buffered for a maximum of 1 minute, and the stream itself will be cancelled and no more
+  // buffering will occur if no client resumes the stream with `OpenSatelliteStream` within 10
+  // minutes.
+  string stream_id = 1;
+
+  // A response on the stream. Currently the only type of response is telemetry received from the
+  // satellite.
+  oneof Response {
+    // A response from a satellite containing telemetry.
+    ReceiveTelemetryResponse receive_telemetry_response = 2;
+  }
+}
+
+// A response from a satellite containing telemetry.
+message ReceiveTelemetryResponse {
+  // The telemetry received.
+  Telemetry telemetry = 1;
+}
+
+// A chunk or frame of telemetry data that has been received from a satellite.
+message Telemetry {
+  // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
+  // chunk of IQ data.
+  Framing framing = 1;
+
+  // The payload of this telemetry.
+  bytes data = 2;
+
+  // The actual downlink frequency, in Hz, used when receiving `data`, including adjustments for
+  // doppler shift.
+  uint64 downlink_frequency_hz = 3;
+
+  // Timestamp when the first byte of `data` was received.
+  google.protobuf.Timestamp time_first_byte_received = 4;
+
+  // Timestamp when the last byte of `data` was received.
+  google.protobuf.Timestamp time_last_byte_received = 5;
+
+  // The binary header of the telemetry frame, if `framing` is not `RAW`.
+  //
+  // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
+  //          returned.
+  bytes frame_header = 6;
+}
