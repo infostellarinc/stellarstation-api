@@ -72,23 +72,18 @@ message SatelliteStreamRequest {
 
 // A request to send commands to a satellite.
 message SendSatelliteCommandsRequest {
-  // The ID of the plan on which to send the commands.
-  //
-  // TODO(anuraag): Add reference to plans API after it is defined.
-  string plan_id = 1;
-
   // The framing to be applied to `command` before transmission. If `command` has already been
   // framed, this should be set to RAW and no additional processing will take place before
   // modulation. When applying framing, each `command` will be treated as a single frame. Framing
   // parameters used will be the ones registered for the satellite in the StellarStation Console.
-  Framing output_framing = 2;
+  Framing output_framing = 1;
 
   // The command frames to send to the satellite. All commands will be transmitted in sequence
   // immediately, during which time telemetry will not be received for the given `plan_id`. After
   // all commands have been transmitted, telemetry receive will be immediately re-enabled. The
   // maximum size of each command is 2MB. If a command larger than 2MB is received, the stream will
   // be closed with a `RESOURCE_EXHAUSTED` error.
-  repeated bytes command = 3;
+  repeated bytes command = 2;
 }
 
 // A type of framing of a binary payload used in satellite communicaation.
