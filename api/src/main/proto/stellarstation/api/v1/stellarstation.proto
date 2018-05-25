@@ -52,13 +52,13 @@ service StellarStationService {
 
 // Request for the `OpenSatelliteStream` method.
 message SatelliteStreamRequest {
-  // The ID of the satellite to open a stream with. The ID of a satellite can
-  // be found on the StellarStation Console page for the satellite.
+  // The ID of the satellite to open a stream with. The ID of a satellite can be found on the
+  // StellarStation Console page for the satellite.
   string satellite_id = 1;
 
   // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
-  // specified stream has already expired or been closed, the stream is closed with an
-  // `INVALID_ARGUMENT` error.
+  // specified stream has already expired or been closed, the stream is closed with a `ABORTED`
+  // error.
   string stream_id = 2;
 
   // A request to send on the satellite stream. Currently only command sending to the satellite is
