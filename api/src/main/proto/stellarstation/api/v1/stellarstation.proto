@@ -41,8 +41,8 @@ service StellarStationService {
   // stream is cancelled with an unexpected error at any point, telemetry received before the next
   // call to `OpenSatelliteStream` to resume the stream will be buffered up to 1 minute, and if no
   // call to `OpenSatelliteStream` is made with `stream_id` specified to resume the stream, it will
-  // expire and a call to `OpenSatelliteStream` with that `stream_id` will be closed with a
-  // `ABORTED` error.
+  // expire in 10 minutes and a call to `OpenSatelliteStream` with that `stream_id` will be closed
+  // with a `ABORTED` error.
   //
   // If the satellite is not found or the client is not authorized for it, the stream will be closed
   // with a `NOT_FOUND` error.
