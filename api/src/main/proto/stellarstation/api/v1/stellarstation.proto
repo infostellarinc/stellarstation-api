@@ -26,31 +26,46 @@ option java_package = "com.stellarstation.api.v1";
 
 // The public API service of Stellarstation, a system supporting communication between satellites
 // and antennas. This API is for use by an operator of a satellite - it is illegal to specify
-// satellites that the operator does not own or antennas which they do not have a license for.
+// satellites that the operator does not own or passes they have not reserved.
 // Only using IDs shown on the StellarStation Console or returned in API responses will ensure all
 // inputs are valid.
 service StellarStationService {
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
-  // as it is made available. All telemetry received from the satellite will be returned as soon as
-  // this method is called.
+  // as it is made available. All telemetry received from the satellite from this point on will be
+  // returned as soon as this method is called. If `SatelliteStreamRequest.stream_id` is specified,
+  // any messages that have been buffered for the stream will be returned as well.
+  //
+  // The stream can be left open for any amount of time and telemetry will be received as available
+  // and returned. When the client does is done with the stream, it should close it successfully.
+  // If the stream is cancelled with an unexpected error at any point, telemetry received before the
+  // next call to `OpenSatelliteStream` to resume the stream will be buffered up to 1 minute, and
+  // if no call to `OpenSatelliteStream` is made with `stream_id` specified to resume the stream, it
+  // will expire and a call to `OpenSatelliteStream` with that `stream_id` will be closed with a
+  // `ABORTED` error.
+  //
   // If the satellite is not found or the client is not authorized for it, the stream will be closed
   // with a `NOT_FOUND` error.
   rpc OpenSatelliteStream (stream SatelliteStreamRequest) returns (stream SatelliteStreamResponse);
 }
 
-// Request for the `OpenSatelliteStreaam` method.
+// Request for the `OpenSatelliteStream` method.
 message SatelliteStreamRequest {
   // The ID of the satellite to open a stream with. The ID of a satellite can
   // be found on the StellarStation Console page for the satellite.
   string satellite_id = 1;
+
+  // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
+  // specified stream has already expired or been closed, the stream is closed with an
+  // `INVALID_ARGUMENT` error.
+  string stream_id = 2;
 
   // A request to send on the satellite stream. Currently only command sending to the satellite is
   // supported. The request does not need to be filled on the first request to
   // `OpenSatelliteStream`.
   oneof Request {
     // A request to send commands to the satellite.
-    SendSatelliteCommandsRequest send_satellite_commands_request = 2;
+    SendSatelliteCommandsRequest send_satellite_commands_request = 3;
   }
 }
 
@@ -87,11 +102,19 @@ enum Framing {
 
 // A response from the `OpenSatelliteStream` method.
 message SatelliteStreamResponse {
-  // A response on the strema. Currently the only type of response is telemetry received from the
+  // The ID of this stream, which can be used in a subsequent call to `OpenSatelliteStream` to
+  // resume this stream on interruption (e.g., if a network failure causes the connection to be
+  // closed mid-stream). Telemetry received on a previously opened stream with no current listener
+  // will be buffered for a maximum of 1 minute, and the stream itself will be cancelled and no more
+  // buffering will occur if no client resumes the stream with `OpenSatelliteStream` within 10
+  // minutes.
+  string stream_id = 1;
+
+  // A response on the stream. Currently the only type of response is telemetry received from the
   // satellite.
   oneof Response {
     // A response from a satellite containing telemetry.
-    ReceiveTelemetryResponse receive_telemetry_response = 1;
+    ReceiveTelemetryResponse receive_telemetry_response = 2;
   }
 }
 
@@ -101,7 +124,7 @@ message ReceiveTelemetryResponse {
   string plan_id = 1;
 
   // The telemetry received.
-  repeated Telemetry telemetry = 2;
+  Telemetry telemetry = 2;
 }
 
 // A chunk or frame of telemetry data that has been received from a satellite.
