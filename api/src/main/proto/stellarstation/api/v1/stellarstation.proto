@@ -25,14 +25,14 @@ option java_outer_classname = "StellarstationProto";
 option java_package = "com.stellarstation.api.v1";
 
 // The public API service of Stellarstation, a system supporting communication between satellites
-// and groundstations. This API is for use by an operator of a satellite - it is illegal to specify
+// and groundstations. This API is for use by an operator of a satellite - it is invalid to specify
 // satellites that the operator does not own or passes they have not reserved.
 // Only using IDs shown on the StellarStation Console or returned in API responses will ensure all
 // inputs are valid.
 service StellarStationService {
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
-  // as it is made available. All telemetry received from the satellite on reserved plans from this
+  // as it is made available. All telemetry received from the satellite on reserved passes from this
   // point on will be returned as soon as this method is called. If
   // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
   // stream will be returned as well.
@@ -79,10 +79,10 @@ message SendSatelliteCommandsRequest {
   Framing output_framing = 1;
 
   // The command frames to send to the satellite. All commands will be transmitted in sequence
-  // immediately, during which time telemetry will not be received for the given `plan_id`. After
-  // all commands have been transmitted, telemetry receive will be immediately re-enabled. The
-  // maximum size of each command is 2MB. If a command larger than 2MB is received, the stream will
-  // be closed with a `RESOURCE_EXHAUSTED` error.
+  // immediately, during which time telemetry will not be received. After all commands have been
+  // transmitted, telemetry receive will be immediately re-enabled. Them aximum size of each command
+  // is 2MB. If a command larger than 2MB is received, the stream will be closed with a
+  // `RESOURCE_EXHAUSTED` error.
   repeated bytes command = 2;
 }
 
@@ -116,11 +116,8 @@ message SatelliteStreamResponse {
 
 // A response from a satellite containing telemetry.
 message ReceiveTelemetryResponse {
-  // The ID of the plan on which the telemetry was received.
-  string plan_id = 1;
-
   // The telemetry received.
-  Telemetry telemetry = 2;
+  Telemetry telemetry = 1;
 }
 
 // A chunk or frame of telemetry data that has been received from a satellite.
