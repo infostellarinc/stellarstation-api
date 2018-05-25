@@ -37,11 +37,11 @@ service StellarStationService {
   // any messages that have been buffered for the stream will be returned as well.
   //
   // The stream can be left open for any amount of time and telemetry will be received as available
-  // and returned. When the client does is done with the stream, it should close it successfully.
-  // If the stream is cancelled with an unexpected error at any point, telemetry received before the
-  // next call to `OpenSatelliteStream` to resume the stream will be buffered up to 1 minute, and
-  // if no call to `OpenSatelliteStream` is made with `stream_id` specified to resume the stream, it
-  // will expire and a call to `OpenSatelliteStream` with that `stream_id` will be closed with a
+  // and returned. When the client is done with the stream, it should close it successfully. If the
+  // stream is cancelled with an unexpected error at any point, telemetry received before the next
+  // call to `OpenSatelliteStream` to resume the stream will be buffered up to 1 minute, and if no
+  // call to `OpenSatelliteStream` is made with `stream_id` specified to resume the stream, it will
+  // expire and a call to `OpenSatelliteStream` with that `stream_id` will be closed with a
   // `ABORTED` error.
   //
   // If the satellite is not found or the client is not authorized for it, the stream will be closed
