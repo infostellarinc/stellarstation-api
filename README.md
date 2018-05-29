@@ -1,6 +1,6 @@
 # StellarStation API
 
-The public API definition for StellarStation and supported client libraries / helpers.
+The public API definition for [StellarStation](https://www.stellarstation.com/) and supported client libraries / helpers.
 
 This repository is currently under construction and is provided for reference. API implementation is
 in progress and documentation will continue to evolve. Feel free to send PRs to improve
