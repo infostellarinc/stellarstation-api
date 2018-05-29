@@ -24,9 +24,85 @@ gcloud {
 }
 
 allprojects {
+    project.group = 'com.stellarstation.api'
+
     plugins.withType(nl.javadude.gradle.plugins.license.LicensePlugin) {
         license {
             header rootProject.file('LICENSE.header')
+        }
+    }
+
+    plugins.withType(org.gradle.api.publish.maven.plugins.MavenPublishPlugin) {
+        project.apply plugin: 'com.jfrog.bintray'
+        // This should happen automatically, not clear why not.
+        tasks.bintrayUpload.dependsOn tasks.publishToMavenLocal
+
+        def bintrayUser = findProperty('bintray.user')
+        def bintrayKey = findProperty('bintray.key')
+
+        afterEvaluate {
+            bintray {
+                publish = true
+                user = bintrayUser
+                key = bintrayKey
+                pkg {
+                    name = project.archivesBaseName
+                    repo = 'stellarstation'
+                    userOrg = 'infostellarinc'
+                    licenses = ['Apache-2.0']
+                    vcsUrl = 'https://github.com/infostellarinc/stellarstation-api.git'
+                    githubRepo = 'infostellarinc/stellarstation-api'
+                    version {
+                        name = project.version
+                        gpg {
+                            sign = true
+                        }
+                    }
+                }
+                publications = ['maven']
+            }
+
+            publishing {
+                publications {
+                    maven(MavenPublication) {
+                        from components.java
+
+                        artifactId = project.archivesBaseName
+
+                        artifact project.tasks.javadocJar
+                        artifact project.tasks.sourceJar
+
+                        pom.withXml {
+                            asNode().children()[3] + {
+                                resolveStrategy = Closure.DELEGATE_FIRST
+
+                                licenses {
+                                    license {
+                                        name 'Apache License, Version 2.0'
+                                        url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                                        distribution 'repo'
+                                    }
+                                }
+                                developers {
+                                    developer {
+                                        id 'rag'
+                                        name 'Anuraag Agrawal'
+                                        email 'rag@istellar.jp'
+                                        organization 'Infostellar, Inc.'
+                                        organizationUrl 'https://www.infostellar.net/'
+                                    }
+                                }
+
+                                scm {
+                                    connection 'scm:git:git://github.com/infostellarinc/stellarstation-api.git'
+                                    developerConnection 'scm:git:ssh://github.com:infostellarinc/stellarstation-api.git'
+                                    url 'https://github.com/infostellarinc/stellarstation-api'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
