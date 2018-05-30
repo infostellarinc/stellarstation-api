@@ -13,6 +13,8 @@ integrating with the service.
 
 ## Running
 
+### Running the server with Gradle
+
 Users of this repository can just use the `run` task.
 
 ```bash
@@ -20,6 +22,8 @@ $ ./gradlew :examples:fakeserver:run
 ```
 
 Make sure to initialize a client with the API key located [here](./src/misc/api-key.json).
+
+### Running the server with Docker
 
 You can run the fakeserver even without using this repository via Docker.
 
