@@ -31,6 +31,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import java.time.Clock;
 import java.time.Duration;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -58,7 +59,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
     ServiceRequestContext ctx = RequestContext.current();
     ctx.setRequestTimeout(Duration.ZERO);
     ctx.setMaxRequestLength(0);
-    var future =
+    ScheduledFuture<?> future =
         ctx.eventLoop()
             .scheduleAtFixedRate(
                 () -> sendRandomTelemetry(responseObserver), 0, 1, TimeUnit.SECONDS);
