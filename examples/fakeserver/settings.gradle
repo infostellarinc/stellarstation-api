@@ -13,11 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-apply plugin: 'maven-publish'
-apply plugin: 'org.curioswitch.gradle-grpc-api-plugin'
-
-archivesBaseName = 'stellarstation-api'
-
-sourceCompatibility = '1.6'
-targetCompatibility = '1.6'

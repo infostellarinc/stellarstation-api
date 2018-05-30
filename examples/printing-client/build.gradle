@@ -20,7 +20,7 @@ mainClassName = 'com.stellarstation.api.examples.printingclient.PrintingClientMa
 
 dependencies {
     compile 'com.google.auth:google-auth-library-oauth2-http:0.9.1'
-    compile 'com.stellarstation.api:stellarstation-api:0.0.1'
+    compile 'com.stellarstation.api:stellarstation-api:0.0.2'
     compile 'io.grpc:grpc-auth:1.12.0'
     compile 'io.grpc:grpc-netty:1.12.0'
     compile 'io.grpc:grpc-protobuf:1.12.0'

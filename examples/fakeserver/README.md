@@ -21,6 +21,12 @@ Users of this repository can just use the `run` task.
 $ ./gradlew :examples:fakeserver:run
 ```
 
+If using a lower version of Java than Java 10, you will need to specify the build file explicitly.
+
+```bash
+$ ./gradlew -b examples/fakeserver/build.gradle run
+```
+
 Make sure to initialize a client with the API key located [here](./src/misc/api-key.json).
 
 ### Running the server with Docker
