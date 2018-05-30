@@ -73,7 +73,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
             5,
             TimeUnit.MINUTES);
 
-    return new StreamObserver<>() {
+    return new StreamObserver<SatelliteStreamRequest>() {
       @Override
       public void onNext(SatelliteStreamRequest value) {
         if (!value.getSatelliteId().equals("5")) {
@@ -106,7 +106,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
 
   private static void sendTelemetry(
       ByteString payload, StreamObserver<SatelliteStreamResponse> responseObserver) {
-    var response =
+    SatelliteStreamResponse response =
         SatelliteStreamResponse.newBuilder()
             .setReceiveTelemetryResponse(
                 ReceiveTelemetryResponse.newBuilder()

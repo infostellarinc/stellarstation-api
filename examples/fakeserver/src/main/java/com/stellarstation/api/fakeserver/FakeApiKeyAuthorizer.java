@@ -78,7 +78,7 @@ class FakeApiKeyAuthorizer implements Authorizer<OAuth2Token> {
   }
 
   private static PublicKey readPublicKey() {
-    try (var parser =
+    try (PEMParser parser =
         new PEMParser(
             new InputStreamReader(
                 Resources.getResource("public-key.pem").openStream(), StandardCharsets.UTF_8))) {

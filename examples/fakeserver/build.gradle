@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-apply plugin: 'org.curioswitch.gradle-curio-server-plugin'
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'http://dl.bintray.com/curioswitch/curiostack'
+        }
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.2.8'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-java-application'
 
 archivesBaseName = 'stellarstation-fake-apiserver'
 mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
 
 dependencies {
-    compile project(':api')
+    compile 'com.stellarstation.api:stellarstation-api:0.0.2'
 
-    compile 'org.bouncycastle:bcpkix-jdk15on'
-    compile 'org.curioswitch.curiostack:curio-server-framework'
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+    compile 'org.curioswitch.curiostack:curio-server-framework:0.0.70'
 
-    annotationProcessor 'com.google.dagger:dagger-compiler'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
 }
 
 docker {
