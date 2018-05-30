@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp /var/keys/api-key.json /out

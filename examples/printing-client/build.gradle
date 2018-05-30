@@ -16,6 +16,8 @@
 
 apply plugin: 'application'
 
+mainClassName = 'com.stellarstation.api.examples.printingclient.PrintingClientMain'
+
 dependencies {
     compile 'com.google.auth:google-auth-library-oauth2-http:0.9.1'
     compile 'com.stellarstation.api:stellarstation-api:0.0.1'
@@ -27,5 +29,5 @@ dependencies {
 }
 
 processResources {
-    from project(':examples:fakeserver').file('api-key.json')
+    from project(':examples:fakeserver').file('src/misc/api-key.json')
 }

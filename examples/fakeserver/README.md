@@ -13,4 +13,35 @@ integrating with the service.
 
 ## Running
 
-// TODO(rag): Add instructions for running with docker after pushing an image.
+### Running the server with Gradle
+
+Users of this repository can just use the `run` task.
+
+```bash
+$ ./gradlew :examples:fakeserver:run
+```
+
+Make sure to initialize a client with the API key located [here](./src/misc/api-key.json).
+
+### Running the server with Docker
+
+You can run the fakeserver even without using this repository via Docker.
+
+First extract the api-key from the Docker image.
+
+```bash
+$ docker pull quay.io/infostellarinc/fake-apiserver
+$ docker run -v `pwd`:/out --entrypoint extract-key -it --rm infostellarinc/fake-apiserver
+```
+
+A file named `api-key.json` will be present in the current directory which you can use to initialize
+a client.
+
+Then just run the server with docker.
+
+```bash
+$ docker run -p 8081:8081 -it --rm quay.io/infostellarinc/fake-apiserver
+```
+
+The server will be listening for plaintext on port 8081. See [printing-client](../printing-client)
+for simple example code that exercises the server code.

@@ -14,7 +14,26 @@ from the StellarStation Console. Details for registering call credentials on a g
 found [here](https://grpc.io/docs/guides/auth.html). Note that if the key has been revoked on the
 console, it will not be usable to authenticate with the API.
 
-// TODO(rag): Provide details on how to register call credentials for StellarStation private keys.
+The `grpc-auth` and `google-auth-library-oauth2-http` libraries can be used to easily setup
+authentication of an API client.
+
+```java
+// Load the private key downloaded from the StellarStation Console.
+ServiceAccountJwtAccessCredentials credentials =
+    ServiceAccountJwtAccessCredentials.fromStream(
+        Resources.getResource("api-key.json").openStream(),
+        URI.create("https://api.stellarstation.com"));
+
+// Setup the gRPC client.
+ManagedChannel channel =
+    ManagedChannelBuilder.forAddress("localhost", 8081)
+        .build();
+StellarStationServiceStub client =
+    StellarStationServiceGrpc.newStub(channel)
+        .withCallCredentials(MoreCallCredentials.from(credentials));
+```
+
+A full example of an API client can be found [here](./examples/fakeserver).
 
 ## Usage
 
