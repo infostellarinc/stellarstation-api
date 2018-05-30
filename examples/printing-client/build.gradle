@@ -27,5 +27,5 @@ dependencies {
 }
 
 processResources {
-    from project(':examples:fakeserver').file('api-key.json')
+    from project(':examples:fakeserver').file('src/misc/api-key.json')
 }

@@ -17,6 +17,7 @@
 apply plugin: 'org.curioswitch.gradle-curio-server-plugin'
 
 archivesBaseName = 'stellarstation-fake-apiserver'
+mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
 
 dependencies {
     compile project(':api')
@@ -25,4 +26,23 @@ dependencies {
     compile 'org.curioswitch.curiostack:curio-server-framework'
 
     annotationProcessor 'com.google.dagger:dagger-compiler'
+}
+
+docker {
+    javaApplication {
+        maintainer = 'StellarStation Team'
+        ports = [8080, 8081]
+    }
+}
+
+dockerDistTar {
+    addFile 'api-key.json', '/var/keys/api-key.json'
+    addFile 'extract-key', '/usr/bin/extract-key'
+
+    doFirst {
+        copy {
+            from 'src/misc'
+            into "$buildDir/docker"
+        }
+    }
 }
