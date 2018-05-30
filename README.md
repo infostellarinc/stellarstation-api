@@ -27,8 +27,6 @@ ServiceAccountJwtAccessCredentials credentials =
 // Setup the gRPC client.
 ManagedChannel channel =
     ManagedChannelBuilder.forAddress("localhost", 8081)
-        // Only for testing, this should not be used when accessing the actual API
-        .usePlaintext()
         .build();
 StellarStationServiceStub client =
     StellarStationServiceGrpc.newStub(channel)
