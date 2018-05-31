@@ -33,7 +33,7 @@ StellarStationServiceStub client =
         .withCallCredentials(MoreCallCredentials.from(credentials));
 ```
 
-A full example of an API client can be found [here](./examples/fakeserver).
+A full example of an API client can be found [here](./examples/printing-client).
 
 ## Usage
 
