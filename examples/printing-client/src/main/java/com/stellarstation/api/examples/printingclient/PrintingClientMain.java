@@ -51,14 +51,14 @@ public class PrintingClientMain {
     // Setup the gRPC client.
     ManagedChannel channel =
         ManagedChannelBuilder.forAddress("localhost", 8081)
-            // Only for testing, this should not be used when accessing the actual API
+            // Only for testing, this should not be set when accessing the actual API
             .usePlaintext()
             .build();
     StellarStationServiceStub client =
         StellarStationServiceGrpc.newStub(channel)
             .withCallCredentials(MoreCallCredentials.from(credentials));
 
-    // Open the stream with a listener to handle telemetry responses.
+    // Open the stream with an observer to handle telemetry responses.
     StreamObserver<SatelliteStreamRequest> requestStream =
         client.openSatelliteStream(
             new StreamObserver<>() {
@@ -85,7 +85,8 @@ public class PrintingClientMain {
               public void onCompleted() {}
             });
 
-    // Send the first request to activate the stream.
+    // Send the first request to activate the stream. Telemetry will start to be received at 
+    // this point.
     requestStream.onNext(SatelliteStreamRequest.newBuilder().setSatelliteId("5").build());
 
     ScheduledExecutorService commandExecutor = Executors.newScheduledThreadPool(1);
