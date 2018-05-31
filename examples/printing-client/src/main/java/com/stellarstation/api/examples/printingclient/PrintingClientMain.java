@@ -85,7 +85,7 @@ public class PrintingClientMain {
               public void onCompleted() {}
             });
 
-    // Send the first request to activate the stream. Telemetry will start to be received at 
+    // Send the first request to activate the stream. Telemetry will start to be received at
     // this point.
     requestStream.onNext(SatelliteStreamRequest.newBuilder().setSatelliteId("5").build());
 
