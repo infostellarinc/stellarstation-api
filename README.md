@@ -70,8 +70,8 @@ Other languages have similar methods for loading Service Account JWT Access Cred
 For example,
 
 C++ - https://github.com/grpc/grpc/blob/583f39ad94c0a14a50916e86a5ccd8c3c77ae2c6/include/grpcpp/security/credentials.h#L144
-Go - https://github.com/grpc/grpc-go/blob/master/credentials/oauth/oauth.go#L60
-Python - https://github.com/google/oauth2client/blob/master/oauth2client/service_account.py#L552
+Go - https://github.com/grpc/grpc-go/blob/96cefb43cfc8b2cd3fed9f19f59830bc69e30093/credentials/oauth/oauth.go#L60
+Python - https://github.com/google/oauth2client/blob/0d1c814779c21503307b2f255dabcf24b2a107ac/oauth2client/service_account.py#L552
 
 ## Usage
 
