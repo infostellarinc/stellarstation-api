@@ -47,7 +47,7 @@ from the StellarStation Console. Details for registering call credentials on a g
 found [here](https://grpc.io/docs/guides/auth.html). Note that if the key has been revoked on the
 console, it will not be usable to authenticate with the API.
 
-The `grpc-auth` and `google-auth-library-oauth2-http` libraries can be used to easily setup
+For Java, the `grpc-auth` and `google-auth-library-oauth2-http` libraries can be used to easily setup
 authentication of an API client.
 
 ```java
