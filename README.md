@@ -1,10 +1,43 @@
 # StellarStation API
 
-The public API definition for [StellarStation](https://www.stellarstation.com/) and supported client libraries / helpers.
+The public API definition for [StellarStation](https://www.stellarstation.com/) and supported client
+libraries / helpers.
 
 This repository is currently under construction and is provided for reference. API implementation is
 in progress and documentation will continue to evolve. Feel free to send PRs to improve
 documentation when things are unclear or file issues with questions on usage.
+
+## Basics
+
+The StellarStation API is based on [gRPC](https://grpc.io). An API client can be written in any
+language supported by gRPC by following one of the language-specific guides [here](https://grpc.io/docs/).
+
+The main protocol definition used to generate language specific stub code is [here](./api/src/main/proto/stellarstation/api/v1/stellarstation.proto).
+
+In addition, we provide precompiled client stubs for Java. Java users can just add a dependency on
+the stubs and don't need to compile the protocol into code themselves.
+
+Gradle users should add the `stellarstation-api` artifact to their `dependencies`, e.g.,
+
+```groovy
+dependencies {
+    compile 'com.stellarstation.api:stellarstation-api:0.0.2'
+}
+```
+
+Maven users would add to their `pom.xml`
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>com.stellarstation.api</groupId>
+    <artifactId>stellarstation-api</artifactId>
+    <version>0.0.2</version>
+  </dependency>
+</dependencies>
+```
+
+A full example of a Java API client can be found [here](./examples/printing-client).
 
 ## Authentication
 
@@ -32,8 +65,6 @@ StellarStationServiceStub client =
     StellarStationServiceGrpc.newStub(channel)
         .withCallCredentials(MoreCallCredentials.from(credentials));
 ```
-
-A full example of an API client can be found [here](./examples/printing-client).
 
 ## Usage
 

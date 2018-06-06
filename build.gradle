@@ -73,7 +73,7 @@ allprojects {
                         artifact project.tasks.sourceJar
 
                         pom.withXml {
-                            asNode().children()[3] + {
+                            asNode().children()[6] + {
                                 resolveStrategy = Closure.DELEGATE_FIRST
 
                                 licenses {
