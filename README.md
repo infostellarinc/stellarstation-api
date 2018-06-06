@@ -7,7 +7,7 @@ This repository is currently under construction and is provided for reference. A
 in progress and documentation will continue to evolve. Feel free to send PRs to improve
 documentation when things are unclear or file issues with questions on usage.
 
-## Basics
+## Usage
 
 The StellarStation API is based on [gRPC](https://grpc.io). An API client can be written in any
 language supported by gRPC by following one of the language-specific guides [here](https://grpc.io/docs/).
