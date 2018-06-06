@@ -21,7 +21,7 @@ Gradle users should add the `stellarstation-api` artifact to their `dependencies
 
 ```groovy
 dependencies {
-    compile 'com.stellarstation.api:stellarstation-api:0.0.2'
+    compile 'com.stellarstation.api:stellarstation-api:0.0.3'
 }
 ```
 
@@ -32,7 +32,7 @@ Maven users would add to their `pom.xml`
   <dependency>
     <groupId>com.stellarstation.api</groupId>
     <artifactId>stellarstation-api</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
   </dependency>
 </dependencies>
 ```
