@@ -88,9 +88,9 @@ message SendSatelliteCommandsRequest {
 
 // A type of framing of a binary payload used in satellite communicaation.
 enum Framing {
-  // No framing done via the API. All payloads are assumed to be pre-framed and ready for
+  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
   // transmission to the satellite or API client with no additional processing.
-  RAW = 0;
+  BITSTREAM = 0;
 
   // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
   AX25 = 1;
