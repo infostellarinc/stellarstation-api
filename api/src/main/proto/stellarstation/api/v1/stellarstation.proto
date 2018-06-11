@@ -88,9 +88,9 @@ message SendSatelliteCommandsRequest {
 
 // A type of framing of a binary payload used in satellite communicaation.
 enum Framing {
-  // No framing. For sent payloads, this is usually pre-framed data while for received ones, it is
-  // raw IQ data.
-  RAW = 0;
+  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
+  // transmission to the satellite or API client with no additional processing.
+  BITSTREAM = 0;
 
   // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
   AX25 = 1;
@@ -123,7 +123,7 @@ message ReceiveTelemetryResponse {
 // A chunk or frame of telemetry data that has been received from a satellite.
 message Telemetry {
   // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
-  // chunk of IQ data.
+  // chunk of the bitstream.
   Framing framing = 1;
 
   // The payload of this telemetry.
