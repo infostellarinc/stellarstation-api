@@ -123,7 +123,7 @@ message ReceiveTelemetryResponse {
 // A chunk or frame of telemetry data that has been received from a satellite.
 message Telemetry {
   // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
-  // chunk of IQ data.
+  // chunk of the bitstream.
   Framing framing = 1;
 
   // The payload of this telemetry.
