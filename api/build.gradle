@@ -37,3 +37,11 @@ publishing {
         }
     }
 }
+
+javadoc {
+    source 'build/generated/source/proto/main'
+}
+
+sourceJar {
+    from 'build/generated/source/proto/main'
+}
