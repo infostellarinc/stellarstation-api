@@ -26,8 +26,9 @@ import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
 import com.stellarstation.api.v1.StellarStationServiceGrpc;
 import com.stellarstation.api.v1.StellarStationServiceGrpc.StellarStationServiceStub;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.auth.MoreCallCredentials;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import java.net.URI;
 import java.util.Base64;
@@ -50,9 +51,12 @@ public class PrintingClientMain {
 
     // Setup the gRPC client.
     ManagedChannel channel =
-        ManagedChannelBuilder.forAddress("localhost", 8081)
+        NettyChannelBuilder.forAddress("localhost", 8080)
             // Only for testing, this should not be set when accessing the actual API
-            .usePlaintext()
+            .sslContext(
+                GrpcSslContexts.forClient()
+                    .trustManager(Resources.getResource("tls.crt").openStream())
+                    .build())
             .build();
     StellarStationServiceStub client =
         StellarStationServiceGrpc.newStub(channel)

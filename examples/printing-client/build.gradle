@@ -25,9 +25,11 @@ dependencies {
     compile 'io.grpc:grpc-netty:1.12.0'
     compile 'io.grpc:grpc-protobuf:1.12.0'
     compile 'io.grpc:grpc-stub:1.12.0'
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.7.Final'
     compile 'org.slf4j:slf4j-simple:1.7.25'
 }
 
 processResources {
     from project(':examples:fakeserver').file('src/misc/api-key.json')
+    from project(':examples:fakeserver').file('src/main/resources/tls.crt')
 }
