@@ -53,9 +53,10 @@ public class PrintingClientMain {
     ManagedChannel channel =
         NettyChannelBuilder.forAddress("localhost", 8080)
             // Only for testing, this should not be set when accessing the actual API
-            .sslContext(GrpcSslContexts.forClient()
-                .trustManager(Resources.getResource("tls.crt").openStream())
-                .build())
+            .sslContext(
+                GrpcSslContexts.forClient()
+                    .trustManager(Resources.getResource("tls.crt").openStream())
+                    .build())
             .build();
     StellarStationServiceStub client =
         StellarStationServiceGrpc.newStub(channel)
