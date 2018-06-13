@@ -37,7 +37,7 @@ Maven users would add to their `pom.xml`
 </dependencies>
 ```
 
-A full example of a Java API client can be found [here](./examples/printing-client).
+A full example of a Java API client can be found [here](./examples/java/printing-client).
 
 ## Authentication
 

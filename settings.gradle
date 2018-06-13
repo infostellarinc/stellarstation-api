@@ -37,4 +37,4 @@ pluginManagement {
 
 include ':api'
 include ':examples:fakeserver'
-include ':examples:printing-client'
+include ':examples:java:printing-client'
