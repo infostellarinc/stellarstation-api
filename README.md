@@ -73,6 +73,11 @@ For example,
 - Go - https://github.com/grpc/grpc-go/blob/96cefb43cfc8b2cd3fed9f19f59830bc69e30093/credentials/oauth/oauth.go#L60
 - Python - https://github.com/google/oauth2client/blob/0d1c814779c21503307b2f255dabcf24b2a107ac/oauth2client/service_account.py#L552
 
+## Other languages
+Examples for other languages can be found here:
+- [Java](./examples/java/printing-client)
+- [Python](./examples/python/printing-client)
+
 ## Usage
 
 When using `proto` files from this repository directly in client code, make sure to only use [tagged releases](https://github.com/infostellarinc/stellarstation-api/releases).
