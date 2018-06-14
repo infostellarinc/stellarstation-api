@@ -72,32 +72,28 @@ allprojects {
                         artifact project.tasks.javadocJar
                         artifact project.tasks.sourceJar
 
-                        pom.withXml {
-                            asNode().children()[6] + {
-                                resolveStrategy = Closure.DELEGATE_FIRST
+                        pom {
+                            licenses {
+                                license {
+                                    name = 'Apache License, Version 2.0'
+                                    url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                                    distribution = 'repo'
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id = 'rag'
+                                    name = 'Anuraag Agrawal'
+                                    email = 'rag@istellar.jp'
+                                    organization = 'Infostellar, Inc.'
+                                    organizationUrl = 'https://www.infostellar.net/'
+                                }
+                            }
 
-                                licenses {
-                                    license {
-                                        name 'Apache License, Version 2.0'
-                                        url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                                        distribution 'repo'
-                                    }
-                                }
-                                developers {
-                                    developer {
-                                        id 'rag'
-                                        name 'Anuraag Agrawal'
-                                        email 'rag@istellar.jp'
-                                        organization 'Infostellar, Inc.'
-                                        organizationUrl 'https://www.infostellar.net/'
-                                    }
-                                }
-
-                                scm {
-                                    connection 'scm:git:git://github.com/infostellarinc/stellarstation-api.git'
-                                    developerConnection 'scm:git:ssh://github.com:infostellarinc/stellarstation-api.git'
-                                    url 'https://github.com/infostellarinc/stellarstation-api'
-                                }
+                            scm {
+                                connection = 'scm:git:git://github.com/infostellarinc/stellarstation-api.git'
+                                developerConnection = 'scm:git:ssh://github.com:infostellarinc/stellarstation-api.git'
+                                url = 'https://github.com/infostellarinc/stellarstation-api'
                             }
                         }
                     }
@@ -105,4 +101,24 @@ allprojects {
             }
         }
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8'
+    distributionType = 'ALL'
+}
+
+ext.condaRoot = gradle.gradleUserHomeDir.toPath().resolve('curiostack/python/bootstrap/miniconda2-4.5.4')
+ext.condaCommand = {command->
+    return """
+    . ${condaRoot.resolve('etc/profile.d/conda.sh')} && \\
+    conda activate > /dev/null && \\
+    ${command}
+    """
+}
+
+task installPythonTools(type: Exec) {
+    dependsOn 'pythonSetup'
+    executable 'bash'
+    args '-c', condaCommand('pip install grpcio-tools twine')
 }
