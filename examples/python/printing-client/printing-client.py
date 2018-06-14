@@ -53,8 +53,8 @@ def run():
         base64.b64encode(value.receive_telemetry_response.telemetry.data)[:100])
 
 
-# Since this generator is used as an argument of OpenSatelliteStream,
-# the stream is closed when python exit from the generator.
+# This generator yields the requests to send on the stream opened by OpenSatelliteStream.
+# The client side of the stream will be closed when this generator returns (in this example, it never returns).
 def generate_request():
 
   # Send the first request to activate the stream. Telemetry will start
@@ -77,7 +77,7 @@ def generate_request():
         send_satellite_commands_request=command_request)
 
     yield satellite_stream_request
-    time.sleep(1)
+    time.sleep(3)
 
 
 if __name__ == '__main__':
