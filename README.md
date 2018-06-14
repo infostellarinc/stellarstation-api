@@ -14,7 +14,9 @@ language supported by gRPC by following one of the language-specific guides [her
 
 The main protocol definition used to generate language specific stub code is [here](./api/src/main/proto/stellarstation/api/v1/stellarstation.proto).
 
-In addition, we provide precompiled client stubs for Java. Java users can just add a dependency on
+### Java
+
+We provide precompiled client stubs for Java. Java users can just add a dependency on
 the stubs and don't need to compile the protocol into code themselves.
 
 Gradle users should add the `stellarstation-api` artifact to their `dependencies`, e.g.,
@@ -39,6 +41,16 @@ Maven users would add to their `pom.xml`
 
 A full example of a Java API client can be found [here](./examples/java/printing-client).
 
+### Python
+
+You can compile client stubs for Python with gRPC tools.
+
+```bash
+$  python -m grpc_tools.protoc -I./api/src/main/proto/stellarstation/api/v1/ --python_out=./examples/python/printing-client --grpc_python_out=./examples/python/printing-client stellarstation.proto
+```
+
+See more details of how to set up gRPC tools in [Python example](./examples/python/printing-client).
+
 ## Authentication
 
 Authentication to the StellarStation API is done using JWT bearer tokens (https://jwt.io). When
@@ -47,6 +59,7 @@ from the StellarStation Console. Details for registering call credentials on a g
 found [here](https://grpc.io/docs/guides/auth.html). Note that if the key has been revoked on the
 console, it will not be usable to authenticate with the API.
 
+### Java
 For Java, the `grpc-auth` and `google-auth-library-oauth2-http` libraries can be used to easily setup
 authentication of an API client.
 
@@ -65,18 +78,33 @@ StellarStationServiceStub client =
     StellarStationServiceGrpc.newStub(channel)
         .withCallCredentials(MoreCallCredentials.from(credentials));
 ```
+### Python
+Google authentication library for Python can be used for authentication of an API client.
 
+
+```python
+# Load the private key downloaded from the StellarStation Console.
+credentials = google_auth_jwt.Credentials.from_service_account_file(
+  'api-key.json',
+  audience='https://api.stellarstation.com')
+
+# Setup the gRPC client.
+jwt_creds = google_auth_jwt.OnDemandCredentials.from_signing_credentials(
+  credentials)
+channel_credential = grpc.ssl_channel_credentials(open('tls.crt', 'br').read())
+channel = google_auth_transport_grpc.secure_authorized_channel(
+  jwt_creds, None, 'localhost:8080', channel_credential)
+client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
+```
+
+
+### Other languages
 Other languages have similar methods for loading Service Account JWT Access Credentials.
 For example,
 
 - C++ - https://github.com/grpc/grpc/blob/583f39ad94c0a14a50916e86a5ccd8c3c77ae2c6/include/grpcpp/security/credentials.h#L144
 - Go - https://github.com/grpc/grpc-go/blob/96cefb43cfc8b2cd3fed9f19f59830bc69e30093/credentials/oauth/oauth.go#L60
-- Python - https://github.com/google/oauth2client/blob/0d1c814779c21503307b2f255dabcf24b2a107ac/oauth2client/service_account.py#L552
 
-## Other languages
-Examples for other languages can be found here:
-- [Java](./examples/java/printing-client)
-- [Python](./examples/python/printing-client)
 
 ## Usage
 
