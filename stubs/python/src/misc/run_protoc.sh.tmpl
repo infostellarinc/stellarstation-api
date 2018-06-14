@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. |CONDA_PROFILE_PATH|
+conda activate > /dev/null
+python -m grpc_tools.protoc "$@"

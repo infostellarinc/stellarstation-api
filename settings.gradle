@@ -38,3 +38,4 @@ pluginManagement {
 include ':api'
 include ':examples:fakeserver'
 include ':examples:java:printing-client'
+include ':stubs:python'
