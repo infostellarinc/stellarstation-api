@@ -14,13 +14,13 @@ In roder for authentication, install google-auth by running:
 $ pip install --upgrade google-auth
 ```
 
-### Compile proto file
+## Compile proto file
 After installation of required modules, you need to generate stub files from .proto file. Python's gRPC tools include the protol buffer compiler. To generate stubs for fakeserver, run:
 ```bash
 $  python -m grpc_tools.protoc -I../../../api/src/main/proto/stellarstation/api/v1/ --python_out=. --grpc_python_out=. stellarstation.proto
 ```
 
-### Try it out!
+## Try it out!
 Now, you'll see response from fakeserver by running printing-client.
 ```bash
 $  python printing-client.py
