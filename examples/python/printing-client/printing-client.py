@@ -18,12 +18,12 @@ import os
 import time
 
 import grpc
-import stellarstation_pb2
-import stellarstation_pb2_grpc
 
 from google import auth as google_auth
 from google.auth import jwt as google_auth_jwt
 from google.auth.transport import grpc as google_auth_transport_grpc
+from stellarstation.api.v1 import stellarstation_pb2
+from stellarstation.api.v1 import stellarstation_pb2_grpc
 
 os.environ['GRPC_SSL_CIPHER_SUITES'] = 'ECDHE-RSA-AES128-GCM-SHA256'
 

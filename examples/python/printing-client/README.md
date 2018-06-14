@@ -6,7 +6,7 @@ the basics of writing code to integrate with the StellarStation API. Only works 
 
 ## Before you begin
 ### Prerequisites
-When you start with gRPC in Python, you need pip, gRPC and gRPC tools. Ensure you have correctly installed those modules by following instructions in official [gRPC site](https://grpc.io/docs/quickstart/python.html#install-grpc-tools).
+When you start with gRPC in Python, you need pip and gRPC. Ensure you have correctly installed those modules by following instructions in official [gRPC site](https://grpc.io/docs/quickstart/python.html#install-grpc-tools).
 
 
 ### Install Google authentication library for Python
@@ -15,10 +15,11 @@ For authentication, install google-auth by running:
 $ pip install --upgrade google-auth
 ```
 
-## Compile proto file
-After installation of required modules, you need to generate stub files from .proto file. Python's gRPC tools include the protol buffer compiler. To generate stubs for fakeserver, run:
+## Install StellarStation API library
+After installation of required modules, you need stubs generated from .proto file. To install precompiled client stubs for Python, run:
+
 ```bash
-$  python -m grpc_tools.protoc -I../../../api/src/main/proto/stellarstation/api/v1/ --python_out=. --grpc_python_out=. stellarstation.proto
+$  pip install --upgrade stellarstation
 ```
 
 ## Try it out!

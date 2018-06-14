@@ -43,13 +43,13 @@ A full example of a Java API client can be found [here](./examples/java/printing
 
 ### Python
 
-You can compile client stubs for Python with gRPC tools.
+You can install precompiled client stubs for Python with `pip` command.
 
 ```bash
-$  python -m grpc_tools.protoc -I./api/src/main/proto/stellarstation/api/v1/ --python_out=./examples/python/printing-client --grpc_python_out=./examples/python/printing-client stellarstation.proto
+$  pip install --upgrade stellarstation
 ```
 
-See more details of how to set up gRPC tools in [Python example](./examples/python/printing-client).
+A full example of a Python API client can be found [here](./examples/python/printing-client).
 
 ## Authentication
 
