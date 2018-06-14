@@ -43,7 +43,7 @@ A full example of a Java API client can be found [here](./examples/java/printing
 
 ### Python
 
-You can install precompiled client stubs for Python with `pip` command.
+We provide precompiled client stubs for Python. Python users can install them with `pip`.
 
 ```bash
 $  pip install --upgrade stellarstation
@@ -79,7 +79,7 @@ StellarStationServiceStub client =
         .withCallCredentials(MoreCallCredentials.from(credentials));
 ```
 ### Python
-Google authentication library for Python can be used for authentication of an API client.
+`google-auth` for Python can be used for authentication of an API client.
 
 
 ```python
