@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// This module generates all stubs that can be provided by the Python gRPC protoc compiler
-// (this generally includes all C++-based gRPC client libraries).
-
 apply plugin: 'java' // Required by gradle plugin but we don't generate Java here
 apply plugin: 'com.google.protobuf'
 
@@ -62,7 +59,7 @@ task fillRunProtocScript {
 }
 
 afterEvaluate {
-    generateProto.dependsOn fillRunProtocScript
+    generateProto.dependsOn fillRunProtocScript, ':installPythonTools'
 
     def packageDir = "$buildDir/publications/python"
     task setupPythonPackage {
