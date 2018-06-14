@@ -25,14 +25,10 @@ targetCompatibility = '1.6'
 publishing {
     publications {
         maven(MavenPublication) {
-            pom.withXml {
-                asNode().children()[3] + {
-                    resolveStrategy = Closure.DELEGATE_FIRST
-
-                    name 'StellarStation API'
-                    description 'Java stubs and protocol definition for accessing the StellarStation API.'
-                    url 'https://github.com/infostellarinc/stellarstation-api'
-                }
+            pom {
+                name = 'StellarStation API'
+                description = 'Java stubs and protocol definition for accessing the StellarStation API.'
+                url = 'https://github.com/infostellarinc/stellarstation-api'
             }
         }
     }
