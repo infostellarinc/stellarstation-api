@@ -3,13 +3,14 @@
 A simple example client that prints received telemetry and sends commands at a fixed interval. Shows
 the basics of writing code to integrate with the StellarStation API. Only works with [Fakeserver](../../fakeserver).
 
+
 ## Before you begin
 ### Prerequisites
 When you start with gRPC in Python, you need pip, gRPC and gRPC tools. Ensure you have correctly installed those modules by following instructions in official [gRPC site](https://grpc.io/docs/quickstart/python.html#install-grpc-tools).
 
 
 ### Install Google authentication library for Python
-In roder for authentication, install google-auth by running:
+For authentication, install google-auth by running:
 ```bash
 $ pip install --upgrade google-auth
 ```
