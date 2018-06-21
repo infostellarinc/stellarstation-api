@@ -51,5 +51,5 @@ $ docker run -p 8080:8080 -p 8081:8081 -it --rm quay.io/infostellarinc/fake-apis
 
 The server will be listening for plaintext on port 8081 and TLS on port 8080. Connecting on TLS will
 require either disabling TLS verification or adding [tls.crt](./src/main/resources/tls.crt) as a
-trusted certificate. See [printing-client](../printing-client) for simple example code that 
+trusted certificate. See [printing-client](../java/printing-client) for simple example code that 
 exercises the server code.
