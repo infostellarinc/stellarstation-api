@@ -73,9 +73,11 @@ message SatelliteStreamRequest {
 // A request to send commands to a satellite.
 message SendSatelliteCommandsRequest {
   // The framing to be applied to `command` before transmission. If `command` has already been
-  // framed, this should be set to RAW and no additional processing will take place before
+  // framed, this should be set to BITSTREAM and no additional processing will take place before
   // modulation. When applying framing, each `command` will be treated as a single frame. Framing
   // parameters used will be the ones registered for the satellite in the StellarStation Console.
+  //
+  // Currently IQ is not allowed for `output_framing`.
   Framing output_framing = 1;
 
   // The command frames to send to the satellite. All commands will be transmitted in sequence
@@ -94,6 +96,10 @@ enum Framing {
 
   // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
   AX25 = 1;
+
+  // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
+  // additional processing.
+  IQ = 2;
 }
 
 // A response from the `OpenSatelliteStream` method.
