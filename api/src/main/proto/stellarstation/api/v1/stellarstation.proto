@@ -35,7 +35,7 @@ option java_package = "com.stellarstation.api.v1";
 // satellite pair.
 //
 // A plan is a scheduled pass that will be executed to send and receive data between the ground
-// stationand satellite during the time range.
+// station and satellite during the time range.
 service StellarStationService {
   // Lists the plans for a particular ground station.
   //
