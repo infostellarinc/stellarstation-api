@@ -209,14 +209,17 @@ message Plan {
     // The plan has been scheduled and will be executed at `aos_time`.
     RESERVED = 0;
 
+    // The plan is currently executing.
+    EXECUTING = 1;
+
     // The plan has executed successfully.
-    SUCCEEDED = 1;
+    SUCCEEDED = 2;
 
     // The plan has executed but was not successful.
-    FAILED = 2;
+    FAILED = 3;
 
     // The plan has been cancelled and will not be executed.
-    CANCELLED = 3;
+    CANCELLED = 4;
   }
   // The status of this plan.
   Status status = 2;
