@@ -226,11 +226,8 @@ message Plan {
   // The status of this plan.
   Status status = 2;
 
-  // The TLE used to compute this plan. Always has exactly two items corresponding to line 1 and
-  // line 2 of the 2-line TLE format.
-  //
-  // https://en.wikipedia.org/wiki/Two-line_element_set
-  repeated string tle_line = 3;
+  // The TLE for the satellite in this plan.
+  Tle tle = 3;
 
   // The time of AOS between the ground station and satellite in this plan.
   google.protobuf.Timestamp aos_time = 4;
@@ -251,4 +248,13 @@ message Plan {
 
   // The time of max elevation during the plan.
   google.protobuf.Timestamp max_elevation_time = 9;
+}
+
+// Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
+message Tle {
+  // The first line of the TLE. Not a title line.
+  string line_1 = 1;
+
+  // The second line of the TLE.
+  string line_2 = 2;
 }
