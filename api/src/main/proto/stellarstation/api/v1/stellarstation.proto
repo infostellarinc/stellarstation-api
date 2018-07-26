@@ -226,8 +226,8 @@ message Plan {
   // The status of this plan.
   Status status = 2;
 
-  // The TLE used to compute this plan. Always has exactly two items corresponding to line 1 and
-  // line 2 of the 2-line TLE format.
+  // The TLE for the satellite in this plan. Always has exactly two items corresponding to line 1
+  // and line 2 of the 2-line TLE format.
   //
   // https://en.wikipedia.org/wiki/Two-line_element_set
   repeated string tle_line = 3;
