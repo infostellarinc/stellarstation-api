@@ -88,21 +88,19 @@ message SatelliteStreamRequest {
     // A request to send commands to the satellite.
     SendSatelliteCommandsRequest send_satellite_commands_request = 3;
   }
+
+  // The `Framing` types to accept, for satellites that have been configured for multiple framings
+  // (e.g., IQ + AX25). If empty, all framings produced by the satellite will be returned.
+  repeated Framing accepted_framing = 4;
 }
 
 // A request to send commands to a satellite.
+//
+// Next ID: 1
 message SendSatelliteCommandsRequest {
-  // The framing to be applied to `command` before transmission. If `command` has already been
-  // framed, this should be set to BITSTREAM and no additional processing will take place before
-  // modulation. When applying framing, each `command` will be treated as a single frame. Framing
-  // parameters used will be the ones registered for the satellite in the StellarStation Console.
-  //
-  // Currently IQ is not allowed for `output_framing`.
-  Framing output_framing = 1;
-
   // The command frames to send to the satellite. All commands will be transmitted in sequence
   // immediately, during which time telemetry will not be received. After all commands have been
-  // transmitted, telemetry receive will be immediately re-enabled. Them aximum size of each command
+  // transmitted, telemetry receive will be immediately re-enabled. The maximum size of each command
   // is 2MB. If a command larger than 2MB is received, the stream will be closed with a
   // `RESOURCE_EXHAUSTED` error.
   repeated bytes command = 2;
@@ -120,6 +118,9 @@ enum Framing {
   // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
   // additional processing.
   IQ = 2;
+
+  // A decoded PNG image frame.
+  IMAGE_PNG = 3;
 }
 
 // A response from the `OpenSatelliteStream` method.
