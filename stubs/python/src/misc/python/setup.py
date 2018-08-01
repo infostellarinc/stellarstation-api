@@ -20,7 +20,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='stellarstation',
-    version='0.0.7',
+    version='0.0.8',
     author='StellarStation API Team',
     author_email='stellarstation-api-team@istellar.jp',
     description='Client stubs for accessing the StellarStation API',
