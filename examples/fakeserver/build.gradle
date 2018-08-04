@@ -34,7 +34,7 @@ archivesBaseName = 'stellarstation-fake-apiserver'
 mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
 
 dependencies {
-    compile 'com.stellarstation.api:stellarstation-api:0.0.2'
+    compile 'com.stellarstation.api:stellarstation-api:0.0.8'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
     compile 'org.curioswitch.curiostack:curio-server-framework:0.0.70'
@@ -44,8 +44,11 @@ dependencies {
 
 docker {
     javaApplication {
+        baseImage = 'openjdk:10-jre-slim'
+
         maintainer = 'StellarStation Team'
         ports = [8080, 8081]
+        tag = 'quay.io/infostellarinc/fake-apiserver'
     }
 }
 
