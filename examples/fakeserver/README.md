@@ -37,7 +37,7 @@ First extract the api-key from the Docker image.
 
 ```bash
 $ docker pull quay.io/infostellarinc/fake-apiserver
-$ docker run -v `pwd`:/out --entrypoint extract-key -it --rm infostellarinc/fake-apiserver
+$ docker run -v `pwd`:/out --entrypoint sh -it --rm quay.io/infostellarinc/fake-apiserver /extract-key
 ```
 
 A file named `api-key.json` will be present in the current directory which you can use to initialize
