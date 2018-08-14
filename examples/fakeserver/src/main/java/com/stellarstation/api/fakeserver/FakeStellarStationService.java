@@ -114,7 +114,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
                         Telemetry.newBuilder()
                             .setTimeFirstByteReceived(
                                 Timestamps.fromMillis(Clock.systemUTC().millis()))
-                            .setTimeFirstByteReceived(
+                            .setTimeLastByteReceived(
                                 Timestamps.fromMillis(
                                     Clock.systemUTC().millis() + TimeUnit.SECONDS.toMillis(1)))
                             .setData(payload)
