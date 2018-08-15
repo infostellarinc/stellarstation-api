@@ -53,3 +53,15 @@ The server will be listening for plaintext on port 8081 and TLS on port 8080. Co
 require either disabling TLS verification or adding [tls.crt](./src/main/resources/tls.crt) as a
 trusted certificate. See [printing-client](../java/printing-client) for simple example code that 
 exercises the server code.
+
+### Releasing docker image
+
+Currently, releasing the docker image is a manual process until https://github.com/GoogleContainerTools/jib/issues/601
+is resolved. In the meantime,
+
+```bash
+$ docker login quay.io  # Only need to do this once on a machine
+$ ./gradlew :examples:fakeserver:jibDockerBuild
+$ docker run -it --rm quay.io/infostellarinc/fake-apiserver  # Sanity check the server starts up
+$ docker push quay.io/infostellarinc/fake-apiserver
+``` 
