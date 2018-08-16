@@ -1,0 +1,12 @@
+{
+  "name": "@infostellarinc/stellarstation-api",
+  "version": "0.0.8-alpha.1",
+  "description": "NodeJS gRPC stubs for accessing the StellarStation API.",
+  "repository": "infostellarinc/stellarstation-api",
+  "author": "The StellarStation Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "google-protobuf": "|GOOGLE_PROTOBUF_VERSION|",
+    "grpc": "|GRPC_VERSION|"
+  }
+}

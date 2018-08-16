@@ -51,6 +51,22 @@ $  pip install --upgrade stellarstation
 
 A full example of a Python API client can be found [here](./examples/python/printing-client).
 
+### Go
+
+We provide precompiled client stubs for Go, found [here](https://github.com/infostellarinc/go-stellarstation).
+
+```go
+import stellarstation "github.com/infostellarinc/go-stellarstation/api/v1"
+```
+
+### NodeJS
+
+We provide precompiled client stubs for NodeJS. NodeJS users can install them with `npm`.
+
+```bash
+$ npm install @infostellarinc/stellarstation-api
+```
+
 ## Authentication
 
 Authentication to the StellarStation API is done using JWT bearer tokens (https://jwt.io). When
