@@ -57,8 +57,34 @@ protobuf {
             path = file('node_modules/grpc-tools/bin/grpc_node_plugin')
         }
         grpc_ts {
-            path = file('node_modules/grpc_tools_node_protoc_ts/bin/protoc-gen-ts')
+            path = file('node_modules/.bin/protoc-gen-ts-resolved')
         }
+    }
+}
+
+// gradle-protobuf-plugin does not allow manipulating PATH for protoc invocation, so
+// there's no way
+// to point it at our downloaded nodejs. We go ahead and create our own plugin
+// executable with the
+// nodejs path resolved.
+
+def RESOLVED_PLUGIN_SCRIPT_TEMPLATE = "#!|NODE_PATH|\n" + "" + "require('grpc_tools_node_protoc_ts/build/index');"
+def RESOLVED_PLUGIN_CMD_TEMPLATE = '@echo off\r\n\"|NODE_PATH|\" \"%~dp0\\protoc-gen-ts-resolved\" %*'
+task addResolvedPluginScript {
+    def script = file('node_modules/.bin/protoc-gen-ts-resolved')
+    def cmd = file('node_modules/.bin/protoc-gen-ts-resolved.cmd')
+
+    outputs.file script
+    outputs.file cmd
+
+    doFirst {
+        def nodePath = node.variant.nodeExec
+        def resolvedScript = RESOLVED_PLUGIN_SCRIPT_TEMPLATE.replace('|NODE_PATH|', nodePath)
+        def resolvedCmd = RESOLVED_PLUGIN_CMD_TEMPLATE.replace('|NODE_PATH|', nodePath)
+        script.text = resolvedScript
+        script.executable = true
+        cmd.text = resolvedCmd
+        cmd.executable = true
     }
 }
 
@@ -70,15 +96,18 @@ task installProtocPlugins(type: NpmTask) {
 
     outputs.dir 'node_modules/grpc-tools'
     outputs.dir 'node_modules/grpc_tools_node_protoc_ts'
+
+    finalizedBy addResolvedPluginScript
 }
 
 task generatePackageJson {
     inputs.files 'package-template.json'
+    outputs.file 'build/web/package.json'
 
     doFirst {
         def packageTemplate = file('package-template.json').text
-        packageTemplate = packageTemplate.replaceFirst('\\|GRPC_VERSION\\|', GRPC_VERSION)
-                .replaceFirst('\\|GOOGLE_PROTOBUF_VERSION\\|', GOOGLE_PROTOBUF_VERSION)
+        packageTemplate = packageTemplate.replace('|GRPC_VERSION|', GRPC_VERSION)
+                .replace('|GOOGLE_PROTOBUF_VERSION|', GOOGLE_PROTOBUF_VERSION)
         file('build/web/package.json').text = packageTemplate
     }
 }

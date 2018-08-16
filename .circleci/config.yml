@@ -28,11 +28,7 @@ jobs:
           keys:
           - v2-dependencies-
 
-      - run:
-          command: ./gradlew build
-          environment:
-            # Hackily add our downloaded nodejs to path since gradle-protobuf-plugin has no way to.
-            PATH: "~/project/stubs/nodejs/.gradle/nodejs/node-v8.11.4-linux-x64/bin:$PATH"
+      - run: ./gradlew build
 
       - save_cache:
           paths:
