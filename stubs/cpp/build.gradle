@@ -53,6 +53,8 @@ protobuf {
 }
 
 task downloadConanDeps {
+    dependsOn ':installPythonTools'
+
     inputs.file 'conanfile.py'
     outputs.dir 'build/conan/bin'
 
