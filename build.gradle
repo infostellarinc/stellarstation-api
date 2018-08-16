@@ -120,5 +120,5 @@ ext.condaCommand = {command->
 task installPythonTools(type: Exec) {
     dependsOn 'pythonSetup'
     executable 'bash'
-    args '-c', condaCommand('pip install grpcio-tools twine')
+    args '-c', condaCommand('pip install conan grpcio-tools twine')
 }
