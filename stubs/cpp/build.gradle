@@ -53,7 +53,7 @@ protobuf {
 }
 
 task downloadConanDeps {
-    inputs.file 'conanfile.txt'
+    inputs.file 'conanfile.py'
     outputs.dir 'build/conan/bin'
 
     def conanDir = file('build/conan')
