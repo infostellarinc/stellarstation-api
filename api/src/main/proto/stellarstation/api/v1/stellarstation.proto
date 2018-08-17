@@ -39,14 +39,6 @@ option java_package = "com.stellarstation.api.v1";
 // A plan is a scheduled pass that will be executed to send and receive data between the ground
 // station and satellite during the time range.
 service StellarStationService {
-  // Lists the plans for a particular ground station.
-  //
-  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
-  // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
-  // 31 days.
-  //
-  // Deprecated - use GroundStationService.ListPlans
-  rpc ListGroundStationPlans (ListGroundStationPlansRequest) returns (ListGroundStationPlansResponse);
 
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
@@ -173,91 +165,4 @@ message Telemetry {
   // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
   //          returned.
   bytes frame_header = 6;
-}
-
-//----------------------------------------------------------------------------------------------
-// Scheduling APIs.
-//----------------------------------------------------------------------------------------------
-
-// Request for the `ListGroundstationPlans` method.
-message ListGroundStationPlansRequest {
-  // The ID of the ground station to list plans for. The ID can be found on the StellarStation
-  // Console page for the ground station.
-  string ground_station_id = 1;
-
-  // The start time of the range of plans to list (inclusive). Only plans with an Acquisition of
-  // Signal (AOS) at or after this time will be returned. It is an error for the duration between
-  // `aos_after` and `aos_before` to be longer than 31 days.
-  google.protobuf.Timestamp aos_after = 2;
-
-
-  // The end time of the range of plans to list (exclusive). Only plans with an Acquisition of
-  // Signal (AOS) before this time will be returned. It is an error for the duration between
-  // `aos_after` and `aos_before` to be longer than 31 days.
-  google.protobuf.Timestamp aos_before = 3;
-}
-
-// A response from the `ListGroundstationPlans` method.
-message ListGroundStationPlansResponse {
-  // The requested list of plans for the ground station.
-  repeated Plan plan = 1;
-}
-
-// A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
-// during a time range between AOS and LOS, unless explicitly cancelled.
-message Plan {
-  // The ID of this plan.
-  string plan_id = 1;
-
-  // Status of a plan.
-  enum Status {
-    // The plan has been scheduled and will be executed at `aos_time`.
-    RESERVED = 0;
-
-    // The plan is currently executing.
-    EXECUTING = 1;
-
-    // The plan has executed successfully.
-    SUCCEEDED = 2;
-
-    // The plan has executed but was not successful.
-    FAILED = 3;
-
-    // The plan has been cancelled and will not be executed.
-    CANCELLED = 4;
-  }
-  // The status of this plan.
-  Status status = 2;
-
-  // The TLE for the satellite in this plan.
-  Tle tle = 3;
-
-  // The time of AOS between the ground station and satellite in this plan.
-  google.protobuf.Timestamp aos_time = 4;
-
-  // The time of LOS between the ground station and satellite in this plan.
-  google.protobuf.Timestamp los_time = 5;
-
-  // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
-  // this plan.
-  uint64 downlink_center_frequency_hz = 6;
-
-  // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in this
-  // plan.
-  uint64 uplink_center_frequency_hz = 7;
-
-  // The max elevation of the plan, in degrees.
-  double max_elevation_degrees = 8;
-
-  // The time of max elevation during the plan.
-  google.protobuf.Timestamp max_elevation_time = 9;
-}
-
-// Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
-message Tle {
-  // The first line of the TLE. Not a title line.
-  string line_1 = 1;
-
-  // The second line of the TLE.
-  string line_2 = 2;
 }
