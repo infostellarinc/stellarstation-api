@@ -45,8 +45,8 @@ service StellarStationService {
   // reserve passes in any way - it is possible for a pass that is returned by this method to be
   // unschedulable when actually trying to schedule because a conflict appeared during that time.
   //
-  // If the satellite is not found or the client is not authorized for it, the stream will be closed
-  // with a `NOT_FOUND` error.
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
   rpc ListUpcomingAvailablePasses (ListUpcomingAvailablePassesRequest) returns (ListUpcomingAvailablePassesResponse);
 
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
@@ -195,8 +195,8 @@ message ListUpcomingAvailablePassesResponse {
 
 // A pass during which a satellite can be communicated with from a given ground station.
 message Pass {
-  // A unique ID for this pass. This can be used in other APIs that accept `pass_id`.
-  string id = 1;
+  // A unique token for this pass that can be used for scheduling it.
+  string reservation_token = 1;
 
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
