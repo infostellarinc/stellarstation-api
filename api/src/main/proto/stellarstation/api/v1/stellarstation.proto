@@ -40,6 +40,15 @@ option java_package = "com.stellarstation.api.v1";
 // station and satellite during the time range.
 service StellarStationService {
 
+  // Lists upcoming passes for a satellite. Passes that can be scheduled for the satellite with an
+  // Acquisition of Signal (AOS) within 14 days from now will be returned. This method does not
+  // reserve passes in any way - it is possible for a pass that is returned by this method to be
+  // unschedulable when actually trying to schedule because a conflict appeared during that time.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
+  rpc ListUpcomingAvailablePasses (ListUpcomingAvailablePassesRequest) returns (ListUpcomingAvailablePassesResponse);
+
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
   // as it is made available. All telemetry received from the satellite on reserved passes from this
@@ -165,4 +174,57 @@ message Telemetry {
   // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
   //          returned.
   bytes frame_header = 6;
+}
+
+//----------------------------------------------------------------------------------------------
+// Scheduling APIs.
+//----------------------------------------------------------------------------------------------
+
+// Request for the `ListUpcomingAvailablePasses` method.
+message ListUpcomingAvailablePassesRequest {
+  // The ID of the satellite to list passes for. The ID of a satellite can be found on the
+  // StellarStation Console page for the satellite.
+  string satellite_id = 1;
+}
+
+// Response for the `ListUpcomingAvailablePasses` method.
+message ListUpcomingAvailablePassesResponse {
+  // The upcoming, schedulable passes for the satellite.
+  repeated Pass pass = 1;
+}
+
+// A pass during which a satellite can be communicated with from a given ground station.
+message Pass {
+  // A unique token for this pass that can be used for scheduling it.
+  string reservation_token = 1;
+
+  // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
+  google.protobuf.Timestamp aos_time = 2;
+
+  // The time of Loss of Signal (LOS) between the ground station and satellite in this pass.
+  google.protobuf.Timestamp los_time = 3;
+
+  // The latitude, in degrees, of the ground station's location.
+  double ground_station_latitude = 4;
+
+  // The longitude, in degrees, of the ground station's location.
+  double ground_station_longitude = 5;
+
+  // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
+  // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+  string ground_station_country_code = 6;
+
+  // The max elevation during the pass, in degrees.
+  double max_elevation_degrees = 7;
+
+  // The time of the max elevation during the pass.
+  google.protobuf.Timestamp max_elevation_time = 8;
+
+  // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
+  // this pass.
+  double downlink_center_frequency_hz = 9;
+
+  // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
+  // this pass.
+  double uplink_center_frequency_hz = 10;
 }
