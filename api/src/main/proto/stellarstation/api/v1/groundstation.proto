@@ -31,8 +31,9 @@ option java_package = "com.stellarstation.api.v1.groundstation";
 // does not own. Only using IDs shown on the StellarStation Console or returned in API responses
 // will ensure all inputs are valid.
 //
-// A plan is a scheduled pass that will be executed to send and receive data between the ground
-// station and satellite during the time range.
+// A pass is a time range where an ground station and satellite can communicate with each other, i.e.,
+// the period between Acquisition of Signal (AOS) and Loss of Signal (LOS) of the ground station and
+// satellite pair.
 //
 // A plan is a scheduled pass that will be executed to send and receive data between the ground
 // station and satellite during the time range.
@@ -42,15 +43,15 @@ service GroundStationService {
   // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
   // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
   // 31 days.
-  rpc ListGroundStationPlans (ListGroundStationPlansRequest) returns (ListGroundStationPlansResponse);
+  rpc ListPlans (ListPlansRequest) returns (ListPlansResponse);
 }
 
 //----------------------------------------------------------------------------------------------
 // Scheduling APIs.
 //----------------------------------------------------------------------------------------------
 
-// Request for the `ListGroundstationPlans` method.
-message ListGroundStationPlansRequest {
+// Request for the `ListPlans` method.
+message ListPlansRequest {
   // The ID of the ground station to list plans for. The ID can be found on the StellarStation
   // Console page for the ground station.
   string ground_station_id = 1;
@@ -67,8 +68,8 @@ message ListGroundStationPlansRequest {
   google.protobuf.Timestamp aos_before = 3;
 }
 
-// A response from the `ListGroundstationPlans` method.
-message ListGroundStationPlansResponse {
+// A response from the `ListPlans` method.
+message ListPlansResponse {
   // The requested list of plans for the ground station.
   repeated Plan plan = 1;
 }
