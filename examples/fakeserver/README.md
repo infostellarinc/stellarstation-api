@@ -61,7 +61,7 @@ is resolved. In the meantime,
 
 ```bash
 $ docker login quay.io  # Only need to do this once on a machine
-$ ./gradlew :examples:fakeserver:jibDockerBuild
+$ ./gradlew :examples:fakeserver:dockerBuildImage
 $ docker run -it --rm quay.io/infostellarinc/fake-apiserver  # Sanity check the server starts up
 $ docker push quay.io/infostellarinc/fake-apiserver
 ``` 
