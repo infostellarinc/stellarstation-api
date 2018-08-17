@@ -46,6 +46,9 @@ dependencies {
     compile 'org.curioswitch.curiostack:curio-server-framework:0.0.70'
 
     annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
+
+    annotationProcessor 'org.immutables:value'
+    compileOnly group: 'org.immutables', name: 'value', classifier: 'annotations'
 }
 
 jib {

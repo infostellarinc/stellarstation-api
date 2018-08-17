@@ -25,6 +25,7 @@ import com.stellarstation.api.v1.SatelliteStreamRequest;
 import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.StellarStationServiceGrpc.StellarStationServiceImplBase;
 import com.stellarstation.api.v1.Telemetry;
+import com.typesafe.config.ConfigMemorySize;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
@@ -49,9 +50,12 @@ import javax.inject.Inject;
  * recovering from errors (e.g., reconnecting the stream).
  */
 class FakeStellarStationService extends StellarStationServiceImplBase {
+  private final FakeServerConfig config;
 
   @Inject
-  FakeStellarStationService() {}
+  FakeStellarStationService(FakeServerConfig config) {
+    this.config = config;
+  }
 
   @Override
   public StreamObserver<SatelliteStreamRequest> openSatelliteStream(
@@ -62,7 +66,10 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
     ScheduledFuture<?> future =
         ctx.eventLoop()
             .scheduleAtFixedRate(
-                () -> sendRandomTelemetry(responseObserver), 0, 1, TimeUnit.SECONDS);
+                () -> sendRandomTelemetry(config.getTelemetryPayloadSize(), responseObserver),
+                0,
+                config.getTelemetryPublishingInterval().toMillis(),
+                TimeUnit.MILLISECONDS);
 
     ctx.eventLoop()
         .schedule(
@@ -70,8 +77,8 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
               future.cancel(true);
               responseObserver.onError(new StatusException(Status.CANCELLED));
             },
-            5,
-            TimeUnit.MINUTES);
+            config.getSessionTimeout().toMillis(),
+            TimeUnit.MILLISECONDS);
 
     return new StreamObserver<SatelliteStreamRequest>() {
       @Override
@@ -98,8 +105,8 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
   }
 
   private static void sendRandomTelemetry(
-      StreamObserver<SatelliteStreamResponse> responseObserver) {
-    byte[] payload = new byte[1024 * 1024];
+      ConfigMemorySize size, StreamObserver<SatelliteStreamResponse> responseObserver) {
+    byte[] payload = new byte[(int) size.toBytes()];
     ThreadLocalRandom.current().nextBytes(payload);
     sendTelemetry(ByteString.copyFrom(payload), responseObserver);
   }
