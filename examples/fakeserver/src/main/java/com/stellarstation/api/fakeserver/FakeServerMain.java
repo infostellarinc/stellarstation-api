@@ -19,6 +19,8 @@ package com.stellarstation.api.fakeserver;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.auth.HttpAuthServiceBuilder;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigBeanFactory;
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
@@ -42,6 +44,14 @@ public class FakeServerMain {
           .decorator(new HttpAuthServiceBuilder().addOAuth2(authorizer).newDecorator())
           .path("/")
           .build();
+    }
+
+    @Provides
+    @Singleton
+    static FakeServerConfig schedulerConfig(Config config) {
+      return ConfigBeanFactory.create(
+              config.getConfig("fakeServer"), ModifiableFakeServerConfig.class)
+          .toImmutable();
     }
 
     @Provides
