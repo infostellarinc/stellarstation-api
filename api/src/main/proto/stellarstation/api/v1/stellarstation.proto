@@ -216,9 +216,9 @@ message Pass {
 
   // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
   // this pass.
-  double downlink_frequency_hz = 7;
+  double downlink_center_frequency_hz = 7;
 
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
-  double uplink_frequency_hz = 8;
+  double uplink_center_frequency_hz = 8;
 }
