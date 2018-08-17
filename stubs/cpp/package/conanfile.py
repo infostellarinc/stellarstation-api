@@ -1,7 +1,7 @@
 from conans import ConanFile, CMake
 
 
-class StellarstationapiConan(ConanFile):
+class StellarstationApiConan(ConanFile):
     name = "stellarstation-api"
     version = "0.0.8"
     license = "Apache-2.0"
