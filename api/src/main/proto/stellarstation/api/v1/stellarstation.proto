@@ -204,21 +204,27 @@ message Pass {
   // The time of Loss of Signal (LOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp los_time = 3;
 
+  // The latitude, in degrees, of the ground station's location.
+  double ground_station_latitude = 4;
+
+  // The longitude, in degrees, of the ground station's location.
+  double ground_station_longitude = 5;
+
   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-  string ground_station_country_code = 4;
+  string ground_station_country_code = 6;
 
   // The max elevation during the pass, in degrees.
-  double max_elevation_degrees = 5;
+  double max_elevation_degrees = 7;
 
   // The time of the max elevation during the pass.
-  google.protobuf.Timestamp max_elevation_time = 6;
+  google.protobuf.Timestamp max_elevation_time = 8;
 
   // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
   // this pass.
-  double downlink_center_frequency_hz = 7;
+  double downlink_center_frequency_hz = 9;
 
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
-  double uplink_center_frequency_hz = 8;
+  double uplink_center_frequency_hz = 10;
 }
