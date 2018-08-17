@@ -45,7 +45,7 @@ service StellarStationService {
   // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
   // 31 days.
   //
-  // Deprecated - use GroundStationService.ListGroundStationPlans
+  // Deprecated - use GroundStationService.ListPlans
   rpc ListGroundStationPlans (ListGroundStationPlansRequest) returns (ListGroundStationPlansResponse);
 
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
