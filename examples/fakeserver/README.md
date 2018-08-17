@@ -56,14 +56,17 @@ exercises the server code.
 
 ### Configuration
 
-The server can be configured via system properties passed on the gradle command line or environment
-variables passed to docker run.
+The server can be configured in any of the following ways:
 
-See [application.conf](./src/main/resources/application.conf).
+- by system properties passed on the gradle command line
+- by system properties passed through the JAVA_OPTS env var on the docker command line
+- by environment variables on the docker command line
+
+See also [application.conf](./src/main/resources/application.conf).
 
 | Property      | Env Variable  |  Description   |  Default  |
 | ------------- | ------------- |----------------|-----------|
-| fakeServer.telemetryPublishingFrequency  | TM_PUBLISHING_FREQUENCY | Duration between publishing | 1s  |
+| fakeServer.telemetryPublishingInterval  | TM_PUBLISHING_INTERVAL | Duration between publishing | 1s  |
 | fakeServer.telemetryPayloadSize | TM_PAYLOAD_SIZE  | Size of published telemetry | 1M |
 | fakeServer.sessionTimeout | SESSION_TIMEOUT | Length of publishing session | 5m |
 

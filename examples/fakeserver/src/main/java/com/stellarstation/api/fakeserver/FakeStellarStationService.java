@@ -68,7 +68,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
             .scheduleAtFixedRate(
                 () -> sendRandomTelemetry(config.getTelemetryPayloadSize(), responseObserver),
                 0,
-                config.getTelemetryPublishingFrequency().toMillis(),
+                config.getTelemetryPublishingInterval().toMillis(),
                 TimeUnit.MILLISECONDS);
 
     ctx.eventLoop()
@@ -77,8 +77,8 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
               future.cancel(true);
               responseObserver.onError(new StatusException(Status.CANCELLED));
             },
-            config.getSessionTimeout().getSeconds(),
-            TimeUnit.SECONDS);
+            config.getSessionTimeout().toMillis(),
+            TimeUnit.MILLISECONDS);
 
     return new StreamObserver<SatelliteStreamRequest>() {
       @Override

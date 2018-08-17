@@ -28,7 +28,7 @@ import org.immutables.value.Value.Modifiable;
 public interface FakeServerConfig {
 
   /** Telemetry will be published on every expiry of this duration. */
-  Duration getTelemetryPublishingFrequency();
+  Duration getTelemetryPublishingInterval();
 
   /** Gets the size of each telemetry blob. */
   ConfigMemorySize getTelemetryPayloadSize();
