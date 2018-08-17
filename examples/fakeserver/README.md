@@ -54,6 +54,19 @@ require either disabling TLS verification or adding [tls.crt](./src/main/resourc
 trusted certificate. See [printing-client](../java/printing-client) for simple example code that 
 exercises the server code.
 
+### Configuration
+
+The server can be configured via system properties passed on the gradle command line or environment
+variables passed to docker run.
+
+See [application.conf](./src/main/resources/application.conf).
+
+| Property      | Env Variable  |  Description   |  Default  |
+| ------------- | ------------- |----------------|-----------|
+| fakeServer.telemetryPublishingFrequency  | TM_PUBLISHING_FREQUENCY | Duration between publishing | 1s  |
+| fakeServer.telemetryPayloadSize | TM_PAYLOAD_SIZE  | Size of published telemetry | 1M |
+| fakeServer.sessionTimeout | SESSION_TIMEOUT | Length of publishing session | 5m |
+
 ### Releasing docker image
 
 Currently, releasing the docker image is a manual process until https://github.com/GoogleContainerTools/jib/issues/601
