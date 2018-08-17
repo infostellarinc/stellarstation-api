@@ -79,48 +79,22 @@ message Plan {
   // The ID of this plan.
   string plan_id = 1;
 
-  // Status of a plan.
-  enum Status {
-    // The plan has been scheduled and will be executed at `aos_time`.
-    RESERVED = 0;
-
-    // The plan is currently executing.
-    EXECUTING = 1;
-
-    // The plan has executed successfully.
-    SUCCEEDED = 2;
-
-    // The plan has executed but was not successful.
-    FAILED = 3;
-
-    // The plan has been cancelled and will not be executed.
-    CANCELLED = 4;
-  }
-  // The status of this plan.
-  Status status = 2;
-
   // The TLE for the satellite in this plan.
-  Tle tle = 3;
+  Tle tle = 2;
 
   // The time of AOS between the ground station and satellite in this plan.
-  google.protobuf.Timestamp aos_time = 4;
+  google.protobuf.Timestamp aos_time = 3;
 
   // The time of LOS between the ground station and satellite in this plan.
-  google.protobuf.Timestamp los_time = 5;
+  google.protobuf.Timestamp los_time = 4;
 
   // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
   // this plan.
-  uint64 downlink_center_frequency_hz = 6;
+  uint64 downlink_center_frequency_hz = 5;
 
   // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in this
   // plan.
-  uint64 uplink_center_frequency_hz = 7;
-
-  // The max elevation of the plan, in degrees.
-  double max_elevation_degrees = 8;
-
-  // The time of max elevation during the plan.
-  google.protobuf.Timestamp max_elevation_time = 9;
+  uint64 uplink_center_frequency_hz = 6;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
