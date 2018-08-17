@@ -204,7 +204,7 @@ message Pass {
   // The time of Loss of Signal (LOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp los_time = 3;
 
-  // The ISO 3166-1 alpha-2 country code for the ground station's location.
+  // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
   string ground_station_country_code = 4;
 
