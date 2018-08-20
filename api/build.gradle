@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+plugins {
+    id 'com.jfrog.artifactory' version '4.7.5'
+}
+
 apply plugin: 'maven-publish'
 apply plugin: 'org.curioswitch.gradle-grpc-api-plugin'
 
@@ -40,4 +44,23 @@ javadoc {
 
 sourceJar {
     from 'build/generated/source/proto/main'
+}
+
+artifactory {
+    contextUrl = 'https://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = rootProject.findProperty('bintray.user')
+            password = rootProject.findProperty('bintray.key')
+        }
+        defaults {
+            publications 'maven'
+            publishArtifacts = true
+            publishPom = true
+        }
+    }
+    resolve {
+        repoKey = 'jcenter'
+    }
 }
