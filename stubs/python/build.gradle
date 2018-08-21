@@ -59,13 +59,13 @@ task fillRunProtocScript {
 }
 
 task prepareSetupPy {
-    inputs.property("apiVersion", apiVersion);
+    inputs.property("version", version);
     inputs.file("src/misc/python/setup.py.tmpl")
     outputs.file("$buildDir/generated/scripts")
 
     doFirst {
         def template = file('src/misc/python/setup.py.tmpl').text
-        def filled = template.replaceFirst('\\|API_VERSION\\|', apiVersion)
+        def filled = template.replaceFirst('\\|API_VERSION\\|', version)
         def outDir = "$buildDir/generated/scripts"
         mkdir outDir
         def out = file("${outDir}/setup.py")
@@ -127,5 +127,5 @@ afterEvaluate {
         }
     }
 
-    uploadPythonPackage.onlyIf { !apiVersion.endsWith('SNAPSHOT') }
+    uploadPythonPackage.onlyIf { !version.endsWith('SNAPSHOT') }
 }
