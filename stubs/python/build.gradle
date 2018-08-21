@@ -58,17 +58,33 @@ task fillRunProtocScript {
     }
 }
 
+task prepareSetupPy {
+    inputs.property("version", version);
+    inputs.file("src/misc/python/setup.py.tmpl")
+    outputs.file("$buildDir/generated/scripts")
+
+    doFirst {
+        def template = file('src/misc/python/setup.py.tmpl').text
+        def filled = template.replaceFirst('\\|API_VERSION\\|', version)
+        def outDir = "$buildDir/generated/scripts"
+        mkdir outDir
+        def out = file("${outDir}/setup.py")
+        out.text = filled
+        out.executable = true
+    }
+}
+
 afterEvaluate {
     generateProto.dependsOn fillRunProtocScript, ':installPythonTools'
 
     def packageDir = "$buildDir/publications/python"
     task setupPythonPackage {
-        dependsOn generateProto
+        dependsOn generateProto, prepareSetupPy
         doFirst {
             mkdir packageDir
 
             copy {
-                from 'src/misc/python/setup.py'
+                from "$buildDir/generated/scripts/setup.py"
                 from rootProject.file('README.md')
                 from rootProject.file('LICENSE')
                 into packageDir
@@ -86,6 +102,9 @@ afterEvaluate {
     }
 
     task buildPythonPackage(type: Exec) {
+        doFirst {
+            delete "$packageDir/dist"
+        }
         dependsOn setupPythonPackage
 
         executable 'bash'
@@ -93,11 +112,20 @@ afterEvaluate {
         workingDir = packageDir
     }
 
-    task uploadPythonPackage(type: Exec) {
+    task uploadPythonPackage {
         dependsOn buildPythonPackage
 
-        executable 'bash'
-        args '-c', condaCommand('twine upload dist/*')
-        workingDir = packageDir
+        doLast {
+            exec {
+                def user = rootProject.property('pypiUser')
+                def password = rootProject.property('pypiPassword')
+
+                executable 'bash'
+                args '-c', condaCommand("twine upload --skip-existing -u $user -p $password dist/*")
+                workingDir = packageDir
+            }
+        }
     }
+
+    uploadPythonPackage.onlyIf { !version.endsWith('SNAPSHOT') }
 }
