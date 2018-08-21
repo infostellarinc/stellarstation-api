@@ -58,9 +58,11 @@ task fillRunProtocScript {
     }
 }
 
-def apiVersion = project.project(":api").property("version").toString()
-
 task prepareSetupPy {
+    inputs.property("apiVersion", apiVersion);
+    inputs.file("src/misc/python/setup.py.tmpl")
+    outputs.file("$buildDir/generated/scripts")
+
     doFirst {
         def template = file('src/misc/python/setup.py.tmpl').text
         def filled = template.replaceFirst('\\|API_VERSION\\|', apiVersion)
@@ -110,12 +112,19 @@ afterEvaluate {
         workingDir = packageDir
     }
 
-    task uploadPythonPackage(type: Exec) {
+    task uploadPythonPackage {
         dependsOn buildPythonPackage
 
-        executable 'bash'
-        args '-c', condaCommand("twine upload -u $pypi_user -p $pypi_password dist/*")
-        workingDir = packageDir
+        doLast {
+            exec {
+                def user = rootProject.property('pypiUser')
+                def password = rootProject.property('pypiPassword')
+
+                executable 'bash'
+                args '-c', condaCommand("twine upload --skip-existing -u $user -p $password dist/*")
+                workingDir = packageDir
+            }
+        }
     }
 
     uploadPythonPackage.onlyIf { !apiVersion.endsWith('SNAPSHOT') }
