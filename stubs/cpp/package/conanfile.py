@@ -8,15 +8,24 @@ class StellarstationApiConan(ConanFile):
     url = "https://github.com/infostellarinc/stellarstation-api"
     description = "C++ gRPC stubs for conneting to the StellarStation API."
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+    }
+    default_options = ("shared=False", "fPIC=True")
     generators = "cmake"
     exports_sources = "src/*"
     requires = "grpc/1.14.1@inexorgame/stable", "protobuf/3.6.1@bincrafters/stable"
 
+    def configure(self):
+        if self.settings.compiler == 'Visual Studio':
+            del self.options.fPIC
+
     def build(self):
         cmake = CMake(self)
         cmake.configure(source_folder="src")
+        if self.settings.compiler != 'Visual Studio':
+            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
         cmake.build()
 
     def imports(self):
