@@ -96,7 +96,7 @@ message Plan {
 
   // Specification of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
-  radio.RadioDevice satelltie_uplink_radio_device = 6;
+  radio.RadioDevice satellite_uplink_radio_device = 6;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
