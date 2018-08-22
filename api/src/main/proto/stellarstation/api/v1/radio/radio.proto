@@ -24,13 +24,13 @@ option java_multiple_files = true;
 option java_outer_classname = "RadioProto";
 option java_package = "com.stellarstation.api.v1.radio";
 
-// Messages for modeling radio devices (e.g., receivers, transmitters) in API messages.
+// Messages for modeling radio device (e.g., receivers, transmitters) configuration in API messages.
 
 // A radio device for RF communication. Usually, a satellite will have one or more radio devices for
 // communicating with the ground and a ground station will have one or more radio devices for
 // communicating with the satellite. Such devices may not actually correspond to actual hardware
 // devices, i.e., in the case of Software Defined Radio (SDR).
-message RadioDevice {
+message RadioDeviceConfiguration {
   // The center frequency of the device, in Hz.
   uint64 center_frequency_hz = 1;
 
