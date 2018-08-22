@@ -109,11 +109,12 @@ afterEvaluate {
     }
 
     def conanDir = 'build/conan'
+    def reference = 'stellarstation/testing'
     task createPackage(type: Exec) {
         dependsOn generateProto
         executable 'bash'
         args '-c', condaCommand(
-                'conan create . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7 stellarstation/testing')
+                "conan create . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7 $reference")
         workingDir conanDir
     }
 
@@ -128,7 +129,7 @@ afterEvaluate {
                 executable 'bash'
                 args '-c', condaCommand(
                         "conan user -p $key -r stellarstation $user && " +
-                                "conan upload stellarstation-api/$version@stellarstation/testing --all -r=stellarstation")
+                                "conan upload stellarstation-api/$version@$reference --all -r=stellarstation")
                 workingDir = conanDir
             }
         }
