@@ -61,7 +61,7 @@ task fillRunProtocScript {
 task prepareSetupPy {
     inputs.property("version", version);
     inputs.file("src/misc/python/setup.py.tmpl")
-    outputs.file("$buildDir/generated/scripts")
+    outputs.file("$buildDir/generated/scripts/setup.py")
 
     doFirst {
         def template = file('src/misc/python/setup.py.tmpl').text
