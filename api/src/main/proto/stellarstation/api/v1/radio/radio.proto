@@ -41,7 +41,6 @@ message RadioDevice {
 // A communication protocol used with a radio device. These must contain all the parameters
 // needed to configure the device for use either in transmission or reception.
 message CommunicationProtocol {
-
   // The type of modulation used by this radio device.
   Modulation modulation = 1;
 
