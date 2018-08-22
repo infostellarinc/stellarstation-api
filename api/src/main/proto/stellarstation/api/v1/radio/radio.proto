@@ -49,7 +49,7 @@ message CommunicationProtocol {
   oneof Framing {
     BitStream bitstream = 2;
 
-    Ax25 ax25 = 3;
+    AX25 ax25 = 3;
   }
 }
 
@@ -58,7 +58,7 @@ message BitStream {
 }
 
 // PACKET communication based on AX.25. https://www.sigidwiki.com/wiki/PACKET.
-message Ax25 {
+message AX25 {
   // Bit rate, e.g. 9600 for FSK9600, 1200 for AFSK1200.
   uint64 bit_rate = 1;
 
