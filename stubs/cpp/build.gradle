@@ -53,8 +53,8 @@ protobuf {
 }
 
 task prepareConanfilePy {
-    inputs.property("version", version);
-    inputs.file("package/conanfile.py.tmpl")
+    inputs.property('version', version);
+    inputs.file('package/conanfile.py.tmpl')
     outputs.file("$buildDir/generated/scripts/conanfile.py")
 
     doFirst {
@@ -64,7 +64,6 @@ task prepareConanfilePy {
         mkdir outDir
         def out = file("${outDir}/conanfile.py")
         out.text = filled
-        out.executable = true
     }
 }
 
@@ -109,7 +108,7 @@ afterEvaluate {
     }
 
     def conanDir = 'build/conan'
-    def reference = 'stellarstation/testing'
+    def reference = 'stellarstation/stable'
     task createPackage(type: Exec) {
         dependsOn generateProto
         executable 'bash'
