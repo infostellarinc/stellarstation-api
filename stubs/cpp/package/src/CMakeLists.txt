@@ -5,4 +5,5 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 include_directories(.)
-add_library(stellarstation stellarstation/api/v1/stellarstation.grpc.pb.cc stellarstation/api/v1/stellarstation.pb.cc)
+file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "stellarstation/api/v1/*.cc")
+add_library(stellarstation ${SOURCES})

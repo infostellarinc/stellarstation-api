@@ -52,11 +52,28 @@ protobuf {
 
 }
 
-task downloadConanDeps {
-    dependsOn ':installPythonTools'
+task prepareConanfilePy {
+    inputs.property("version", version);
+    inputs.file("package/conanfile.py.tmpl")
+    outputs.file("$buildDir/generated/scripts/conanfile.py")
 
-    inputs.file 'conanfile.py'
-    outputs.dir 'build/conan/bin'
+    doFirst {
+        def template = file('package/conanfile.py.tmpl').text
+        def filled = template.replaceFirst('\\|API_VERSION\\|', version.toString())
+        def outDir = "$buildDir/generated/scripts"
+        mkdir outDir
+        def out = file("${outDir}/conanfile.py")
+        out.text = filled
+        out.executable = true
+    }
+}
+
+task downloadConanDeps {
+    dependsOn prepareConanfilePy, ':installPythonTools'
+
+    inputs.file "$buildDir/generated/scripts/conanfile.py"
+    inputs.file "package/src"
+    outputs.dir 'build/conan'
 
     def conanDir = file('build/conan')
     doFirst {
@@ -64,14 +81,20 @@ task downloadConanDeps {
         file("${conanDir}/src").mkdirs()
 
         copy {
-            from 'package'
+            from "$buildDir/generated/scripts/conanfile.py"
             into conanDir
+        }
+
+        copy {
+            from 'package/src'
+            into "$conanDir/src"
         }
 
         exec {
             executable 'bash'
             args '-c', condaCommand(
                     'conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan && ' +
+                            'conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&' +
                             'conan remote add -f inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan && ' +
                             'conan install . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7')
             workingDir conanDir
@@ -84,4 +107,32 @@ afterEvaluate {
     tasks.generateProto.doLast {
         delete 'build/conan/src/google'
     }
+
+    def conanDir = 'build/conan'
+    task createPackage(type: Exec) {
+        dependsOn generateProto
+        executable 'bash'
+        args '-c', condaCommand(
+                'conan create . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7 stellarstation/testing')
+        workingDir conanDir
+    }
+
+    task uploadPackage {
+        dependsOn createPackage
+
+        doLast {
+            exec {
+                def user = rootProject.property('bintray.user')
+                def key = rootProject.property('bintray.key')
+
+                executable 'bash'
+                args '-c', condaCommand(
+                        "conan user -p $key -r stellarstation $user && " +
+                                "conan upload stellarstation-api/$version@stellarstation/testing --all -r=stellarstation")
+                workingDir = conanDir
+            }
+        }
+    }
+
+    uploadPackage.onlyIf { !version.endsWith('SNAPSHOT') }
 }
