@@ -96,11 +96,13 @@ task installProtocPlugins(type: NpmTask) {
 
     outputs.dir 'node_modules/grpc-tools'
     outputs.dir 'node_modules/grpc_tools_node_protoc_ts'
+    environment = ["NPM_TOKEN": rootProject.property('npm.key')]
 
     finalizedBy addResolvedPluginScript
 }
 
 task generatePackageJson {
+    inputs.property('version', version);
     inputs.files 'package-template.json'
     outputs.file 'build/web/package.json'
 
@@ -108,14 +110,24 @@ task generatePackageJson {
         def packageTemplate = file('package-template.json').text
         packageTemplate = packageTemplate.replace('|GRPC_VERSION|', GRPC_VERSION)
                 .replace('|GOOGLE_PROTOBUF_VERSION|', GOOGLE_PROTOBUF_VERSION)
+                .replace('|API_VERSION|', version.toString())
         file('build/web/package.json').text = packageTemplate
     }
 }
 
 task publish(type: NpmTask) {
+    doFirst {
+        copy {
+            from ".npmrc"
+            into "build/web"
+        }
+    }
+
     dependsOn 'build'
     args = ['publish', '--access=public']
+    environment = ["NPM_TOKEN": rootProject.property('npm.key')]
     workingDir = file('build/web')
+    onlyIf { !version.endsWith('SNAPSHOT') }
 }
 
 node {
