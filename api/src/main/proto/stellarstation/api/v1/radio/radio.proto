@@ -78,7 +78,8 @@ message Ax25 {
   uint32 source_ssid = 6;
 }
 
-  // Type of modulation.
+// Type of modulation. Modulation is the process of converting binary data (0's and 1's) to
+// an analog wave for use in radio communication.
 enum Modulation {
   // Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying
   FSK = 0;
