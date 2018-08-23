@@ -40,6 +40,10 @@ allprojects {
         def bintrayUser = findProperty('bintray.user')
         def bintrayKey = findProperty('bintray.key')
 
+        // Skip the task if this is a snapshot.
+        tasks.bintrayUpload.onlyIf { !version.endsWith('SNAPSHOT') }
+        rootProject.tasks.bintrayPublish.onlyIf { !version.endsWith('SNAPSHOT') }
+
         afterEvaluate {
             bintray {
                 publish = true
@@ -121,4 +125,11 @@ task installPythonTools(type: Exec) {
     dependsOn 'pythonSetup'
     executable 'bash'
     args '-c', condaCommand('pip install conan grpcio-tools twine')
+}
+
+task publishStubs {
+    dependsOn ':api:bintrayUpload'
+    dependsOn ':stubs:cpp:uploadPackage'
+    dependsOn ':stubs:nodejs:publish'
+    dependsOn ':stubs:python:uploadPythonPackage'
 }
