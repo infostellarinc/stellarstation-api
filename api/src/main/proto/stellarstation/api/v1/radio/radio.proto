@@ -34,25 +34,25 @@ message RadioDeviceConfiguration {
   // The center frequency of the device, in Hz.
   uint64 center_frequency_hz = 1;
 
-  // The protocol used by this device when doing RF communication.
-  CommunicationProtocol protocol = 2;
+  // The type of modulation used by this radio device.
+  Modulation modulation = 2;
+
+  // The bitrate used during modulation.
+  uint64 bitrate = 3;
+
+  // The protocol used by this device when doing RF communication. If unset, the device is only
+  // demodulating / modulating without applying any higher-level communication protocol.
+  CommunicationProtocol protocol = 4;
 }
 
 // A communication protocol used with a radio device. These must contain all the parameters
 // needed to configure the device for use either in transmission or reception.
 message CommunicationProtocol {
-  // The type of modulation used by this radio device.
-  Modulation modulation = 1;
-
-  // The bitrate to use during modulation.
-  uint64 bitrate = 2;
-
   // The type of framing used for communication on the device. If `bitstream`, the device is only
   // demodulating / modulating without applying any higher-level framing (i.e., packeting) protocol.
   oneof Framing {
-    BitStream bitstream = 3;
-
-    AX25 ax25 = 4;
+    // AX.25 protocol settings.
+    AX25 ax25 = 1;
   }
 }
 
