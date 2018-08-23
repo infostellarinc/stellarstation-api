@@ -1,6 +1,6 @@
 {
   "name": "@infostellarinc/stellarstation-api",
-  "version": "0.0.8-alpha.1",
+  "version": "|API_VERSION|",
   "description": "NodeJS gRPC stubs for accessing the StellarStation API.",
   "repository": "infostellarinc/stellarstation-api",
   "author": "The StellarStation Team",
