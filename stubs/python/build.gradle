@@ -117,8 +117,8 @@ afterEvaluate {
 
         doLast {
             exec {
-                def user = rootProject.property('pypiUser')
-                def password = rootProject.property('pypiPassword')
+                def user = rootProject.property('pypi.user')
+                def password = rootProject.property('pypi.password')
 
                 executable 'bash'
                 args '-c', condaCommand("twine upload --skip-existing -u $user -p $password dist/*")

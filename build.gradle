@@ -122,3 +122,17 @@ task installPythonTools(type: Exec) {
     executable 'bash'
     args '-c', condaCommand('pip install conan grpcio-tools twine')
 }
+
+// To use this task the following properites should be set in your gradle.properties:
+//   pypi.user
+//   pypi.password
+//   bintray.user
+//   bintray.key
+//   npm.key
+task publishStubs {
+    description 'Publishes API stubs (only works for non-snapshot versions)'
+    dependsOn ':api:bintrayUpload'
+    dependsOn ':stubs:cpp:uploadPackage'
+    dependsOn ':stubs:nodejs:publish'
+    dependsOn ':stubs:python:uploadPythonPackage'
+}
