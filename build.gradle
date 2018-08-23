@@ -124,8 +124,8 @@ task installPythonTools(type: Exec) {
 }
 
 // To use this task the following properites should be set in your gradle.properties:
-//   pypiUser
-//   pypiPassword
+//   pypi.user
+//   pypi.password
 //   bintray.user
 //   bintray.key
 //   npm.key
