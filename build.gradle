@@ -40,10 +40,6 @@ allprojects {
         def bintrayUser = findProperty('bintray.user')
         def bintrayKey = findProperty('bintray.key')
 
-        // Skip the task if this is a snapshot.
-        tasks.bintrayUpload.onlyIf { !version.endsWith('SNAPSHOT') }
-        rootProject.tasks.bintrayPublish.onlyIf { !version.endsWith('SNAPSHOT') }
-
         afterEvaluate {
             bintray {
                 publish = true
@@ -127,7 +123,14 @@ task installPythonTools(type: Exec) {
     args '-c', condaCommand('pip install conan grpcio-tools twine')
 }
 
+// To use this task the following properites should be set in your gradle.properties:
+//   pypiUser
+//   pypiPassword
+//   bintray.user
+//   bintray.key
+//   npm.key
 task publishStubs {
+    description 'Publishes API stubs (only works for non-snapshot versions)'
     dependsOn ':api:bintrayUpload'
     dependsOn ':stubs:cpp:uploadPackage'
     dependsOn ':stubs:nodejs:publish'
