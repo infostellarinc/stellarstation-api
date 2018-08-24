@@ -17,6 +17,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/radio/radio.proto";
 
 package stellarstation.api.v1.groundstation;
 
@@ -89,13 +90,13 @@ message Plan {
   // The time of LOS between the ground station and satellite in this plan.
   google.protobuf.Timestamp los_time = 4;
 
-  // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
-  // this plan.
-  uint64 downlink_center_frequency_hz = 5;
+  // Configuration of the radio device used for downlinking from the satellite. Ground stations will
+  // need to configure reception during the plan to match this device.
+  radio.RadioDeviceConfiguration downlink_radio_device = 5;
 
-  // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in this
-  // plan.
-  uint64 uplink_center_frequency_hz = 6;
+  // Configuration of the radio device used for uplinking to the satellite. Ground stations will
+  // need to configure transmission during the plan to match this device.
+  radio.RadioDeviceConfiguration uplink_radio_device = 6;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set

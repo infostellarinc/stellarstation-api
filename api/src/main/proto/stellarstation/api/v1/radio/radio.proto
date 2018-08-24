@@ -1,0 +1,92 @@
+/*
+ * Copyright 2018 Infostellar, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package stellarstation.api.v1.radio;
+
+option go_package = "radio";
+
+option java_multiple_files = true;
+option java_outer_classname = "RadioProto";
+option java_package = "com.stellarstation.api.v1.radio";
+
+// Messages for modeling radio device (e.g., receivers, transmitters) configuration in API messages.
+
+// A radio device for RF communication. Usually, a satellite will have one or more radio devices for
+// communicating with the ground and a ground station will have one or more radio devices for
+// communicating with the satellite. Such devices may not actually correspond to actual hardware
+// devices, i.e., in the case of Software Defined Radio (SDR).
+message RadioDeviceConfiguration {
+  // The center frequency of the device, in Hz.
+  uint64 center_frequency_hz = 1;
+
+  // The type of modulation used by this radio device.
+  Modulation modulation = 2;
+
+  // The bitrate used during modulation.
+  uint64 bitrate = 3;
+
+  // The protocol used by this device when doing RF communication. If unset, the device is only
+  // demodulating / modulating without applying any higher-level communication protocol.
+  CommunicationProtocol protocol = 4;
+}
+
+// A communication protocol used with a radio device. These must contain all the parameters
+// needed to configure the device for use either in transmission or reception.
+message CommunicationProtocol {
+  // The type of framing used for communication on the device. If `bitstream`, the device is only
+  // demodulating / modulating without applying any higher-level framing (i.e., packeting) protocol.
+  oneof Framing {
+    // AX.25 protocol settings.
+    AX25 ax25 = 1;
+  }
+}
+
+// Communication of a stream of bits with no framing defined.
+message BitStream {
+}
+
+// PACKET communication based on AX.25. https://www.sigidwiki.com/wiki/PACKET.
+message AX25 {
+  // Whether or not G3RUH scrambling is used.
+  bool g3ruh = 1;
+
+  // Destination callsign.
+  string destination_callsign = 2;
+
+  // Destination SSID.
+  uint32 destination_ssid = 3;
+
+  // Source callsign.
+  string source_callsign = 4;
+
+  // Source SSID.
+  uint32 source_ssid = 5;
+}
+
+// Type of modulation. Modulation is the process of converting binary data (0's and 1's) to
+// an analog wave for use in radio communication.
+enum Modulation {
+  // Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying
+  FSK = 0;
+
+  // Audio Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying#Audio_FSK
+  AFSK = 1;
+
+  // Binary Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Binary_phase-shift_keying_(BPSK)
+  BPSK = 2;
+}
