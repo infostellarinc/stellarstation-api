@@ -130,10 +130,6 @@ ${protowrapPath} --protoc_command=${protocPath} \$@
     }
 }
 
-tasks.clean.doFirst {
-    delete file('api')
-}
-
 // protobuf-gradle-plugin always apply Java plugin, but we don't need it.
 tasks.compileJava.enabled = false
 tasks.compileTestJava.enabled = false
