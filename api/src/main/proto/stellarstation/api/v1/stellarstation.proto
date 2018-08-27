@@ -69,17 +69,19 @@ service StellarStationService {
   rpc OpenSatelliteStream (stream SatelliteStreamRequest) returns (stream SatelliteStreamResponse);
 
   // Reserves a pass for later execution as a plan. The pass must be specified by a
-  // `reservation_token` returned in another method like `ListUpcomingAvailablePasses` and must be
-  // reservable. It is possible for the pass to become unreservable in the time between calling
-  // `ListUpcomingAvailablePasses` and `ReservePass` - in that case `ListUpcomingAvailablePasses`
-  // should be called again to get a fresh list of reservable passes. The pass must be scheduled at
-  // least one hour in advance of `aos_time` or it will be rejected.
+  // `reservation_token` returned in another method like `ListUpcomingAvailablePasses` and its
+  // `aos_time` must be at least one hour in the future.
   //
   // If the `reservation_token` is invalid, the request will return an `INVALID_ARGUMENT` error.
   //
   // If the requested pass cannot be scheduled due to a conflict with existing plans or other
   // scheduling constraints, the request will return a `FAILED_PRECONDITION` error. This includes
   // if the pass `aos_time` is less than one hour in the future.
+  //
+  // Note that the reservation_token may have become unreservable since it was fetched. If that's
+  // the case, the call to `ReservePass` will fail with a 'FAILED_PRECONDITION' error and
+  // `ListUpcomingAvailablePasses` should be called again to get a fresh list of reservable passes.
+  // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
 }
 
@@ -290,17 +292,27 @@ message Plan {
   // The time of Loss of Signal (LOS) between the ground station and satellite in this plan.
   google.protobuf.Timestamp los_time = 5;
 
+  // The latitude, in degrees, of the ground station's location.
+  double ground_station_latitude = 6;
+
+  // The longitude, in degrees, of the ground station's location.
+  double ground_station_longitude = 7;
+
+  // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
+  // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+  string ground_station_country_code = 8;
+
   // The max elevation during the plan, in degrees.
-  double max_elevation_degrees = 6;
+  double max_elevation_degrees = 9;
 
   // The time of the max elevation during the plan.
-  google.protobuf.Timestamp max_elevation_time = 7;
+  google.protobuf.Timestamp max_elevation_time = 10;
 
   // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
   // this plan.
-  uint64 downlink_center_frequency_hz = 8;
+  uint64 downlink_center_frequency_hz = 11;
 
   // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
   // this plan.
-  uint64 uplink_center_frequency_hz = 9;
+  uint64 uplink_center_frequency_hz = 12;
 }
