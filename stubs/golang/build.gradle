@@ -98,7 +98,7 @@ task installProtoWrap(type: com.github.blindpirate.gogradle.Go) {
 afterEvaluate {
     tasks.generateProto.dependsOn installProtocGoPlugin, installProtoWrap
     tasks.assemble.dependsOn tasks.generateProto
-    tasks.gitPublishReset.dependsOn tasks.generateProto
+    tasks.gitPublishCopy.dependsOn tasks.generateProto
 
     // Hack around golang protobuf plugin not supporting compiling multiple packages at the same
     // time. We use the protowrap wrapper which does support it and hack it into the generateProto
