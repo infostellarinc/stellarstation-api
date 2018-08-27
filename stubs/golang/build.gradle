@@ -80,11 +80,6 @@ gitPublish {
         include '**'
         exclude 'api'
     }
-
-    // what to publish, this is a standard CopySpec
-    contents {
-        from 'api' into 'api'
-    }
 }
 
 task installProtocGoPlugin(type: com.github.blindpirate.gogradle.Go) {
