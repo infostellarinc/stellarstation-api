@@ -23,10 +23,12 @@ buildscript {
     }
 }
 
-apply plugin: 'com.github.blindpirate.gogradle'
-apply plugin: 'java'  // Required by com.google.protobuf but we don't compile Java here.
-apply plugin: 'com.google.protobuf'
-apply plugin: 'org.ajoberstar.git-publish'
+plugins {
+    id 'com.github.blindpirate.gogradle'
+    id 'java'
+    id 'com.google.protobuf'
+    id 'org.ajoberstar.git-publish'
+}
 
 golang {
     packagePath = 'github.com/infostellarinc/go-genproto'
@@ -94,9 +96,9 @@ task installProtoWrap(type: com.github.blindpirate.gogradle.Go) {
 }
 
 afterEvaluate {
-    tasks.generateProto.dependsOn tasks.clean, installProtocGoPlugin, installProtoWrap
+    tasks.generateProto.dependsOn tasks.clean, installProtocGoPlugin, installProtoWrap, tasks.gitPublishReset
     tasks.assemble.dependsOn tasks.generateProto
-    tasks.gitPublishReset.dependsOn tasks.generateProto
+    tasks.gitPublishCommit.dependsOn tasks.generateProto
 
     // Hack around golang protobuf plugin not supporting compiling multiple packages at the same
     // time. We use the protowrap wrapper which does support it and hack it into the generateProto
@@ -128,7 +130,7 @@ ${protowrapPath} --protoc_command=${protocPath} \$@
     generateProto.doLast {
         copy {
             from file('build/generated/source/proto/main/go/stellarstation')
-            into projectDir
+            into gitPublish.repoDir
         }
     }
 }
