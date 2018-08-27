@@ -20,7 +20,7 @@ import "google/protobuf/timestamp.proto";
 
 package stellarstation.api.v1;
 
-option go_package = "stellarstation";
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1";
 
 option java_multiple_files = true;
 option java_outer_classname = "StellarstationProto";
