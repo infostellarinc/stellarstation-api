@@ -80,6 +80,11 @@ gitPublish {
         include '**'
         exclude 'api'
     }
+
+    // what to publish, this is a standard CopySpec
+    contents {
+        from 'build/generated/source/proto/main/go/stellarstation/api' into 'api'
+    }
 }
 
 task installProtocGoPlugin(type: com.github.blindpirate.gogradle.Go) {
@@ -91,9 +96,9 @@ task installProtoWrap(type: com.github.blindpirate.gogradle.Go) {
 }
 
 afterEvaluate {
-    tasks.generateProto.dependsOn tasks.clean, installProtocGoPlugin, installProtoWrap, tasks.gitPublishReset
+    tasks.generateProto.dependsOn installProtocGoPlugin, installProtoWrap
     tasks.assemble.dependsOn tasks.generateProto
-    tasks.gitPublishCommit.dependsOn tasks.generateProto
+    tasks.gitPublishReset.dependsOn tasks.generateProto
 
     // Hack around golang protobuf plugin not supporting compiling multiple packages at the same
     // time. We use the protowrap wrapper which does support it and hack it into the generateProto
@@ -121,12 +126,6 @@ ${protowrapPath} --protoc_command=${protocPath} \$@
 
     generateProto.doFirst {
         mkdir file('build/proto-src')
-    }
-    generateProto.doLast {
-        copy {
-            from file('build/generated/source/proto/main/go/stellarstation')
-            into gitPublish.repoDir
-        }
     }
 }
 
