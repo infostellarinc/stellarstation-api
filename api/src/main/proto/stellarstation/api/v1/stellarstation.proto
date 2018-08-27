@@ -79,7 +79,7 @@ service StellarStationService {
   //
   // If the requested pass cannot be scheduled due to a conflict with existing plans or other
   // scheduling constraints, the request will return a `FAILED_PRECONDITION` error. This includes
-  // if there if the pass `aos_time` is less than one hour in the future.
+  // if the pass `aos_time` is less than one hour in the future.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
 }
 
