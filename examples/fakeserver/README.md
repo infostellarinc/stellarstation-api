@@ -59,7 +59,7 @@ exercises the server code.
 The server can be configured in any of the following ways:
 
 - by system properties passed on the gradle command line
-- by system properties passed through the JAVA_OPTS env var on the docker command line
+- by system properties passed through the JAVA_TOOL_OPTIONS env var on the docker command line
 - by environment variables on the docker command line
 
 See also [application.conf](./src/main/resources/application.conf).
