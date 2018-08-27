@@ -248,14 +248,14 @@ message Pass {
 
   // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
   // this pass.
-  double downlink_center_frequency_hz = 9;
+  uint64 downlink_center_frequency_hz = 9;
 
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
-  double uplink_center_frequency_hz = 10;
+  uint64 uplink_center_frequency_hz = 10;
 }
 
-// A scheduled plan, specifying a time range within which a satellite will be communicated with.
+// A plan, specifying a time range within which a satellite will be communicated with.
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -298,9 +298,9 @@ message Plan {
 
   // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
   // this plan.
-  double downlink_center_frequency_hz = 8;
+  uint64 downlink_center_frequency_hz = 8;
 
   // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
   // this plan.
-  double uplink_center_frequency_hz = 9;
+  uint64 uplink_center_frequency_hz = 9;
 }
