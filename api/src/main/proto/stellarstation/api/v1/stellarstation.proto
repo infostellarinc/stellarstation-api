@@ -255,9 +255,7 @@ message Pass {
   double uplink_center_frequency_hz = 10;
 }
 
-// A plan that specifies antenna configuration for tracking a satellite. A plan
-// is most often created from a pass but does not have to. A plan can contain
-// arbitrary antenna angles and communication frequencies.
+// A scheduled plan, specifying a time range within which a satellite will be communicated with.
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -279,7 +277,8 @@ message Plan {
     // The plan failed to execute correctly.
     FAILED = 3;
 
-    // The plan was canceled.
+    // The plan was canceled. This can be explicitly by calling `CancelPlan` or implicit due to
+    // cancellation by the ground station in the plan (i.e., due to bad weather).
     CANCELED = 4;
   }
   // The status of this plan.
