@@ -18,7 +18,7 @@ syntax = "proto3";
 
 package stellarstation.api.v1.radio;
 
-option go_package = "radio";
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/radio";
 
 option java_multiple_files = true;
 option java_outer_classname = "RadioProto";
