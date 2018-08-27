@@ -135,7 +135,7 @@ task publishStubs {
     description 'Publishes API stubs (only works for non-snapshot versions)'
     dependsOn ':api:bintrayUpload'
     dependsOn ':stubs:cpp:uploadPackage'
-    dependsOn ":stubs:golang:gitPublishCommit"
+    dependsOn ':stubs:golang:gitPublishCommit'
     dependsOn ':stubs:nodejs:publish'
     dependsOn ':stubs:python:uploadPythonPackage'
 }
