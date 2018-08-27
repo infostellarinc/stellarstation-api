@@ -30,6 +30,6 @@ dependencies {
 }
 
 processResources {
-    from project(':examples:fakeserver').file('src/misc/api-key.json')
+    from project(':examples:fakeserver').file('src/main/jib/var/keys/api-key.json')
     from project(':examples:fakeserver').file('src/main/resources/tls.crt')
 }
