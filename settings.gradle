@@ -39,5 +39,6 @@ include ':api'
 include ':examples:fakeserver'
 include ':examples:java:printing-client'
 include ':stubs:cpp'
+include ":stubs:golang"
 include ':stubs:nodejs'
 include ':stubs:python'

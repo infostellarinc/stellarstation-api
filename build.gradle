@@ -16,6 +16,8 @@
 
 plugins {
     id 'org.curioswitch.gradle-curiostack-plugin'
+    id 'com.github.blindpirate.gogradle' version '0.10' apply false
+    id 'org.ajoberstar.git-publish' version '1.0.1' apply false
 }
 
 gcloud {
