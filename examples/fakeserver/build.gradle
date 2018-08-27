@@ -27,8 +27,11 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.google.cloud.tools.jib' version '0.9.8'
+}
+
 apply plugin: 'application'
-apply plugin: 'com.bmuschko.docker-java-application'
 
 archivesBaseName = 'stellarstation-fake-apiserver'
 mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
@@ -48,24 +51,15 @@ dependencies {
     compileOnly group: 'org.immutables', name: 'value', classifier: 'annotations'
 }
 
-docker {
-    javaApplication {
-        baseImage = 'openjdk:10-jre-slim'
-
-        maintainer = 'StellarStation Team'
-        ports = [8080, 8081]
-        tag = 'quay.io/infostellarinc/fake-apiserver'
+jib {
+    from {
+        image = 'gcr.io/distroless/java:debug'
     }
-}
-
-dockerDistTar {
-    addFile 'api-key.json', '/var/keys/api-key.json'
-    addFile 'extract-key', '/usr/bin/extract-key'
-
-    doFirst {
-        copy {
-            from 'src/misc'
-            into "$buildDir/docker"
-        }
+    to {
+        image = 'quay.io/infostellarinc/fake-apiserver'
+    }
+    container {
+        mainClass = mainClassName
+        ports = ['8080', '8081']
     }
 }
