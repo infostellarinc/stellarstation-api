@@ -67,6 +67,22 @@ service StellarStationService {
   // If the satellite is not found or the client is not authorized for it, the stream will be closed
   // with a `NOT_FOUND` error.
   rpc OpenSatelliteStream (stream SatelliteStreamRequest) returns (stream SatelliteStreamResponse);
+
+  // Reserves a pass for later execution as a plan. The pass must be specified by a
+  // `reservation_token` returned in another method like `ListUpcomingAvailablePasses` and its
+  // `aos_time` must be at least one hour in the future.
+  //
+  // If the `reservation_token` is invalid, the request will return an `INVALID_ARGUMENT` error.
+  //
+  // If the requested pass cannot be scheduled due to a conflict with existing plans or other
+  // scheduling constraints, the request will return a `FAILED_PRECONDITION` error. This includes
+  // if the pass `aos_time` is less than one hour in the future.
+  //
+  // Note that the reservation_token may have become unreservable since it was fetched. If that's
+  // the case, the call to `ReservePass` will fail with a 'FAILED_PRECONDITION' error and
+  // `ListUpcomingAvailablePasses` should be called again to get a fresh list of reservable passes.
+  // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
+  rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -193,6 +209,18 @@ message ListUpcomingAvailablePassesResponse {
   repeated Pass pass = 1;
 }
 
+// Request for the `ReservePass` method.
+message ReservePassRequest {
+  // The token that specifies the pass, as returned in `Pass.reservation_token`.
+  string reservation_token = 1;
+}
+
+// Response for the `ReservePass` method.
+message ReservePassResponse {
+  // The reserved plan.
+  Plan plan = 1;
+}
+
 // A pass during which a satellite can be communicated with from a given ground station.
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
@@ -222,9 +250,69 @@ message Pass {
 
   // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
   // this pass.
-  double downlink_center_frequency_hz = 9;
+  uint64 downlink_center_frequency_hz = 9;
 
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
-  double uplink_center_frequency_hz = 10;
+  uint64 uplink_center_frequency_hz = 10;
+}
+
+// A plan, specifying a time range within which a satellite will be communicated with.
+message Plan {
+  // The unique ID of the plan.
+  string id = 1;
+
+  // The id of the satellite to be tracked in the plan.
+  string satellite_id = 2;
+
+  // A description of the status of a plan.
+  enum Status {
+    // The plan is reserved for execution in the future at `aos_time`.
+    RESERVED = 0;
+
+    // The plan is currently executing and will end in the future at `los_time`.
+    EXECUTING = 1;
+
+    // The plan already finished executing successfully.
+    SUCCEEDED = 2;
+
+    // The plan failed to execute correctly.
+    FAILED = 3;
+
+    // The plan was canceled. This can be explicitly by calling `CancelPlan` or implicit due to
+    // cancellation by the ground station in the plan (i.e., due to bad weather).
+    CANCELED = 4;
+  }
+  // The status of this plan.
+  Status status = 3;
+
+  // The time of Acquisition of Signal (AOS) between the ground station and satellite in this plan.
+  google.protobuf.Timestamp aos_time = 4;
+
+  // The time of Loss of Signal (LOS) between the ground station and satellite in this plan.
+  google.protobuf.Timestamp los_time = 5;
+
+  // The latitude, in degrees, of the ground station's location.
+  double ground_station_latitude = 6;
+
+  // The longitude, in degrees, of the ground station's location.
+  double ground_station_longitude = 7;
+
+  // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
+  // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+  string ground_station_country_code = 8;
+
+  // The max elevation during the plan, in degrees.
+  double max_elevation_degrees = 9;
+
+  // The time of the max elevation during the plan.
+  google.protobuf.Timestamp max_elevation_time = 10;
+
+  // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
+  // this plan.
+  uint64 downlink_center_frequency_hz = 11;
+
+  // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
+  // this plan.
+  uint64 uplink_center_frequency_hz = 12;
 }
