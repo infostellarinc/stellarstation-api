@@ -26,11 +26,11 @@ jobs:
 
       - restore_cache:
           keys:
-          - v3-dependencies-
+          - v4-dependencies-
 
       - run: ./gradlew build
 
       - save_cache:
           paths:
             - ~/.gradle
-          key: v3-dependencies-
+          key: v4-dependencies-
