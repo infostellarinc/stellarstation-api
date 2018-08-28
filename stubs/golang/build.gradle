@@ -24,8 +24,8 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.blindpirate.gogradle'
     id 'java'
+    id 'com.github.blindpirate.gogradle'
     id 'com.google.protobuf'
     id 'org.ajoberstar.git-publish'
 }
