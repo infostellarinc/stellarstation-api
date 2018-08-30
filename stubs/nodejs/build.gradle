@@ -97,11 +97,6 @@ task installProtocPlugins(type: NpmTask) {
     outputs.dir 'node_modules/grpc-tools'
     outputs.dir 'node_modules/grpc_tools_node_protoc_ts'
 
-    // This is added in case the build/web directory contains our project-level .npmrc (this can
-    // happen if a publication was run before). Since the .npmrc references NPM_TOKEN, we need to
-    // define it here. It's safe for the variable to be null.
-    environment = ['NPM_TOKEN': rootProject.findProperty('npm.key')]
-
     finalizedBy addResolvedPluginScript
 }
 
@@ -124,8 +119,9 @@ task generatePackageJson {
 task publish(type: NpmTask) {
     doFirst {
         copy {
-            from ".npmrc"
-            into "build/web"
+            from 'publishing.npmrc'
+            into 'build/web/'
+            rename 'publishing.npmrc', '.npmrc'
         }
     }
 
