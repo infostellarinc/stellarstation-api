@@ -64,8 +64,3 @@ artifactory {
         repoKey = 'jcenter'
     }
 }
-
-tasks.artifactoryPublish.doFirst {
-    println(rootProject.findProperty('bintray.user'))
-    println(rootProject.findProperty('bintray.key'))
-}
