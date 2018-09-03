@@ -1,0 +1,28 @@
+secrets:
+- kmsKeyName: projects/infostellar-cluster/locations/us-central1/keyRings/cloudbuild/cryptoKeys/deploy-stubs
+  secretEnv:
+    BINTRAY_KEY: CiQAo3bGoZ8oqTtDBX7G5hReUiSymLSobSDvpa3w9qq7/iTnrf8SUQD6f46OKS7QQjJ0JRTfwcIlgcfWN89NbmlLMtzGP582qvCcDhh57vd1JR/lr/SZ8HolfzEAZP6k/SdfEZ+oF/u7/CiCWOUzRlgLWFg1Mqm8PA==
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=cloudbuild/id_rsa.enc
+  - --plaintext-file=cloudbuild/id_rsa
+  - --location=us-central1
+  - --keyring=cloudbuild
+  - --key=deploy-stubs
+- name: openjdk:10-jdk
+  entrypoint: bash
+  args:
+  - -c
+  # The SSH clients are looking in /root/.ssh for keys and config, even although the HOME directory
+  # is /builder/home.
+  - |
+    mkdir /root/.ssh &&
+    cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
+    echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
+    ./gradlew :api:artifactoryPublish :stubs:golang:gitPublishCommit -Pbintray.user=$$BINTRAY_USER -Pbintray.key=$$BINTRAY_KEY --stacktrace --no-daemon
+  env: ['BINTRAY_USER=istellar-admin']
+  secretEnv: ['BINTRAY_KEY']
+  timeout: 600s
