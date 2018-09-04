@@ -83,7 +83,7 @@ gitPublish {
 
     // what to publish, this is a standard CopySpec
     contents {
-        from 'build/generated/source/proto/main/go/stellarstation/api' into 'api'
+        from 'build/generated/source/proto/main/go/github.com/infostellarinc/go-stellarstation/api' into 'api'
     }
 }
 
