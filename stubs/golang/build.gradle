@@ -85,6 +85,8 @@ gitPublish {
     contents {
         from 'build/generated/source/proto/main/go/github.com/infostellarinc/go-stellarstation/api' into 'api'
     }
+
+    commitMessage = 'Refresh API stubs.'
 }
 
 task installProtocGoPlugin(type: com.github.blindpirate.gogradle.Go) {
