@@ -46,6 +46,9 @@ service StellarStationService {
   // cause a new plan to be reserved. The plan cannot be cancelled less than ten minutes before
   // AOS.
   //
+  // Canceling a plan may incur a charge based on the time left to AOS. See our cancellation policy
+  // for details.
+  //
   // If the plan is not found, the request will return a `NOT_FOUND` error.
   //
   // If the plan has already been canceled or is less than ten minutes away from its AOS, the
