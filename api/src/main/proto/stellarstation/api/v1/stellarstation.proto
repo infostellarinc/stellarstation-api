@@ -40,6 +40,24 @@ option java_package = "com.stellarstation.api.v1";
 // station and satellite during the time range.
 service StellarStationService {
 
+  // Cancel a previously reserved upcoming plan. Cancelling the plan will cause it to not be
+  // executed. This action cannot be undone, but it is still possible to reserve the corresponding
+  // pass again by calling `ListUpcomingAvailablePasses` and `ReservePass` as usual - this will
+  // cause a new plan to be reserved. The plan cannot be cancelled less than ten minutes before
+  // AOS.
+  //
+  // Canceling a plan may incur a charge based on the time left to AOS. See our cancellation policy
+  // for details.
+  //
+  // If the plan is not found, the request will return a `NOT_FOUND` error.
+  //
+  // If the plan has already been canceled or is less than ten minutes away from its AOS, the
+  // request will return a `FAILED_PRECONDITION` error.
+  //
+  // If the plan is ongoing or has already finished executing, the request will return a
+  // `OUT_OF_RANGE` error.
+  rpc CancelPlan (CancelPlanRequest) returns (CancelPlanResponse);
+
   // Lists upcoming passes for a satellite. Passes that can be scheduled for the satellite with an
   // Acquisition of Signal (AOS) within 14 days from now will be returned. This method does not
   // reserve passes in any way - it is possible for a pass that is returned by this method to be
@@ -195,6 +213,17 @@ message Telemetry {
 //----------------------------------------------------------------------------------------------
 // Scheduling APIs.
 //----------------------------------------------------------------------------------------------
+
+// Request for the `CancelPlan` method.
+message CancelPlanRequest {
+  // The id of the plan to cancel, i.e., the value of `Plan.id`.
+  string plan_id = 1;
+}
+
+// Response for the `CancelPlan` method.
+message CancelPlanResponse {
+  // Currently no payload in the response.
+}
 
 // Request for the `ListUpcomingAvailablePasses` method.
 message ListUpcomingAvailablePassesRequest {
