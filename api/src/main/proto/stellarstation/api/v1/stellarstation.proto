@@ -43,11 +43,13 @@ service StellarStationService {
   // Cancel a previously reserved upcoming plan. Cancelling the plan will cause it to not be
   // executed. This action cannot be undone, but it is still possible to reserve the corresponding
   // pass again by calling `ListUpcomingAvailablePasses` and `ReservePass` as usual - this will
-  // cause a new plan to be reserved.
+  // cause a new plan to be reserved. The plan cannot be cancelled less than ten minutes before
+  // AOS.
   //
   // If the plan is not found, the request will return a `NOT_FOUND` error.
   //
-  // If the plan has already been canceled, the request will return a `FAILED_PRECONDITION` error.
+  // If the plan has already been canceled or is less than ten minutes away from its AOS, the
+  // request will return a `FAILED_PRECONDITION` error.
   //
   // If the plan is ongoing or has already finished executing, the request will return a
   // `OUT_OF_RANGE` error.
