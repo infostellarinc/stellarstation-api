@@ -48,6 +48,9 @@ service StellarStationService {
   // If the plan is not found, the request will return a `NOT_FOUND` error.
   //
   // If the plan has already been canceled, the request will return a `FAILED_PRECONDITION` error.
+  //
+  // If the plan is ongoing or has already finished executing, the request will return a
+  // `OUT_OF_RANGE` error.
   rpc CancelPlan (CancelPlanRequest) returns (CancelPlanResponse);
 
   // Lists upcoming passes for a satellite. Passes that can be scheduled for the satellite with an
