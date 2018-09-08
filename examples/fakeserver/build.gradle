@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url 'http://dl.bintray.com/curioswitch/curiostack'
-        }
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.2.8'
-    }
-}
-
 plugins {
-    id 'com.google.cloud.tools.jib' version '0.9.9'
+    id 'com.google.cloud.tools.jib'
 }
 
 apply plugin: 'application'
@@ -42,10 +29,10 @@ targetCompatibility = '1.8'
 dependencies {
     compile 'com.stellarstation.api:stellarstation-api:0.0.8'
 
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
-    compile 'org.curioswitch.curiostack:curio-server-framework:0.0.70'
+    compile 'org.bouncycastle:bcpkix-jdk15on'
+    compile 'org.curioswitch.curiostack:curio-server-framework'
 
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
+    annotationProcessor 'com.google.dagger:dagger-compiler'
 
     annotationProcessor 'org.immutables:value'
     compileOnly group: 'org.immutables', name: 'value', classifier: 'annotations'
