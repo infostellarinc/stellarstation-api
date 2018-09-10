@@ -134,3 +134,6 @@ afterEvaluate {
 
     uploadPackage.onlyIf { !version.endsWith('SNAPSHOT') }
 }
+
+tasks.compileJava.enabled = false
+tasks.compileTestJava.enabled = false
