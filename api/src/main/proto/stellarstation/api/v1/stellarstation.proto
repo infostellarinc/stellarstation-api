@@ -40,6 +40,13 @@ option java_package = "com.stellarstation.api.v1";
 // station and satellite during the time range.
 service StellarStationService {
 
+  // Lists the plans for a particular satellite.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `satellite_id`,
+  // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
+  // 31 days.
+  rpc ListPlans (ListPlansRequest) returns (ListPlansResponse);
+
   // Cancel a previously reserved upcoming plan. Cancelling the plan will cause it to not be
   // executed. This action cannot be undone, but it is still possible to reserve the corresponding
   // pass again by calling `ListUpcomingAvailablePasses` and `ReservePass` as usual - this will
@@ -248,6 +255,29 @@ message ReservePassRequest {
 message ReservePassResponse {
   // The reserved plan.
   Plan plan = 1;
+}
+
+// Request for the `ListPlans` method.
+message ListPlansRequest {
+  // The ID of the satellite to list plans for. The ID can be found on the StellarStation
+  // Console page for the satellite.
+  string satellite_id = 1;
+
+  // The start time of the range of plans to list (inclusive). Only plans with an Acquisition of
+  // Signal (AOS) at or after this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_after = 2;
+
+  // The end time of the range of plans to list (exclusive). Only plans with an Acquisition of
+  // Signal (AOS) before this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_before = 3;
+}
+
+// A response from the `ListPlans` method.
+message ListPlansResponse {
+  // The requested list of plans for the satellite.
+  repeated Plan plan = 1;
 }
 
 // A pass during which a satellite can be communicated with from a given ground station.
