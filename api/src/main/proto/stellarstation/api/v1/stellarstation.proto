@@ -125,14 +125,17 @@ message SatelliteStreamRequest {
   // error.
   string stream_id = 2;
 
-  // A unique ID identifying this request. If filled, monitoring events will be returned in
-  // `SatelliteStreamResponse.stream_event` with this value copied into `StreamEvent.request_id` for
-  // correlation. The API will treat this as an opaque identifier which can be set to any value,
-  // e.g., to the same value as the request ID in a downstream system. For simple cases, it is often
-  // simplest to set this to a standard UUID.
-  //
-  // If unset, stream events wil not be returned.
-  string request_id = 5;
+  // Whether monitoring events should be returned by the stream in
+  // `SatelliteStreamResponse.stream_event`. If enabled, events of type `StreamEvent` will be
+  // returned as they occur.
+  bool enable_events = 5;
+
+  // A unique ID identifying this request. If `enable_events` is true and this is filled, events
+  // returned in `SatelliteStreamResponse.stream_event` will have this value copied into
+  // `StreamEvent.request_id` for correlation. The API will treat this as an opaque identifier which
+  // can be set to any value, e.g., to the same value as the request ID or command number in a
+  // downstream system. For simple cases, it is often simplest to set this to a standard UUID.
+  string request_id = 6;
 
   // A request to send on the satellite stream. Currently only command sending to the satellite is
   // supported. The request does not need to be filled on the first request to
