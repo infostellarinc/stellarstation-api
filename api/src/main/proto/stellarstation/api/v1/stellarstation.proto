@@ -81,6 +81,10 @@ service StellarStationService {
   // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
   // stream will be returned as well.
   //
+  // The first `SatelliteStreamRequest` sent on the stream is used for configuring the stream.
+  // Unless otherwise specified, all configuration is taken from the first request and configuration
+  // values in subsequent requests will be ignored.
+  //
   // The stream can be left open for any amount of time and telemetry will be received as available
   // and returned. When the client is done with the stream, it should close it successfully. If the
   // stream is cancelled with an unexpected error at any point, telemetry received before the next
@@ -124,6 +128,19 @@ message SatelliteStreamRequest {
   // specified stream has already expired or been closed, the stream is closed with a `ABORTED`
   // error.
   string stream_id = 2;
+
+  // Whether monitoring events should be returned by the stream in
+  // `SatelliteStreamResponse.stream_event`. If set in the first request of the stream, events of
+  // type `StreamEvent` will be returned throughout the lifetime of the stream.
+  bool enable_events = 5;
+
+  // A unique ID identifying this request. If `enable_events` is true and this is filled, events
+  // returned in `SatelliteStreamResponse.stream_event` that correspond to this request will have
+  // this value copied into `StreamEvent.request_id` for correlation. The API will treat this as an
+  // opaque identifier which can be set to any value, e.g., to the same value as the request ID or
+  // command number in a downstream system. For simple cases, it is often simplest to set this to a
+  // standard UUID.
+  string request_id = 6;
 
   // A request to send on the satellite stream. Currently only command sending to the satellite is
   // supported. The request does not need to be filled on the first request to
@@ -182,6 +199,10 @@ message SatelliteStreamResponse {
   oneof Response {
     // A response from a satellite containing telemetry.
     ReceiveTelemetryResponse receive_telemetry_response = 2;
+
+    // An event that occurred while processing the stream. Often used for monitoring the stream.
+    // Never returned if `SatelliteStreamRequest.enable_events` is false.
+    StreamEvent stream_event = 3;
   }
 }
 
@@ -215,6 +236,31 @@ message Telemetry {
   // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
   //          returned.
   bytes frame_header = 6;
+}
+
+// An event that occurred while processing the stream. Only returned if `enable_events` was true
+// in the first `SatelliteStreamRequest` of the stream. A `StreamEvent` will have one of several
+// types of event payloads corresponding to event types. Many of these payloads will be empty,
+// depending on the context of an event, but are still returned as messages to allow future
+// extension.
+message StreamEvent {
+  // The ID of the request this event corresponds to, copied from
+  // `SatelliteStreamRequest.request_id` when present. If the event doesn't correspond to a request,
+  // this is always empty.
+  string request_id = 1;
+
+  // An event indicating the commands in the request were sent by the ground station through its
+  // radio.
+  message CommandSentFromGroundStation {
+    // Empty, may be extended in the future.
+  }
+
+  // A stream event payload.
+  oneof Event {
+    // An event indicating the commands in the request were sent by the ground station through its
+    // radio.
+    CommandSentFromGroundStation command_sent = 2;
+  }
 }
 
 //----------------------------------------------------------------------------------------------
