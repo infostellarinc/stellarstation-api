@@ -316,8 +316,8 @@ message Pass {
   uint64 uplink_center_frequency_hz = 10;
 }
 
-// Data uploaded from the ground station during a pass.
-message TelemetryData {
+// Metadata for telemetry downlinked during a pass.
+message TelemetryMetadata {
   // URL of the data. This URL is valid for one hour after being returned.
   string url = 1;
 
@@ -332,7 +332,8 @@ message TelemetryData {
     // Decoded data.
     DECODED = 2;
   }
-  // The status of this plan.
+
+  // The type of data received during downlinking.
   DataType data_type = 2;
 }
 
@@ -398,7 +399,7 @@ message Plan {
   // this plan.
   uint64 uplink_center_frequency_hz = 12;
 
-  // Telemetry received during the pass. Only populated when the pass has completed successfully
-  // and data processing is complete.
-  repeated TelemetryData telmetry_data = 13;
+  // Metadata for telemetry received during the pass. Only populated when the pass has completed
+  // successfully and data processing is complete.
+  repeated TelemetryMetadata telmetry_metadata = 13;
 }
