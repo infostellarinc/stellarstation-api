@@ -316,6 +316,26 @@ message Pass {
   uint64 uplink_center_frequency_hz = 10;
 }
 
+// Data uploaded from the ground station during a pass.
+message TelemetryData {
+  // URL of the data. This URL is valid for one hour after being returned.
+  string url = 1;
+
+  // The type of data available at the above URL.
+  enum DataType {
+    // Raw IQ data.
+    RAW = 0;
+
+    // Demodulated IQ data.
+    DEMODULATED = 1;
+
+    // Decoded data.
+    DECODED = 2;
+  }
+  // The status of this plan.
+  DataType data_type = 2;
+}
+
 // A plan, specifying a time range within which a satellite will be communicated with.
 message Plan {
   // The unique ID of the plan.
@@ -339,8 +359,11 @@ message Plan {
     FAILED = 3;
 
     // The plan was canceled. This can be explicitly by calling `CancelPlan` or implicit due to
-    // cancellation by the ground station in the plan (i.e., due to bad weather).
+    // cancellation by the ground station in the plan (e.g., due to bad weather).
     CANCELED = 4;
+
+    // The plan completed execution and telemetry data is being processed.
+    PROCESSING = 5;
   }
   // The status of this plan.
   Status status = 3;
@@ -374,4 +397,8 @@ message Plan {
   // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
   // this plan.
   uint64 uplink_center_frequency_hz = 12;
+
+  // Telemetry received during the pass. Only populated when the pass has completed successfully
+  // and data processing is complete.
+  repeated TelemetryData telmetry_data = 13;
 }
