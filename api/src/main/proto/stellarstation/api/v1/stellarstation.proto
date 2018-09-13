@@ -238,7 +238,7 @@ message Telemetry {
   bytes frame_header = 6;
 }
 
-// A event that occurred while processing the stream. Only returned if `enable_events` was true
+// An event that occurred while processing the stream. Only returned if `enable_events` was true
 // in the first `SatelliteStreamRequest` of the stream. A `StreamEvent` will have one of several
 // types of event payloads corresponding to event types. Many of these payloads will be empty,
 // depending on the context of an event, but are still returned as messages to allow future
