@@ -41,6 +41,15 @@ Maven users would add to their `pom.xml`
 
 A full example of a Java API client can be found [here](./examples/java/printing-client).
 
+#### Note for Alpine Linux users
+
+For anyone trying to use the Java API client in an Alpine Linux container, they will find it doesn't
+work due to a limitation of gRPC with Java 8. There are many ways to work around this, such as
+using [jetty-alpn](https://www.eclipse.org/jetty/documentation/current/alpn-chapter.html) or
+installing a version of Java 9+, but our recommendation for Java 8 users is to use 
+[distroless](https://github.com/GoogleContainerTools/distroless/blob/master/java/README.md), which
+is similarly compact but will work fine with gRPC.
+
 ### Python
 
 We provide precompiled client stubs for Python. Python users can install them with `pip`.
