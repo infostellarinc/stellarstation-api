@@ -101,6 +101,13 @@ afterEvaluate {
     tasks.generateProto.dependsOn installProtocGoPlugin, installProtoWrap
     tasks.assemble.dependsOn tasks.generateProto
     tasks.gitPublishCopy.dependsOn tasks.generateProto
+    // Set commit user name and email (without this the commit is by 'root').
+    tasks.gitPublishReset.doLast {
+        File f = file("build/gitPublish/.git/config")
+        if (!f.text.contains('sys-admin')) {
+            f.append('\n[user]\nname = InfoStellar Inc\nemail = sys-admin@istellar.jp\n')
+        }
+    }
 
     // Hack around golang protobuf plugin not supporting compiling multiple packages at the same
     // time. We use the protowrap wrapper which does support it and hack it into the generateProto
