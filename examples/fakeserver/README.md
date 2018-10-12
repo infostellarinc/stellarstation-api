@@ -27,7 +27,7 @@ If using a lower version of Java than Java 10, you will need to specify the buil
 $ ./gradlew -b examples/fakeserver/build.gradle run
 ```
 
-Make sure to initialize a client with the API key located [here](./src/misc/api-key.json).
+Make sure to initialize a client with the API key located [here](./src/main/jib/var/keys/api-key.json).
 
 ### Running the server with Docker
 
