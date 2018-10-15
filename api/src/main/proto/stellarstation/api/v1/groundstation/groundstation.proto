@@ -64,8 +64,8 @@ service GroundStationService {
 
   // Returns a list of unavailability windows for the requested ground station.
   //
-  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id` is missing
-  // or invalid.
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+  // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
   rpc ListUnavailabilityWindows (ListUnavailabilityWindowsRequest) returns (ListUnavailabilityWindowsResponse);
 }
 
@@ -141,10 +141,17 @@ message UnavailabilityWindow {
   google.protobuf.Timestamp end_time = 3;
 }
 
-// A request for a list of unavailability windows for the specified ground station.
+// A request for a list of unavailability windows for the specified ground station that
+// fall within the given time range.
 message ListUnavailabilityWindowsRequest {
   // ID of the ground station for which to retrieve unavailability windows.
   string ground_station_id = 1;
+
+  // Start time.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time.
+  google.protobuf.Timestamp end_time = 3;
 }
 
 // A response containing unavailability windows for the requested ground station.
