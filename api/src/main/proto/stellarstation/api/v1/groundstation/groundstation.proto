@@ -39,12 +39,30 @@ option java_package = "com.stellarstation.api.v1.groundstation";
 // A plan is a scheduled pass that will be executed to send and receive data between the ground
 // station and satellite during the time range.
 service GroundStationService {
+  // Adds a new unavailability window to the requested ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+  // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
+  rpc AddUnavailabilityWindow (AddUnavailabilityWindowRequest) returns (AddUnavailabilityWindowResponse);
+
+  // Deletes an existing unavailability window of the requested ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `window_id` is missing
+  // or invalid.
+  rpc DeleteUnavailabilityWindow (DeleteUnavailabilityWindowRequest) returns (DeleteUnavailabilityWindowResponse);
+
   // Lists the plans for a particular ground station.
   //
   // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
   // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
   // 31 days.
   rpc ListPlans (ListPlansRequest) returns (ListPlansResponse);
+
+  // Returns a list of unavailability windows for the requested ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id` is missing
+  // or invalid.
+  rpc ListUnavailabilityWindows (ListUnavailabilityWindowsRequest) returns (ListUnavailabilityWindowsResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -106,4 +124,56 @@ message Tle {
 
   // The second line of the TLE.
   string line_2 = 2;
+}
+
+// A time window during which a ground station is unavailable e.g. for local maintenance.
+message UnavailabilityWindow {
+  // The ID of the unavailability window.
+  string window_id = 1;
+
+  // Start time of the unavailabilty window.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time of the unavailability window.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// A request for a list of unavailability windows for the specified ground station.
+message ListUnavailabilityWindowsRequest {
+  // ID of the ground station for which to retrieve unavailability windows.
+  string ground_station_id = 1;
+}
+
+// A response containing unavailability windows for the requested ground station.
+message ListUnavailabilityWindowsResponse {
+  // A list of unavailability windows, sorted in ascending order of the start time.
+  repeated UnavailabilityWindow window = 1;
+}
+
+// A request for adding a new unavailability window for the specified ground station.
+message AddUnavailabilityWindowRequest {
+  // ID of the ground station to add a new unavailability window.
+  string ground_station_id = 1;
+
+  // Start time of the unavailabilty window.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time of the unavailability window.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// A response from the 'AddUnavailabilityWindow' method.
+message AddUnavailabilityWindowResponse {
+  // Currently no payload in the response.
+}
+
+// A request for deleting an existing unavailability window for the specified ground station.
+message DeleteUnavailabilityWindowRequest {
+  // ID of the unavailability window to delete.
+  string window_id = 1;
+}
+
+// A response to the request for deleting an existing unavailability window.
+message DeleteUnavailabilityWindowResponse {
+  // Currently no payload in the response.
 }
