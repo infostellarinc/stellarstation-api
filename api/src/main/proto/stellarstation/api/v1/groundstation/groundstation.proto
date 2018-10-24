@@ -174,7 +174,8 @@ message AddUnavailabilityWindowRequest {
 
 // A response from the 'AddUnavailabilityWindow' method.
 message AddUnavailabilityWindowResponse {
-  // Currently no payload in the response.
+  // ID of the window.
+  string window_id = 1;
 }
 
 // A request for deleting an existing unavailability window for the specified ground station.
