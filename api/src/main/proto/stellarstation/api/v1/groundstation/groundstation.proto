@@ -174,7 +174,7 @@ message AddUnavailabilityWindowRequest {
 
 // A response from the 'AddUnavailabilityWindow' method.
 message AddUnavailabilityWindowResponse {
-  // ID of the window.
+  // ID of the new window.
   string window_id = 1;
 }
 
