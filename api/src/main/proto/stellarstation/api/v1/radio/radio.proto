@@ -186,7 +186,7 @@ enum LineCoding {
   BP_S = 6;
 }
 
-message ViterbiMode {
+message ViterbiModeMessage {
   // A type of Viterbi convolutional coding applied to a bitstream.
   // https://en.wikipedia.org/wiki/Convolutional_code
   enum ViterbiMode {
@@ -210,7 +210,7 @@ message ViterbiMode {
   }
 }
 
-message ReedSolomonMode {
+message ReedSolomonModeMessage {
   // A type of Reed-Solomon error correction applied to a bitstream.
   // https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction
   enum ReedSolomonMode {
@@ -225,7 +225,7 @@ message ReedSolomonMode {
   }
 }
 
-message FrameCheckingMode {
+message FrameCheckingModeMessage {
   // A type of frame error checking applied to a bitstream.
   enum FrameCheckingMode {
     // No frame error checking.
@@ -239,7 +239,7 @@ message FrameCheckingMode {
   }
 }
 
-message ViterbiStatus {
+message ViterbiStatusMessage {
   // A current status of Viterbi convolutional coding.
   enum ViterbiStatus {
     // Not locked on.
