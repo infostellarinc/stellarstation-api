@@ -19,6 +19,12 @@ Language-specific documentation:
 - [Java](https://javadoc.io/doc/com.stellarstation.api/stellarstation-api/)
 - [Go](https://godoc.org/github.com/infostellarinc/go-stellarstation/api/v1)
 
+When using `proto` files from this repository directly in client code, make sure to only use [tagged releases](https://github.com/infostellarinc/stellarstation-api/releases).
+Using `proto` files from any non-tagged revision will likely not work correctly or maintain backwards compatibility.
+
+The API follows semantic versioning - any breaking, backwards incompatible change will be made while increasing the
+major version.
+
 ### Java
 
 We provide precompiled client stubs for Java. Java users can just add a dependency on
@@ -45,6 +51,11 @@ Maven users would add to their `pom.xml`
 ```
 
 A full example of a Java API client can be found [here](./examples/java/printing-client).
+
+We publish `SNAPSHOT` builds to https://oss.jfrog.org/libs-snapshot/ for access to preview features.
+The same caveats as using non-tagged releases applies - not all functions in `SNAPSHOT` builds may
+be implemented yet and there is no guarantee of backwards compatibility for `SNAPSHOT` builds. It is
+generally not recommended to use `SNAPSHOT` builds without first consulting with your StellarStation rep.
 
 #### Note for Alpine Linux users
 
@@ -134,9 +145,3 @@ For example,
 
 - C++ - https://github.com/grpc/grpc/blob/583f39ad94c0a14a50916e86a5ccd8c3c77ae2c6/include/grpcpp/security/credentials.h#L144
 - Go - https://github.com/grpc/grpc-go/blob/96cefb43cfc8b2cd3fed9f19f59830bc69e30093/credentials/oauth/oauth.go#L60
-
-
-## Usage
-
-When using `proto` files from this repository directly in client code, make sure to only use [tagged releases](https://github.com/infostellarinc/stellarstation-api/releases).
-Using `proto` files from any non-tagged revision will likely not work correctly.
