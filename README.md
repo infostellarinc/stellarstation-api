@@ -16,7 +16,7 @@ The main protocol definition used to generate language specific stub code is [he
 
 Language-specific documentation:
 
-- [Java](http://javadoc.io/doc/com.stellarstation.api/stellarstation-api/0.1.0)
+- [Java](https://javadoc.io/doc/com.stellarstation.api/stellarstation-api/)
 - [Go](https://godoc.org/github.com/infostellarinc/go-stellarstation/api/v1)
 
 ### Java
