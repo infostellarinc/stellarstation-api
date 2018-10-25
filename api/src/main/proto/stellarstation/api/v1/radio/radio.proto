@@ -121,47 +121,44 @@ enum Modulation {
   // Offset Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Offset_QPSK_(OQPSK)
   OQPSK = 12;
 
-  // Asynchronous Quadrature Phase Shift Keying.
-  AQPSK = 13;
-
 
   // 8-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM8 = 14;
+  QAM8 = 13;
 
   // 16-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM16 = 15;
+  QAM16 = 14;
 
   // 32-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM32 = 16;
+  QAM32 = 15;
 
   // 64-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM64 = 17;
+  QAM64 = 16;
 
   // 128-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM128 = 18;
+  QAM128 = 17;
 
   // 256-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM256 = 19;
+  QAM256 = 18;
 
 
   // Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying
-  MSK = 20;
+  MSK = 19;
 
   // Gaussian Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying
-  GMSK = 21;
+  GMSK = 20;
 
 
   // Amplitude modulation (generic)
-  AM = 22;
+  AM = 21;
 
   // Frequency modulation (generic)
-  FM = 23;
+  FM = 22;
 
   // Phase modulation (generic)
-  PM = 24;
+  PM = 23;
 
   // Pulse-code modulation (generic)
-  PCM = 25;
+  PCM = 24;
 }
 
 // Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
