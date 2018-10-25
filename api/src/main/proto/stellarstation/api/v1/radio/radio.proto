@@ -89,4 +89,174 @@ enum Modulation {
 
   // Binary Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Binary_phase-shift_keying_(BPSK)
   BPSK = 2;
+
+  // Multiple Frequency Shift Keying. https://en.wikipedia.org/wiki/Multiple_frequency-shift_keying
+  MFSK = 3;
+
+  // Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Quadrature_phase-shift_keying_(QPSK)
+  QPSK = 4;
+
+  // 8-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK8 = 5;
+
+  // 16-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK16 = 6;
+
+  // 32-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK32 = 7;
+
+  // 64-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK64 = 8;
+
+  // 128-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK128 = 9;
+
+  // 256-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK256 = 10;
+
+
+  // Differential Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Differential_phase-shift_keying_(DPSK)
+  DPSK = 11;
+
+  // Optical Differential Phase Shift Keying. https://www.bell-labs.com/our-research/publications/203155/
+  ODPSK = 12;
+
+  // Offset Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Offset_QPSK_(OQPSK)
+  OQPSK = 13;
+
+  // Asynchronous Quadrature Phase Shift Keying.
+  AQPSK = 14;
+
+
+  // 8-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM8 = 15;
+
+  // 16-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM16 = 16;
+
+  // 32-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM32 = 17;
+
+  // 64-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM64 = 18;
+
+  // 128-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM128 = 19;
+
+  // 256-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM256 = 20;
+
+
+  // Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying
+  MSK = 21;
+
+  // Gaussian Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying
+  GMSK = 22;
+
+
+  // Amplitude modulation (generic)
+  AM = 23;
+
+  // Frequency modulation (generic)
+  FM = 24;
+
+  // Phase modulation (generic)
+  PM = 25;
+
+  // Pulse-code modulation (generic)
+  PCM = 26;
+}
+
+// Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
+// within a modulated waveform.
+enum LineCoding {
+  // Non-return-to-zero level. https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_L = 0;
+
+  // Non-return-to-zero mark. https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_M = 1;
+
+  // Non-return-to-zero space. https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_S = 2;
+
+  // Return-to-zero. https://en.wikipedia.org/wiki/Return-to-zero
+  RZ = 3;
+
+  // Bipolar return-to-zero level. https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_L = 4;
+
+  // Bipolar return-to-zero mark. https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_M = 5;
+
+  // Bipolar return-to-zero space. https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_S = 6;
+}
+
+// A type of Viterbi coding applied to a bitstream.
+enum ViterbiMode {
+  // No Viterbi coding.
+  OFF = 0;
+
+  // Only Viterbi descrambling.
+  DESCRAMBLING = 1;
+
+  // Only Viterbi decoding.
+  DECODING = 2;
+
+  // Only inverted Viterbi.
+  DECODING_INVERTED = 3;
+
+  // Viterbi decoding and descrambling.
+  DECODING_DESCRAMBLING = 4;
+
+  // Inverted Viterbi decoding and descrambling.
+  DECODING_INVERTED_DESCRAMBLING = 5;
+}
+
+// A type of Reed-Solomon coding applied to a bitstream.
+enum ReedSolomonMode {
+  // No Reed-Solomon coding.
+  OFF = 0;
+
+  // Alpha Reed-Solomon coding.
+  ALPHA = 1;
+
+  // Beta Reed-Solomon coding.
+  BETA = 2;
+}
+
+// A type of frame checking applied to a bitstream.
+enum FrameCheckingMode {
+  // No frame checking.
+  OFF = 0;
+
+  // Cyclic redundancy check.
+  CRC = 1;
+
+  // Generic checksum.
+  CHECKSUM = 2;
+}
+
+// A current status of Viterbi coding.
+enum ViterbiStatus {
+  // Not locked on.
+  UNLOCKED = 0;
+
+  // Locked onto the in-phase signal.
+  I_LOCKED = 1;
+
+  // Locked onto the quadrature signal.
+  Q_LOCKED = 2;
+
+  // Locked onto both in-phase and quadrature signal.
+  LOCKED = 3;
+}
+
+// A status of a synchronizer, which attempts to lock onto signals in the bitstream.
+enum LockStatus {
+  // Not locked onto any signal
+  UNLOCKED = 0;
+
+  // Locked onto a signal.
+  LOCKED = 1;
 }
