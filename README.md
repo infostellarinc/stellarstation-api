@@ -54,7 +54,8 @@ A full example of a Java API client can be found [here](./examples/java/printing
 
 We publish `SNAPSHOT` builds to https://oss.jfrog.org/libs-snapshot/ for access to preview features.
 The same caveats as using non-tagged releases applies - not all functions in `SNAPSHOT` builds may
-be implemented yet and there is no guarantee of backwards compatibility for `SNAPSHOT` builds.
+be implemented yet and there is no guarantee of backwards compatibility for `SNAPSHOT` builds. It is
+generally not recommended to use `SNAPSHOT` builds without first consulting with your StellarStation rep.
 
 #### Note for Alpine Linux users
 
