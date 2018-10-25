@@ -118,53 +118,50 @@ enum Modulation {
   // Differential Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Differential_phase-shift_keying_(DPSK)
   DPSK = 11;
 
-  // Optical Differential Phase Shift Keying. https://www.bell-labs.com/our-research/publications/203155/
-  ODPSK = 12;
-
   // Offset Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Offset_QPSK_(OQPSK)
-  OQPSK = 13;
+  OQPSK = 12;
 
   // Asynchronous Quadrature Phase Shift Keying.
-  AQPSK = 14;
+  AQPSK = 13;
 
 
   // 8-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM8 = 15;
+  QAM8 = 14;
 
   // 16-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM16 = 16;
+  QAM16 = 15;
 
   // 32-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM32 = 17;
+  QAM32 = 16;
 
   // 64-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM64 = 18;
+  QAM64 = 17;
 
   // 128-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM128 = 19;
+  QAM128 = 18;
 
   // 256-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM256 = 20;
+  QAM256 = 19;
 
 
   // Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying
-  MSK = 21;
+  MSK = 20;
 
   // Gaussian Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying
-  GMSK = 22;
+  GMSK = 21;
 
 
   // Amplitude modulation (generic)
-  AM = 23;
+  AM = 22;
 
   // Frequency modulation (generic)
-  FM = 24;
+  FM = 23;
 
   // Phase modulation (generic)
-  PM = 25;
+  PM = 24;
 
   // Pulse-code modulation (generic)
-  PCM = 26;
+  PCM = 25;
 }
 
 // Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
