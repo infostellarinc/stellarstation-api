@@ -22,6 +22,9 @@ Language-specific documentation:
 When using `proto` files from this repository directly in client code, make sure to only use [tagged releases](https://github.com/infostellarinc/stellarstation-api/releases).
 Using `proto` files from any non-tagged revision will likely not work correctly or maintain backwards compatibility.
 
+The API follows semantic versioning - any breaking, backwards incompatible change will be made while increasing the
+major version.
+
 ### Java
 
 We provide precompiled client stubs for Java. Java users can just add a dependency on
