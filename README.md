@@ -14,6 +14,11 @@ language supported by gRPC by following one of the language-specific guides [her
 
 The main protocol definition used to generate language specific stub code is [here](./api/src/main/proto/stellarstation/api/v1/stellarstation.proto).
 
+Language-specific documentation:
+
+- [Java](http://javadoc.io/doc/com.stellarstation.api/stellarstation-api/0.1.0)
+- [Go](https://godoc.org/github.com/infostellarinc/go-stellarstation/api/v1)
+
 ### Java
 
 We provide precompiled client stubs for Java. Java users can just add a dependency on
@@ -23,7 +28,7 @@ Gradle users should add the `stellarstation-api` artifact to their `dependencies
 
 ```groovy
 dependencies {
-    compile 'com.stellarstation.api:stellarstation-api:0.0.8'
+    compile 'com.stellarstation.api:stellarstation-api:0.1.0'
 }
 ```
 
@@ -34,7 +39,7 @@ Maven users would add to their `pom.xml`
   <dependency>
     <groupId>com.stellarstation.api</groupId>
     <artifactId>stellarstation-api</artifactId>
-    <version>0.0.7</version>
+    <version>0.1.0</version>
   </dependency>
 </dependencies>
 ```
