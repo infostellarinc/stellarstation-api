@@ -225,7 +225,7 @@ message ConvolutionalCodingParams {
 
 message ConvolutionalCodingStatusMessage {
   // A current status of convolutional coding.
-  enum ViterbiStatus {
+  enum ConvolutionalCodingStatus {
     // Not locked on.
     UNLOCKED = 0;
 
