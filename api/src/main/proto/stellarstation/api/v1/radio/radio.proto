@@ -192,71 +192,81 @@ enum LineCoding {
   BP_S = 6;
 }
 
-// A type of Viterbi coding applied to a bitstream.
-enum ViterbiMode {
-  // No Viterbi coding.
-  OFF = 0;
+message ViterbiMode {
+  // A type of Viterbi coding applied to a bitstream.
+  enum ViterbiMode {
+    // No Viterbi coding.
+    OFF = 0;
 
-  // Only Viterbi descrambling.
-  DESCRAMBLING = 1;
+    // Only Viterbi descrambling.
+    DESCRAMBLING = 1;
 
-  // Only Viterbi decoding.
-  DECODING = 2;
+    // Only Viterbi decoding.
+    DECODING = 2;
 
-  // Only inverted Viterbi.
-  DECODING_INVERTED = 3;
+    // Only inverted Viterbi.
+    DECODING_INVERTED = 3;
 
-  // Viterbi decoding and descrambling.
-  DECODING_DESCRAMBLING = 4;
+    // Viterbi decoding and descrambling.
+    DECODING_DESCRAMBLING = 4;
 
-  // Inverted Viterbi decoding and descrambling.
-  DECODING_INVERTED_DESCRAMBLING = 5;
+    // Inverted Viterbi decoding and descrambling.
+    DECODING_INVERTED_DESCRAMBLING = 5;
+  }
 }
 
-// A type of Reed-Solomon coding applied to a bitstream.
-enum ReedSolomonMode {
-  // No Reed-Solomon coding.
-  OFF = 0;
+message ReedSolomonMode {
+  // A type of Reed-Solomon coding applied to a bitstream.
+  enum ReedSolomonMode {
+    // No Reed-Solomon coding.
+    OFF = 0;
 
-  // Alpha Reed-Solomon coding.
-  ALPHA = 1;
+    // Alpha Reed-Solomon coding.
+    ALPHA = 1;
 
-  // Beta Reed-Solomon coding.
-  BETA = 2;
+    // Beta Reed-Solomon coding.
+    BETA = 2;
+  }
 }
 
-// A type of frame checking applied to a bitstream.
-enum FrameCheckingMode {
-  // No frame checking.
-  OFF = 0;
+message FrameCheckingMode {
+  // A type of frame checking applied to a bitstream.
+  enum FrameCheckingMode {
+    // No frame checking.
+    OFF = 0;
 
-  // Cyclic redundancy check.
-  CRC = 1;
+    // Cyclic redundancy check.
+    CRC = 1;
 
-  // Generic checksum.
-  CHECKSUM = 2;
+    // Generic checksum.
+    CHECKSUM = 2;
+  }
 }
 
-// A current status of Viterbi coding.
-enum ViterbiStatus {
-  // Not locked on.
-  UNLOCKED = 0;
+message ViterbiStatus {
+  // A current status of Viterbi coding.
+  enum ViterbiStatus {
+    // Not locked on.
+    UNLOCKED = 0;
 
-  // Locked onto the in-phase signal.
-  I_LOCKED = 1;
+    // Locked onto the in-phase signal.
+    I_LOCKED = 1;
 
-  // Locked onto the quadrature signal.
-  Q_LOCKED = 2;
+    // Locked onto the quadrature signal.
+    Q_LOCKED = 2;
 
-  // Locked onto both in-phase and quadrature signal.
-  LOCKED = 3;
+    // Locked onto both in-phase and quadrature signal.
+    LOCKED = 3;
+  }
 }
 
-// A status of a synchronizer, which attempts to lock onto signals in the bitstream.
-enum LockStatus {
-  // Not locked onto any signal
-  UNLOCKED = 0;
+message LockStatus {
+  // A status of a synchronizer, which attempts to lock onto signals in the bitstream.
+  enum LockStatus {
+    // Not locked onto any signal
+    UNLOCKED = 0;
 
-  // Locked onto a signal.
-  LOCKED = 1;
+    // Locked onto a signal.
+    LOCKED = 1;
+  }
 }
