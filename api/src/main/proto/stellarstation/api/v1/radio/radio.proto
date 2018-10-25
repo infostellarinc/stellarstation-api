@@ -187,7 +187,8 @@ enum LineCoding {
 }
 
 message ViterbiMode {
-  // A type of Viterbi coding applied to a bitstream.
+  // A type of Viterbi convolutional coding applied to a bitstream.
+  // https://en.wikipedia.org/wiki/Convolutional_code
   enum ViterbiMode {
     // No Viterbi coding.
     OFF = 0;
@@ -198,7 +199,7 @@ message ViterbiMode {
     // Only Viterbi decoding.
     DECODING = 2;
 
-    // Only inverted Viterbi.
+    // Only inverted Viterbi decoding.
     DECODING_INVERTED = 3;
 
     // Viterbi decoding and descrambling.
@@ -210,23 +211,24 @@ message ViterbiMode {
 }
 
 message ReedSolomonMode {
-  // A type of Reed-Solomon coding applied to a bitstream.
+  // A type of Reed-Solomon error correction applied to a bitstream.
+  // https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction
   enum ReedSolomonMode {
-    // No Reed-Solomon coding.
+    // No Reed-Solomon error correction.
     OFF = 0;
 
-    // Alpha Reed-Solomon coding.
+    // Alpha Reed-Solomon error correction.
     ALPHA = 1;
 
-    // Beta Reed-Solomon coding.
+    // Beta Reed-Solomon error correction.
     BETA = 2;
   }
 }
 
 message FrameCheckingMode {
-  // A type of frame checking applied to a bitstream.
+  // A type of frame error checking applied to a bitstream.
   enum FrameCheckingMode {
-    // No frame checking.
+    // No frame error checking.
     OFF = 0;
 
     // Cyclic redundancy check.
@@ -238,7 +240,7 @@ message FrameCheckingMode {
 }
 
 message ViterbiStatus {
-  // A current status of Viterbi coding.
+  // A current status of Viterbi convolutional coding.
   enum ViterbiStatus {
     // Not locked on.
     UNLOCKED = 0;
@@ -251,16 +253,5 @@ message ViterbiStatus {
 
     // Locked onto both in-phase and quadrature signal.
     LOCKED = 3;
-  }
-}
-
-message LockStatus {
-  // A status of a synchronizer, which attempts to lock onto signals in the bitstream.
-  enum LockStatus {
-    // Not locked onto any signal
-    UNLOCKED = 0;
-
-    // Locked onto a signal.
-    LOCKED = 1;
   }
 }
