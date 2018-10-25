@@ -197,7 +197,7 @@ message ConvolutionalCodingParams {
 
   // The polynomials used for coding. Must have `r` number of elements, where the most significant
   // `k` bits of each element will be used as the polynomial for that index.
-  repeated bytes polonymial = 3;
+  repeated bytes polynomial = 3;
 }
 
 message ConvolutionalCodingStatusMessage {
