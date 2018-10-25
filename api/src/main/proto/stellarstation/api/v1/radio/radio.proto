@@ -195,32 +195,9 @@ message ConvolutionalCodingParams {
   // The inverse of the rate of coding, e.g., if rate is `1 / r`, `inverse_rate` is `r`.
   uint32 inverse_rate = 2;
 
-  message DescramblingParams {
-    // A type of descrambling.
-    enum Type {
-      // Additive descrambling.
-      ADDITIVE = 0;
-
-      // Multiplicative descrambling.
-      MULTIPLICATIVE = 1;
-    }
-    // The type of descrambling.
-    Type type = 1;
-
-    // The polynomial mask bitmaps using when descrambling. Each mask should be of
-    // length `k` bits. The most significant `k` bits of each mask will be used.
-    repeated bytes mask = 2;
-
-    // The initial contents of the shift register.
-    bytes seed = 3;
-
-    // The length of the shift register, in bits. The most significant `length` bits of `seed` will
-    // be used.
-    uint32 length = 4;
-  }
-  // Descrambling parameters used when applying convolutional coding. If unset, descrambling is not
-  // used.
-  DescramblingParams descrambling = 3;
+  // The polynomials used for coding. Must have `r` number of elements, where the most significant
+  // `k` bits of each element will be used as the polynomial for that index.
+  repeated bytes polonymial = 3;
 }
 
 message ConvolutionalCodingStatusMessage {
@@ -238,4 +215,29 @@ message ConvolutionalCodingStatusMessage {
     // Locked onto both in-phase and quadrature signal.
     LOCKED = 3;
   }
+}
+
+// Parameters for scrambling applied to a bitstream.
+message ScramblingParams {
+  // A type of scrambling.
+  enum Type {
+    // Additive scrambling.
+    ADDITIVE = 0;
+
+    // Multiplicative scrambling.
+    MULTIPLICATIVE = 1;
+  }
+  // The type of scrambling.
+  Type type = 1;
+
+  // The length of the shift register, in bits.
+  uint32 num_bits = 2;
+
+  // The polynomial mask for the shift register. The most significant `num_bits` bits of `mask` will
+  // be used.
+  bytes mask = 3;
+
+  // The initial contents of the shift register. The most significant `num_bits` bits of `mask` will
+  // be used.
+  bytes seed = 4;
 }
