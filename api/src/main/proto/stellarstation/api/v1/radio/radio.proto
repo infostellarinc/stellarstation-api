@@ -89,4 +89,155 @@ enum Modulation {
 
   // Binary Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Binary_phase-shift_keying_(BPSK)
   BPSK = 2;
+
+  // Multiple Frequency Shift Keying. https://en.wikipedia.org/wiki/Multiple_frequency-shift_keying
+  MFSK = 3;
+
+  // Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Quadrature_phase-shift_keying_(QPSK)
+  QPSK = 4;
+
+  // 8-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK8 = 5;
+
+  // 16-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK16 = 6;
+
+  // 32-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK32 = 7;
+
+  // 64-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK64 = 8;
+
+  // 128-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK128 = 9;
+
+  // 256-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
+  PSK256 = 10;
+
+
+  // Offset Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Offset_QPSK_(OQPSK)
+  OQPSK = 11;
+
+
+  // 8-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM8 = 12;
+
+  // 16-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM16 = 13;
+
+  // 32-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM32 = 14;
+
+  // 64-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM64 = 15;
+
+  // 128-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM128 = 16;
+
+  // 256-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
+  QAM256 = 17;
+
+
+  // Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying
+  MSK = 18;
+
+  // Gaussian Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying
+  GMSK = 19;
+
+
+  // Amplitude modulation (generic)
+  AM = 20;
+
+  // Frequency modulation (generic)
+  FM = 21;
+
+  // Phase modulation (generic)
+  PM = 22;
+}
+
+// Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
+// within a modulated waveform.
+enum LineCoding {
+  // Non-return-to-zero level.
+  // https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_L = 0;
+
+  // Non-return-to-zero mark (i.e., differential encoding).
+  // https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_M = 1;
+
+  // Non-return-to-zero space (i.e., non-differential-encoding).
+  // https://en.wikipedia.org/wiki/Non-return-to-zero
+  NRZ_S = 2;
+
+  // Return-to-zero. https://en.wikipedia.org/wiki/Return-to-zero
+  RZ = 3;
+
+  // Bipolar return-to-zero level.
+  // https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_L = 4;
+
+  // Bipolar return-to-zero mark (i.e., differential encoding).
+  // https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_M = 5;
+
+  // Bipolar return-to-zero space (i.e., non-differential encoding).
+  // https://en.wikipedia.org/wiki/Bipolar_encoding
+  BP_S = 6;
+}
+
+// Parameters for convolutional coding applied to a bitstream.
+// https://en.wikipedia.org/wiki/Convolutional_code
+message ConvolutionalCodingParams {
+  // The constraint length, `k`, of the code.
+  uint32 k = 1;
+
+  // The inverse of the rate of coding, e.g., if rate is `1 / r`, `inverse_rate` is `r`.
+  uint32 inverse_rate = 2;
+
+  // The polynomials used for coding. Must have `r` number of elements, where the most significant
+  // `k` bits of each element will be used as the polynomial for that index.
+  repeated bytes polynomial = 3;
+}
+
+message ConvolutionalCodingStatusMessage {
+  // A current status of convolutional coding.
+  enum ConvolutionalCodingStatus {
+    // Not locked on.
+    UNLOCKED = 0;
+
+    // Locked onto the in-phase signal.
+    I_LOCKED = 1;
+
+    // Locked onto the quadrature signal.
+    Q_LOCKED = 2;
+
+    // Locked onto both in-phase and quadrature signal.
+    LOCKED = 3;
+  }
+}
+
+// Parameters for scrambling applied to a bitstream.
+message ScramblingParams {
+  // A type of scrambling.
+  enum Type {
+    // Additive scrambling.
+    ADDITIVE = 0;
+
+    // Multiplicative scrambling.
+    MULTIPLICATIVE = 1;
+  }
+  // The type of scrambling.
+  Type type = 1;
+
+  // The length of the shift register, in bits.
+  uint32 num_bits = 2;
+
+  // The polynomial mask for the shift register. The most significant `num_bits` bits of `mask` will
+  // be used.
+  bytes mask = 3;
+
+  // The initial contents of the shift register. The most significant `num_bits` bits of `mask` will
+  // be used.
+  bytes seed = 4;
 }
