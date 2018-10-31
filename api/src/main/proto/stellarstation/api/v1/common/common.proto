@@ -1,0 +1,39 @@
+/*
+ * Copyright 2018 Infostellar, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package stellarstation.api.v1.common;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/common";
+
+option java_multiple_files = true;
+option java_outer_classname = "CommonProto";
+option java_package = "com.stellarstation.api.v1.common";
+
+// Common messages for low level primitives used by many different API concepts.
+
+// A set of bits - this is not necessarily aligned to bytes (8-bits).
+message Bits {
+
+  // The number of bits in this message. Only the most-significant `length` bits of `payload` will
+  // be used.
+  uint32 length = 1;
+
+  // The actual bits in this message. Only the most-significant `length` bits of `payload` will
+  // be used.
+  bytes payload = 2;
+}

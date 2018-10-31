@@ -81,78 +81,81 @@ message AX25 {
 // Type of modulation. Modulation is the process of converting binary data (0's and 1's) to
 // an analog wave for use in radio communication.
 enum Modulation {
+  // Indicates modulation is disabled.
+  DISABLED = 0;
+
   // Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying
-  FSK = 0;
+  FSK = 1;
 
   // Audio Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying#Audio_FSK
-  AFSK = 1;
+  AFSK = 2;
 
   // Binary Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Binary_phase-shift_keying_(BPSK)
-  BPSK = 2;
+  BPSK = 3;
 
   // Multiple Frequency Shift Keying. https://en.wikipedia.org/wiki/Multiple_frequency-shift_keying
-  MFSK = 3;
+  MFSK = 4;
 
   // Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Quadrature_phase-shift_keying_(QPSK)
-  QPSK = 4;
+  QPSK = 5;
 
   // 8-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK8 = 5;
+  PSK8 = 6;
 
   // 16-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK16 = 6;
+  PSK16 = 7;
 
   // 32-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK32 = 7;
+  PSK32 = 8;
 
   // 64-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK64 = 8;
+  PSK64 = 9;
 
   // 128-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK128 = 9;
+  PSK128 = 10;
 
   // 256-Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying
-  PSK256 = 10;
+  PSK256 = 11;
 
 
   // Offset Quadrature Phase Shift Keying. https://en.wikipedia.org/wiki/Phase-shift_keying#Offset_QPSK_(OQPSK)
-  OQPSK = 11;
+  OQPSK = 12;
 
 
   // 8-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM8 = 12;
+  QAM8 = 13;
 
   // 16-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM16 = 13;
+  QAM16 = 14;
 
   // 32-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM32 = 14;
+  QAM32 = 15;
 
   // 64-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM64 = 15;
+  QAM64 = 16;
 
   // 128-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM128 = 16;
+  QAM128 = 17;
 
   // 256-Phase Amplitude Modulation. https://en.wikipedia.org/wiki/Quadrature_amplitude_modulation
-  QAM256 = 17;
+  QAM256 = 18;
 
 
   // Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying
-  MSK = 18;
+  MSK = 19;
 
   // Gaussian Minimum Shift Keying. https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying
-  GMSK = 19;
+  GMSK = 20;
 
 
   // Amplitude modulation (generic)
-  AM = 20;
+  AM = 21;
 
   // Frequency modulation (generic)
-  FM = 21;
+  FM = 22;
 
   // Phase modulation (generic)
-  PM = 22;
+  PM = 23;
 }
 
 // Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
@@ -198,23 +201,6 @@ message ConvolutionalCodingParams {
   // The polynomials used for coding. Must have `r` number of elements, where the most significant
   // `k` bits of each element will be used as the polynomial for that index.
   repeated bytes polynomial = 3;
-}
-
-message ConvolutionalCodingStatusMessage {
-  // A current status of convolutional coding.
-  enum ConvolutionalCodingStatus {
-    // Not locked on.
-    UNLOCKED = 0;
-
-    // Locked onto the in-phase signal.
-    I_LOCKED = 1;
-
-    // Locked onto the quadrature signal.
-    Q_LOCKED = 2;
-
-    // Locked onto both in-phase and quadrature signal.
-    LOCKED = 3;
-  }
 }
 
 // Parameters for scrambling applied to a bitstream.
