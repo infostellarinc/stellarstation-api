@@ -197,7 +197,7 @@ message AntennaState {
   // The state of an antenna angle.
   message Angle {
     // The angle that was specified for the antenna. When the antenna is functioning properly,
-    //    // there should be nearly no difference between this and `measured`.
+    // there should be nearly no difference between this and `measured`.
     double command = 1;
 
     // The actual angle physically measured from the antenna. When the antenna is functioning

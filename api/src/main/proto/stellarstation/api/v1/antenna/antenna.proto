@@ -32,7 +32,7 @@ message AntennaConfiguration {
   // The latitude of the antenna, in degrees.
   double latitude = 1;
 
-  // The latitude of the antenna, in degrees.
+  // The longitude of the antenna, in degrees.
   double longitude = 2;
 
   // The altitude of the antenna, in meters.
