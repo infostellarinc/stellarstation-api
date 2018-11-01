@@ -24,9 +24,9 @@ option java_multiple_files = true;
 option java_outer_classname = "AntennaProto";
 option java_package = "com.stellarstation.api.v1.antenna";
 
-// Messages for modeling physical antenna configuration in API messages.
+// Messages for modeling physical antenna configuration in the API.
 
-// The static configuration of a antenna. These are the physical parameters of the antenna.
+// The static configuration of an antenna. These are the physical parameters of the antenna.
 message AntennaConfiguration {
 
   // The latitude of the antenna, in degrees.
@@ -52,10 +52,11 @@ message AntennaConfiguration {
 
   // The beamwidth, in degrees.
   // https://en.wikipedia.org/wiki/Beamwidth
-  double beamwidth = 7;
+  double beamwidth_degrees = 7;
 }
 
 // The polarization of an antenna.
+// https://en.wikipedia.org/wiki/Antenna_(radio)#Polarization
 enum AntennaPolarization {
   // Horizontal polarization.
   HORIZONTAL = 0;

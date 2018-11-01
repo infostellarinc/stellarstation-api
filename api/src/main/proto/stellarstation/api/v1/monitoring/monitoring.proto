@@ -30,8 +30,10 @@ option java_package = "com.stellarstation.api.v1.monitoring";
 
 // Messages for reporting information about a ground station for monitoring and debugging.
 
-// The current configuration of a transmitter. A transmitter is taking a bitstream and applies
-// signal processing to create the final waveform sent to a satellite.
+// The current configuration of a transmitter.
+//
+// A transmitter takes a bitstream and applies signal processing to create the final waveform sent
+// to a satellite.
 message TransmitterConfiguration {
   // The modulation type of the transmitter.
   radio.Modulation modulation = 1;
@@ -52,8 +54,10 @@ message TransmitterConfiguration {
   uint64 sampling_frequency_hz = 6;
 }
 
-// The current configuration of a receiver. A receiver is taking a waveform from a satellite and
-// applying signal processing to produce a bitstream.
+// The current configuration of a receiver.
+//
+// A receiver takes a waveform from a satellite and applying signal processing to produce a
+// bitstream.
 message ReceiverConfiguration {
   // The modulation type of the receiver.
   radio.Modulation modulation = 1;
@@ -80,6 +84,7 @@ message ReceiverConfiguration {
   bool is_convolutional_code_decoding = 8;
 
   // Whether convolutional codes are inverted.
+  // No meaning if `is_convolutional_code_decoding` is not enabled.
   bool is_convolutional_code_inverted = 9;
 
   // Whether reed solomon coding is being used.
@@ -161,6 +166,7 @@ message ReedSolomonStatus {
   uint32 num_corrected_signals = 2;
 }
 
+// The current state of the ground station's receiver during the operation of a pass.
 message ReceiverState {
   // The current center frequency of the receiver, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
