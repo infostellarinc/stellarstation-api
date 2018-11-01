@@ -38,9 +38,9 @@ message AntennaConfiguration {
   // The altitude of the antenna, in meters.
   double altitude_meters = 3;
 
-  // The heading (i.e., left-right rotation), in degrees.
+  // The yaw (i.e., left-right rotation), in degrees.
   // https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
-  double heading_degrees = 4;
+  double yaw_degrees = 4;
 
   // The pitch (i.e., up-down rotation), in degrees.
   // https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
