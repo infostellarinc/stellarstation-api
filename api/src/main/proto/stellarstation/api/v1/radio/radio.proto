@@ -81,7 +81,7 @@ message AX25 {
 // Type of modulation. Modulation is the process of converting binary data (0's and 1's) to
 // an analog wave for use in radio communication.
 enum Modulation {
-  // Indicates modulation is disabled.
+  // Indicates modulation is disabled and raw I/Q is being used.
   DISABLED = 0;
 
   // Frequency Shift Keying. https://en.wikipedia.org/wiki/Frequency-shift_keying

@@ -56,7 +56,7 @@ message TransmitterConfiguration {
 
 // The current configuration of a receiver.
 //
-// A receiver takes a waveform from a satellite and applying signal processing to produce a
+// A receiver takes a waveform from a satellite and applies signal processing to produce a
 // bitstream.
 message ReceiverConfiguration {
   // The modulation type of the receiver.
@@ -222,6 +222,10 @@ message AntennaState {
 }
 
 // The current state of a ground station during the operation of a pass.
+//
+// State that can be monitored will vary by the specifications of the ground station that executes
+// the pass. Any information that cannot be monitored for the current ground station will not be
+// filled.
 message GroundStationState {
 
   // The current state of the transmitter in use during a pass. When debugging issues with data
