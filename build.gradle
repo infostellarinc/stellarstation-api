@@ -20,6 +20,13 @@ plugins {
     id 'org.curioswitch.gradle-curiostack-plugin'
 }
 
+conda {
+    'miniconda2-build' {
+        packages.add('cmake')
+        pythonPackages.addAll('conan', 'grpcio-tools', 'twine')
+    }
+}
+
 gcloud {
     clusterBaseName = 'infostellar-api'
     cloudRegion = 'asia-northeast1'
@@ -103,26 +110,6 @@ allprojects {
             }
         }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.8'
-    distributionType = 'ALL'
-}
-
-ext.condaRoot = gradle.gradleUserHomeDir.toPath().resolve('curiostack/python/bootstrap/miniconda2-4.5.4')
-ext.condaCommand = {command->
-    return """
-    . ${condaRoot.resolve('etc/profile.d/conda.sh')} && \\
-    conda activate > /dev/null && \\
-    ${command}
-    """
-}
-
-task installPythonTools(type: Exec) {
-    dependsOn 'pythonSetup'
-    executable 'bash'
-    args '-c', condaCommand('pip install conan grpcio-tools twine')
 }
 
 // To use this task the following properites should be set in your gradle.properties:
