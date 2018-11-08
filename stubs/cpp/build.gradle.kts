@@ -94,7 +94,7 @@ tasks {
                 commandLine("conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan && " +
                         "conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&" +
                         "conan remote add -f inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan && " +
-                        "conan install . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7")
+                        "conan install . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7 --build=missing")
                 workingDir(conanDir)
 
                 org.curioswitch.gradle.conda.exec.CondaExecUtil.condaExec(this, project)
