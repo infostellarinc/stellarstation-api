@@ -79,7 +79,7 @@ tasks {
 
     val generateProto = named("generateProto")
     generateProto.configure {
-        dependsOn(fillRunProtocScript, prepareSetupPy)
+        dependsOn(fillRunProtocScript, prepareSetupPy, ':toolsSetupMiniconda2Build')
     }
 
     val setupPythonPackage by registering() {
