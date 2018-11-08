@@ -71,10 +71,14 @@ gitPublish {
 
 tasks {
     val installProtocGoPlugin by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        dependsOn(named("goDownloadDeps"))
+
         args("install", "github.com/golang/protobuf/protoc-gen-go")
     }
 
     val installProtoWrap by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        dependsOn(named("goDownloadDeps"))
+
         args("install", "github.com/square/goprotowrap/cmd/protowrap")
     }
 
