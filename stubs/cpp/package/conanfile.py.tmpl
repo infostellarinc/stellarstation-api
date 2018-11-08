@@ -30,7 +30,7 @@ class StellarstationApiConan(ConanFile):
 
     def imports(self):
         self.copy("grpc_cpp_plugin", "bin", "bin", 'grpc')
-        self.copy("protoc", "bin", "bin", 'protobuf')
+        self.copy("protoc", "bin", "bin", 'protoc_installer')
 
     def package(self):
         self.copy("*.h", dst="include", src="src")
