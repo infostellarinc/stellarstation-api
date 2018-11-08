@@ -27,6 +27,15 @@ conda {
     }
 }
 
+tools {
+    node {
+        version.set('10.13.0')
+        // TODO(rag): Make the node build work on other OS's too by fixing the nodejs
+        // setup.
+        pathSubDirs.set(['node-v10.13.0-linux-x64/bin'])
+    }
+}
+
 gcloud {
     clusterBaseName = 'infostellar-api'
     cloudRegion = 'asia-northeast1'

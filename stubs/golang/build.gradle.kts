@@ -30,6 +30,8 @@ dependencies {
     protobuf(project(":api"))
 }
 
+val GOPATH = extra["gopath"]
+
 protobuf {
     protoc {
         artifact.set("com.google.protobuf:protoc:3.6.1")
@@ -42,7 +44,7 @@ protobuf {
         register("go") {
             option("plugins=grpc")
             plugin {
-                path.set(file("${extra["gopath"]}/bin/protoc-gen-go"))
+                path.set(file("${GOPATH}/bin/protoc-gen-go"))
             }
         }
     }
@@ -80,7 +82,7 @@ tasks {
         dependsOn(installProtocGoPlugin, installProtoWrap)
 
         execOverride {
-            val protowrapPath = project.file("${extra["gopath"]}/bin/protowrap")
+            val protowrapPath = project.file("${GOPATH}/bin/protowrap")
             setCommandLine(listOf(protowrapPath.getAbsolutePath(), "--protoc_command=${executable}") + args)
 
             org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)

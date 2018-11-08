@@ -23,7 +23,7 @@ plugins {
 val GRPC_TOOLS_VERSION = "1.6.6"
 val GRPC_TOOLS_TS_VERSION = "2.3.1"
 
-val GRPC_VERSION = "1.14.1"
+val GRPC_VERSION = "1.16.0"
 val GOOGLE_PROTOBUF_VERSION = "3.6.1"
 
 repositories {

@@ -72,7 +72,7 @@ tasks {
         dependsOn(prepareConanFilePy, ":toolsSetupMiniconda2Build")
 
         inputs.file("$buildDir/generated/scripts/conanfile.py")
-        inputs.file("package/src")
+        inputs.dir("package/src")
         outputs.dir("build/conan")
 
         val conanDir = file("build/conan")
