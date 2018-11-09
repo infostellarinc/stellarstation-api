@@ -21,11 +21,10 @@ mainClassName = 'com.stellarstation.api.examples.printingclient.PrintingClientMa
 dependencies {
     compile 'com.google.auth:google-auth-library-oauth2-http:0.9.1'
     compile 'com.stellarstation.api:stellarstation-api:0.0.8'
-    compile 'io.grpc:grpc-auth:1.14.0'
-    compile 'io.grpc:grpc-netty:1.14.0'
-    compile 'io.grpc:grpc-protobuf:1.14.0'
-    compile 'io.grpc:grpc-stub:1.14.0'
-    compile 'io.netty:netty-tcnative-boringssl-static:2.0.14.Final'
+    ['auth', 'netty', 'protobuf', 'stub'].each {
+        compile "io.grpc:grpc-$it:1.16.1"
+    }
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.17.Final'
     compile 'org.slf4j:slf4j-simple:1.7.25'
 }
 
