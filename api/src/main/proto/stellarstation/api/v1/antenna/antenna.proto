@@ -38,21 +38,9 @@ message AntennaConfiguration {
   // The altitude of the antenna above mean sea level, in meters.
   double altitude_meters = 3;
 
-  // The yaw (i.e., left-right rotation), in degrees.
-  // https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
-  double yaw_degrees = 4;
-
-  // The pitch (i.e., up-down rotation), in degrees.
-  // https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
-  double pitch_degrees = 5;
-
-  // The roll (i.e., circular rotation), in degrees.
-  // https://en.wikipedia.org/wiki/Euler_angles#Tait-Bryan_angles
-  double roll_degrees = 6;
-
   // The beamwidth, in degrees.
   // https://en.wikipedia.org/wiki/Beamwidth
-  double beamwidth_degrees = 7;
+  double beamwidth_degrees = 4;
 }
 
 // The polarization of an antenna.
