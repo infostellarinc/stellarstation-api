@@ -12,7 +12,7 @@ steps:
   - --location=us-central1
   - --keyring=cloudbuild
   - --key=deploy-stubs
-- name: openjdk:10-jdk
+- name: openjdk:11-jdk
   entrypoint: bash
   args:
   - -c
