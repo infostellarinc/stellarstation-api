@@ -112,6 +112,26 @@ service StellarStationService {
   // `ListUpcomingAvailablePasses` should be called again to get a fresh list of reservable passes.
   // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
+
+  // Add TLE for a satellite.
+  //
+  // If the TLE is accepted, it will be applied when executing upcoming plans, and for pass
+  // calculation..
+  //
+  // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
+  // - the TLE cannot be parsed
+  // - the TLE is older than the current TLE
+  // - the TLE norad ID does not correspond to the requested satellite.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
+  rpc AddTle (AddTleRequest) returns (AddTleResponse);
+
+  // Gets the current TLE for a satellite.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
+  rpc GetTle (GetTleRequest) returns (GetTleResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -448,4 +468,34 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telmetry_metadata = 13;
+}
+
+// Request for the 'addTle' method.
+message AddTleRequest {
+  // The first line of the TLE. Not a title line.
+  string tle_line_1 = 1;
+
+  // The second line of the TLE.
+  string tle_line_2 = 2;
+}
+
+// Response for the `addTle` method.
+message AddTleResponse {
+  // Currently no payload in the response.
+}
+
+// Request for the 'getTle' method.
+message GetTleRequest {
+  // The ID of the satellite for which to fetch TLE. The ID can be found on the StellarStation
+  // Console page for the satellite.
+  string satellite_id = 1;
+}
+
+// Response for the 'getTle' method.
+message GetTleResponse {
+  // The first line of the TLE. Not a title line.
+  string tle_line_1 = 1;
+
+  // The second line of the TLE.
+  string tle_line_2 = 2;
 }
