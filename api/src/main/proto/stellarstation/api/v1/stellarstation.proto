@@ -470,7 +470,7 @@ message Plan {
   repeated TelemetryMetadata telmetry_metadata = 13;
 }
 
-// Request for the 'addTle' method.
+// Request for the 'AddTle' method.
 message AddTleRequest {
   // The first line of the TLE. Not a title line.
   string tle_line_1 = 1;
@@ -479,19 +479,19 @@ message AddTleRequest {
   string tle_line_2 = 2;
 }
 
-// Response for the `addTle` method.
+// Response for the `AddTle` method.
 message AddTleResponse {
   // Currently no payload in the response.
 }
 
-// Request for the 'getTle' method.
+// Request for the 'GetTle' method.
 message GetTleRequest {
   // The ID of the satellite for which to fetch TLE. The ID can be found on the StellarStation
   // Console page for the satellite.
   string satellite_id = 1;
 }
 
-// Response for the 'getTle' method.
+// Response for the 'GetTle' method.
 message GetTleResponse {
   // The first line of the TLE. Not a title line.
   string tle_line_1 = 1;
