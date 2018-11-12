@@ -472,11 +472,15 @@ message Plan {
 
 // Request for the 'AddTle' method.
 message AddTleRequest {
+  // The ID of the satellite to add TLE for. The ID can be found on the StellarStation
+  // Console page for the satellite.
+  string satellite_id = 1;
+
   // The first line of the TLE. Not a title line.
-  string tle_line_1 = 1;
+  string tle_line_1 = 2;
 
   // The second line of the TLE.
-  string tle_line_2 = 2;
+  string tle_line_2 = 3;
 }
 
 // Response for the `AddTle` method.
