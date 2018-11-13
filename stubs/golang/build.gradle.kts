@@ -93,6 +93,19 @@ tasks {
         }
     }
 
+    named("gitPublishReset"){
+        doLast {
+            val f = File("build/gitPublish/.git/config")
+            if (f.readText().contains("sys-admin")) {
+                f.appendText("'\n[user]\nname = InfoStellar Inc\nemail = sys-admin@istellar.jp\n'")
+            }
+        }
+    }
+
+    named("gitPublishCopy").configure({
+        dependsOn(generateProto)
+    })
+
     named("assemble").configure({
         dependsOn(generateProto)
     })
