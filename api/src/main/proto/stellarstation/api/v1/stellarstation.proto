@@ -17,6 +17,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/orbit/orbit.proto";
 
 package stellarstation.api.v1;
 
@@ -476,11 +477,8 @@ message AddTleRequest {
   // Console page for the satellite.
   string satellite_id = 1;
 
-  // The first line of the TLE. Not a title line.
-  string tle_line_1 = 2;
-
-  // The second line of the TLE.
-  string tle_line_2 = 3;
+  // The TLE to be added.
+  orbit.Tle tle = 2;
 }
 
 // Response for the `AddTle` method.
@@ -497,9 +495,5 @@ message GetTleRequest {
 
 // Response for the 'GetTle' method.
 message GetTleResponse {
-  // The first line of the TLE. Not a title line.
-  string tle_line_1 = 1;
-
-  // The second line of the TLE.
-  string tle_line_2 = 2;
+  orbit.Tle tle = 1;
 }
