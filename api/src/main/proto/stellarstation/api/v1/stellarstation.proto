@@ -114,10 +114,10 @@ service StellarStationService {
   // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
 
-  // Add TLE for a satellite.
+  // Set TLE for a satellite.
   //
   // If the TLE is accepted, it will be applied when executing upcoming plans, and for pass
-  // calculation..
+  // calculation.
   //
   // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
   // - the TLE cannot be parsed
@@ -126,7 +126,7 @@ service StellarStationService {
   //
   // If the satellite is not found or the client is not authorized for it, the request will return
   // a `NOT_FOUND` error.
-  rpc AddTle (AddTleRequest) returns (AddTleResponse);
+  rpc SetTle (SetTleRequest) returns (SetTleResponse);
 
   // Gets the current TLE for a satellite.
   //
@@ -471,8 +471,8 @@ message Plan {
   repeated TelemetryMetadata telmetry_metadata = 13;
 }
 
-// Request for the 'AddTle' method.
-message AddTleRequest {
+// Request for the 'SetTle' method.
+message SetTleRequest {
   // The ID of the satellite to add TLE for. The ID can be found on the StellarStation
   // Console page for the satellite.
   string satellite_id = 1;
@@ -481,8 +481,8 @@ message AddTleRequest {
   orbit.Tle tle = 2;
 }
 
-// Response for the `AddTle` method.
-message AddTleResponse {
+// Response for the `SetTle` method.
+message SetTleResponse {
   // Currently no payload in the response.
 }
 
@@ -495,6 +495,6 @@ message GetTleRequest {
 
 // Response for the 'GetTle' method.
 message GetTleResponse {
-  // The latest TLE for the given satellite.
+  // The TLE for the given satellite.
   orbit.Tle tle = 1;
 }
