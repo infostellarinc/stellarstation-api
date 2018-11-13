@@ -495,5 +495,6 @@ message GetTleRequest {
 
 // Response for the 'GetTle' method.
 message GetTleResponse {
+  // The latest TLE for the given satellite.
   orbit.Tle tle = 1;
 }
