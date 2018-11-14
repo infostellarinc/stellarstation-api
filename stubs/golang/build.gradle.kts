@@ -50,6 +50,7 @@ protobuf {
     }
 }
 
+
 gitPublish {
     repoUri.set("git@github.com:infostellarinc/go-stellarstation.git")
     branch.set("master")
