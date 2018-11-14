@@ -17,6 +17,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/orbit/orbit.proto";
 
 package stellarstation.api.v1;
 
@@ -26,7 +27,7 @@ option java_multiple_files = true;
 option java_outer_classname = "StellarstationProto";
 option java_package = "com.stellarstation.api.v1";
 
-// The public API service of Stellarstation, a system supporting communication between satellites
+// The public API service of StellarStation, a system supporting communication between satellites
 // and ground stations. This API is for use by an operator of a satellite - it is invalid to specify
 // satellites that the operator does not own or plans they have not reserved.
 // Only using IDs shown on the StellarStation Console or returned in API responses will ensure all
@@ -112,6 +113,30 @@ service StellarStationService {
   // `ListUpcomingAvailablePasses` should be called again to get a fresh list of reservable passes.
   // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
+
+  // Adds TLE for a satellite.
+  //
+  // The TLE will be used for satellite orbit calculation until it is superseded by a TLE with a
+  // more recent epoch. This happens automatically if StellarStation pulls new TLE data from
+  // external sources, or manually through this API etc.
+  //
+  // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
+  // - the TLE cannot be parsed
+  // - the TLE epoch is older than the most recent TLE known to StellarStation
+  // - the TLE norad ID does not correspond to the requested satellite.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
+  rpc AddTle (AddTleRequest) returns (AddTleResponse);
+
+  // Gets the TLE for a satellite.
+  //
+  // The returned TLE will be the one that has the latest epoch known to StellarStation, and is
+  // used when calculating satellite orbits.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `NOT_FOUND` error.
+  rpc GetTle (GetTleRequest) returns (GetTleResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -448,4 +473,32 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telmetry_metadata = 13;
+}
+
+// Request for the 'AddTle' method.
+message AddTleRequest {
+  // The ID of the satellite to add TLE for. The ID can be found on the StellarStation
+  // Console page for the satellite.
+  string satellite_id = 1;
+
+  // The TLE to be added.
+  orbit.Tle tle = 2;
+}
+
+// Response for the `AddTle` method.
+message AddTleResponse {
+  // Currently no payload in the response.
+}
+
+// Request for the 'GetTle' method.
+message GetTleRequest {
+  // The ID of the satellite for which to fetch TLE. The ID can be found on the StellarStation
+  // Console page for the satellite.
+  string satellite_id = 1;
+}
+
+// Response for the 'GetTle' method.
+message GetTleResponse {
+  // The TLE for the given satellite.
+  orbit.Tle tle = 1;
 }
