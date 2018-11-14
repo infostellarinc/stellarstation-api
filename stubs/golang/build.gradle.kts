@@ -99,11 +99,12 @@ tasks {
         }
     }
 
-    register("copyDepsToMockgenGopath", Copy::class) {
+    val copyDepsToMockgenGopath by registering(Copy::class) {
         into("build/goproto/src/")
 
-        println("${System.getProperty("project")}")
-        val goModLines = File("${System.getProperty("user.root")}/stubs/golang/go.mod").readLines()
+        dependsOn(generateProto, installMockGen)
+
+        val goModLines = File("${System.getProperty("user.dir")}/stubs/golang/go.mod").readLines()
         var foundRequire = false
 
         for (line in goModLines) {
@@ -124,6 +125,38 @@ tasks {
                 into(parts[0])
                 exclude("**/testdata/**")
             }
+        }
+    }
+
+    fun createMockgenTask(subpackage : String, interfaceName : String) : org.curioswitch.gradle.golang.tasks.GoTask {
+        return project.tasks.create("runMockgen${interfaceName}", org.curioswitch.gradle.golang.tasks.GoTask::class.java).apply{
+            val outputDir = project.file("build/goproto/src/infostellarinc/grpcapis/mock_${subpackage}")
+            val outputFile = project.file("${outputDir}/${subpackage}.mock.go")
+
+            inputs.dir(project.file("build/goproto/src/stellarstation.com/grpcapis/${subpackage}"))
+            outputs.dir(outputDir)
+
+            dependsOn(copyDepsToMockgenGopath)
+
+            command(project.file("${GOPATH}/bin/mockgen").toString())
+            args("-destination=${outputFile}".toString(), "stellarstation.com/grpcapis/${subpackage}".toString(), interfaceName)
+
+            execCustomizer({
+                environment("GOPATH", file("build/goproto").getAbsolutePath())
+                environment("GO111MODULE", "off")
+            })
+        }
+    }
+
+    val mockgenTasks = arrayOf(
+        createMockgenTask("planservice", "PlanServiceClient"),
+        createMockgenTask("monitorservice", "MonitorServiceClient")
+    )
+
+    withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
+        if (name.startsWith("goBuild") || name == "goTest") {
+            dependsOn(generateProto)
+            dependsOn(mockgenTasks)
         }
     }
 
@@ -151,4 +184,5 @@ tasks {
     named("goTest").configure({
         enabled = false
     })
+
 }
