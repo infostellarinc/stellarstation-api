@@ -3,6 +3,8 @@ module github.com/infostellarinc/go-stellarstation
 require (
 	cloud.google.com/go v0.33.0 // indirect
 	github.com/golang/lint v0.0.0-20181026193005-c67002cb31c3 // indirect
+	github.com/golang/mock v1.1.2-0.20180820161358-600781dde9cc
+	github.com/golang/protobuf v1.2.0
 	github.com/square/goprotowrap v0.0.0-20180504135057-6f414ea4a80c // indirect
 	golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3 // indirect
 	golang.org/x/net v0.0.0-20181113165502-88d92db4c548 // indirect
