@@ -50,7 +50,6 @@ protobuf {
     }
 }
 
-
 gitPublish {
     repoUri.set("git@github.com:infostellarinc/go-stellarstation.git")
     branch.set("master")
@@ -101,6 +100,8 @@ tasks {
 
     val copyDepsToMockgenGopath by registering(Copy::class) {
         into("build/goproto/src/")
+        dirMode = 493 // 755
+        fileMode = 420 // 644
 
         dependsOn(generateProto, installMockGen)
 
@@ -128,35 +129,38 @@ tasks {
         }
     }
 
-    fun createMockgenTask(subpackage : String, interfaceName : String) : org.curioswitch.gradle.golang.tasks.GoTask {
-        return project.tasks.create("runMockgen${interfaceName}", org.curioswitch.gradle.golang.tasks.GoTask::class.java).apply{
-            val outputDir = project.file("build/goproto/src/infostellarinc/grpcapis/mock_${subpackage}")
-            val outputFile = project.file("${outputDir}/${subpackage}.mock.go")
+    val copyBuildedSource by registering(Copy::class) {
+        into("build/goproto/src/github.com/infostellarinc/go-stellarstation")
+        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
+        dirMode = 493 // 755
+        fileMode = 420 // 644
 
-            inputs.dir(project.file("build/goproto/src/stellarstation.com/grpcapis/${subpackage}"))
-            outputs.dir(outputDir)
-
-            dependsOn(copyDepsToMockgenGopath)
-
-            command(project.file("${GOPATH}/bin/mockgen").toString())
-            args("-destination=${outputFile}".toString(), "stellarstation.com/grpcapis/${subpackage}".toString(), interfaceName)
-
-            execCustomizer({
-                environment("GOPATH", file("build/goproto").getAbsolutePath())
-                environment("GO111MODULE", "off")
-            })
-        }
+        dependsOn(generateProto, installMockGen)
     }
 
-    val mockgenTasks = arrayOf(
-        createMockgenTask("planservice", "PlanServiceClient"),
-        createMockgenTask("monitorservice", "MonitorServiceClient")
-    )
+    val runMockgenStellarStationServiceClient by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        val outputDir = project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api/v1")
+        val outputFile = project.file("${outputDir}/stellarstation.mock.go")
+
+        inputs.dir(project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation"))
+        outputs.dir(outputDir)
+
+        dependsOn(copyDepsToMockgenGopath, copyBuildedSource)
+
+        command(project.file("${GOPATH}/bin/mockgen").toString())
+        args("-destination=${outputFile}".toString(), "github.com/infostellarinc/go-stellarstation/api/v1", "StellarStationServiceClient")
+
+        execCustomizer({
+            environment("GOPATH", file("build/goproto").getAbsolutePath())
+            environment("GO111MODULE", "off")
+        })
+
+    }
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
         if (name.startsWith("goBuild") || name == "goTest") {
             dependsOn(generateProto)
-            dependsOn(mockgenTasks)
+            dependsOn(runMockgenStellarStationServiceClient)
         }
     }
 
@@ -184,5 +188,4 @@ tasks {
     named("goTest").configure({
         enabled = false
     })
-
 }
