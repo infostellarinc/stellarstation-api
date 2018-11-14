@@ -99,6 +99,7 @@ tasks {
         }
     }
 
+    // Because mockgen isn't aware of Go modules, we need to prepare a GOPATH for it like this.
     val copyDepsToMockgenGopath by registering(Copy::class) {
         into("build/goproto/src/")
         dirMode = 493 // 755
