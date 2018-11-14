@@ -114,7 +114,7 @@ service StellarStationService {
   // The pass must be scheduled at least one hour in advance of `aos_time` or it will be rejected.
   rpc ReservePass (ReservePassRequest) returns (ReservePassResponse);
 
-  // Sets the TLE for a satellite.
+  // Set TLE for a satellite.
   //
   // If the TLE is accepted, it will be applied when executing upcoming plans, and for pass
   // calculation.
