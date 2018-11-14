@@ -82,6 +82,12 @@ tasks {
         args("install", "github.com/square/goprotowrap/cmd/protowrap")
     }
 
+    val installMockGen by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        dependsOn(named("goDownloadDeps"))
+
+        args("install", "github.com/golang/mock/mockgen")
+    }
+
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
         dependsOn(installProtocGoPlugin, installProtoWrap)
 
@@ -90,6 +96,34 @@ tasks {
             setCommandLine(listOf(protowrapPath.getAbsolutePath(), "--protoc_command=${executable}") + args)
 
             org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
+        }
+    }
+
+    register("copyDepsToMockgenGopath", Copy::class) {
+        into("build/goproto/src/")
+
+        println("${System.getProperty("project")}")
+        val goModLines = File("${System.getProperty("user.root")}/stubs/golang/go.mod").readLines()
+        var foundRequire = false
+
+        for (line in goModLines) {
+            if (!foundRequire && !line.startsWith("require")) {
+                continue
+            }
+
+            if (line.startsWith("require")) {
+                foundRequire = true
+                continue
+            }
+
+            if (line.startsWith(")")) {
+                break
+            }
+            val parts = line.trim().split(" ")
+            from("$GOPATH/pkg/mod/${parts[0]}@${parts[1]}"){
+                into(parts[0])
+                exclude("**/testdata/**")
+            }
         }
     }
 
