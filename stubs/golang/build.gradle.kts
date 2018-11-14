@@ -175,7 +175,7 @@ tasks {
     }
 
     named("gitPublishCopy").configure({
-        dependsOn(generateProto)
+        dependsOn(generateProto, runMockgenStellarStationServiceClient)
     })
 
     named("assemble").configure({
