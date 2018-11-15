@@ -78,8 +78,8 @@ service StellarStationService {
 
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
-  // as it is made available. All telemetry received from the satellite on reserved passes from this
-  // point on will be returned as soon as this method is called. If
+  // as it is made available. All telemetry received from the satellite on reserved passes along
+  // with associated events from this point on will be returned as soon as this method is called. If
   // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
   // stream will be returned as well.
   //
