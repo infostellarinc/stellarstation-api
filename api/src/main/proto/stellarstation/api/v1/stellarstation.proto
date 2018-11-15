@@ -17,6 +17,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/monitoring/monitoring.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
 
 package stellarstation.api.v1;
@@ -77,8 +78,8 @@ service StellarStationService {
 
   // Open a stream to a satellite. The returned stream is bi-directional - it can be used by the
   // client to send commands to the satellite and data received from the satellite will be returned
-  // as it is made available. All telemetry received from the satellite on reserved passes from this
-  // point on will be returned as soon as this method is called. If
+  // as it is made available. All telemetry received from the satellite on reserved passes along
+  // with associated events from this point on will be returned as soon as this method is called. If
   // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
   // stream will be returned as well.
   //
@@ -263,6 +264,29 @@ message Telemetry {
   bytes frame_header = 6;
 }
 
+// A monitoring event that occurred during the execution of the plan. Information about the current
+// configuration of the ground station and state of components is returned to provide information
+// that can help to troubleshoot issues with the plan.
+message PlanMonitoringEvent {
+  // The ID of the plan being monitored.
+  string plan_id = 1;
+
+  // The monitoring information in a `PlanMonitoringEvent`
+  oneof Info {
+    // Information about the current configuration of the ground station when beginning to execute
+    // a plan. This will only be returned once at the beginning of execution. Information that is
+    // provided by the ground station executing the plan will be returned - any fields that are not
+    // supported by the ground station will be left unfilled.
+    monitoring.GroundStationConfiguration ground_station_configuration = 2;
+
+    // Information about the current state of the ground station while executing a plan. This will
+    // be returned periodically during execution of the plan. Information that is provided by the
+    // ground station executing the plan will be returned - any fields that are not supported by
+    // the ground station will be left unfilled.
+    monitoring.GroundStationState ground_station_state = 3;
+  }
+}
+
 // An event that occurred while processing the stream. Only returned if `enable_events` was true
 // in the first `SatelliteStreamRequest` of the stream. A `StreamEvent` will have one of several
 // types of event payloads corresponding to event types. Many of these payloads will be empty,
@@ -285,6 +309,9 @@ message StreamEvent {
     // An event indicating the commands in the request were sent by the ground station through its
     // radio.
     CommandSentFromGroundStation command_sent = 2;
+
+    // An event with monitoring information for a particular executed plan.
+    PlanMonitoringEvent plan_monitoring_event = 3;
   }
 }
 
