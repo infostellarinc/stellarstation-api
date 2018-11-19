@@ -88,8 +88,15 @@ tasks {
         args("install", "github.com/golang/mock/mockgen")
     }
 
+    val copyGoMod by registering(Copy::class) {
+        into("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
+        from("go.mod")
+        from("go.sum")
+    }
+
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
         dependsOn(installProtocGoPlugin, installProtoWrap)
+        finalizedBy(copyGoMod)
 
         execOverride {
             val protowrapPath = project.file("${GOPATH}/bin/protowrap")
