@@ -66,7 +66,7 @@ gitPublish {
         from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api") {
             into("api")
         }
-        from"build/generated/proto/main/github.com/infostellarinc/go-stellarstation/vendor") {
+        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/vendor") {
             into("vendor")
         }
     }
