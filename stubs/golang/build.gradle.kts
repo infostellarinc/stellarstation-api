@@ -58,12 +58,17 @@ gitPublish {
     preserve {
         include("**")
         exclude("api")
+        exclude("vendor")
     }
 
     // what to publish, this is a standard CopySpec
     contents {
-        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api")
-        into("api")
+        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api") {
+            into("api")
+        }
+        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/vendor") {
+            into("vendor")
+        }
     }
 
     commitMessage.set("Refresh API stubs.")
