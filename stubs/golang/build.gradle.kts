@@ -69,6 +69,9 @@ gitPublish {
         from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/vendor") {
             into("vendor")
         }
+        from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation") {
+            include("go.mod", "go.sum")
+        }
     }
 
     commitMessage.set("Refresh API stubs.")
