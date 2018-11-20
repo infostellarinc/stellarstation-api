@@ -158,7 +158,7 @@ tasks {
 
     val runMockgenStellarStationServiceClient by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         val outputDir = project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api/mock_v1")
-        val outputFile = project.file("${outputDir}cu/stellarstation.mock.go")
+        val outputFile = project.file("${outputDir}/stellarstation.mock.go")
 
         inputs.dir(project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation"))
         outputs.dir(outputDir)
