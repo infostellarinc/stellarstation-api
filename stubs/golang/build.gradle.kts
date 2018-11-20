@@ -88,18 +88,19 @@ tasks {
         args("install", "github.com/golang/mock/mockgen")
     }
 
-    val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
-        args("mod", "vendor")
-
-        execCustomizer {
-            workingDir = file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
-        }
-    }
-
     val copyGoMod by registering(Copy::class) {
         into("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
         from("go.mod")
         from("go.sum")
+    }
+
+    val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        args("mod", "vendor")
+        dependsOn(copyGoMod)
+
+        execCustomizer {
+            workingDir = file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
+        }
     }
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
