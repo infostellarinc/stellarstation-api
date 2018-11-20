@@ -120,7 +120,7 @@ tasks {
         dirMode = 493 // 755
         fileMode = 420 // 644
 
-        dependsOn(generateProto, installMockGen)
+        dependsOn(generateProto, installMockGen, runModVendoring)
 
         val goModLines = File("${System.getProperty("user.dir")}/stubs/golang/go.mod").readLines()
         var foundRequire = false
@@ -152,7 +152,7 @@ tasks {
         dirMode = 493 // 755
         fileMode = 420 // 644
 
-        dependsOn(generateProto, installMockGen)
+        dependsOn(generateProto, installMockGen, runModVendoring)
     }
 
     val runMockgenStellarStationServiceClient by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
@@ -178,6 +178,9 @@ tasks {
         if (name.startsWith("goBuild") || name == "goTest") {
             dependsOn(generateProto)
             dependsOn(runMockgenStellarStationServiceClient)
+            execCustomizer({
+                environment("GOFLAGS", "-mod=vendor")
+            })
         }
     }
 
