@@ -90,6 +90,10 @@ tasks {
 
     val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         args("mod", "vendor")
+
+        execCustomizer {
+            workingDir = file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
+        }
     }
 
     val copyGoMod by registering(Copy::class) {
@@ -100,7 +104,7 @@ tasks {
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
         dependsOn(installProtocGoPlugin, installProtoWrap)
-        finalizedBy(copyGoMod)
+        finalizedBy(copyGoMod, runModVendoring)
 
         execOverride {
             val protowrapPath = project.file("${GOPATH}/bin/protowrap")
@@ -153,7 +157,7 @@ tasks {
 
     val runMockgenStellarStationServiceClient by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         val outputDir = project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api/mock_v1")
-        val outputFile = project.file("${outputDir}/stellarstation.mock.go")
+        val outputFile = project.file("${outputDir}cu/stellarstation.mock.go")
 
         inputs.dir(project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation"))
         outputs.dir(outputDir)
@@ -172,7 +176,7 @@ tasks {
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
         if (name.startsWith("goBuild") || name == "goTest") {
-            dependsOn(generateProto, runModVendoring)
+            dependsOn(generateProto)
             dependsOn(runMockgenStellarStationServiceClient)
         }
     }
