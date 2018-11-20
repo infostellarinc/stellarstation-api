@@ -58,6 +58,7 @@ gitPublish {
     preserve {
         include("**")
         exclude("api")
+        exclude("vendor")
     }
 
     // what to publish, this is a standard CopySpec
