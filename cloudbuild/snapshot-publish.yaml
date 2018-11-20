@@ -26,4 +26,4 @@ steps:
     ./gradlew :api:artifactoryPublish :stubs:golang:gitPublishPush -Pbintray.user=$$BINTRAY_USER -Pbintray.key=$$BINTRAY_KEY --stacktrace --no-daemon
   env: ['BINTRAY_USER=istellar-admin']
   secretEnv: ['BINTRAY_KEY']
-  timeout: 60m
+timeout: 60m
