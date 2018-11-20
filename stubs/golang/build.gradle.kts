@@ -88,6 +88,10 @@ tasks {
         args("install", "github.com/golang/mock/mockgen")
     }
 
+    val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+        args("mod", "vendor")
+    }
+
     val copyGoMod by registering(Copy::class) {
         into("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
         from("go.mod")
@@ -168,7 +172,7 @@ tasks {
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
         if (name.startsWith("goBuild") || name == "goTest") {
-            dependsOn(generateProto)
+            dependsOn(generateProto, runModVendoring)
             dependsOn(runMockgenStellarStationServiceClient)
         }
     }
