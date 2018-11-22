@@ -123,6 +123,7 @@ service StellarStationService {
   //
   // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
   // - the TLE cannot be parsed
+  // - the TLE epoch is in the future
   // - the TLE epoch is older than the most recent TLE known to StellarStation
   // - the TLE norad ID does not correspond to the requested satellite.
   //
