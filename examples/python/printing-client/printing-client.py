@@ -33,7 +33,7 @@ SATELLITE_ID = '5'
 def run():
     # Load the private key downloaded from the StellarStation Console.
     credentials = google_auth_jwt.Credentials.from_service_account_file(
-        '../../fakeserver/src/misc/api-key.json',
+        '../../fakeserver/src/main/jib/var/keys/api-key.json',
         audience='https://api.stellarstation.com')
 
     # Setup the gRPC client.
@@ -64,7 +64,6 @@ def generate_request():
 
     while True:
         command_request = stellarstation_pb2.SendSatelliteCommandsRequest(
-            output_framing=0,
             command=[
                 bytes(b'a' * 5000),
                 bytes(b'b' * 5000),
