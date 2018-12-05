@@ -68,7 +68,7 @@ tasks {
 
         doFirst {
             val template = file("src/misc/python/setup.py.tmpl").readText()
-            val filled = template.replaceFirst("\\|API_VERSION\\|", (version as String))
+            val filled = template.replace("|API_VERSION|", (version as String))
             val outDir = "$buildDir/generated/scripts"
             mkdir(outDir)
             val out = file("${outDir}/setup.py")
