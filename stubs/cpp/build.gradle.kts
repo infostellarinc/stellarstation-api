@@ -60,7 +60,7 @@ tasks {
 
         doFirst {
             val template = file("package/conanfile.py.tmpl").readText()
-            val filled = template.replaceFirst("\\|API_VERSION\\|", version.toString())
+            val filled = template.replace("|API_VERSION|", version.toString())
             val outDir = "$buildDir/generated/scripts"
             mkdir(outDir)
             val out = file("${outDir}/conanfile.py")

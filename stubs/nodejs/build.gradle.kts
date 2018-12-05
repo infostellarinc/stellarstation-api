@@ -117,7 +117,7 @@ tasks {
             }
         }
 
-        dependsOn("build")
+        dependsOn("assemble")
         args("publish", "--access=public")
         execOverride {
             environment("NPM_TOKEN", rootProject.findProperty("npm.key"))
