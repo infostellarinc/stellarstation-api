@@ -118,6 +118,18 @@ message Plan {
   // Configuration of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
+
+  // The start time of the plan.
+  //
+  // This value will never be after aos_time. Unlike aos_time, this value is fixed upon plan
+  // creation.
+  google.protobuf.Timestamp start_time = 7;
+
+  // The end time of the plan.
+  //
+  // This value will never be before los_time. Unlike los_time, this value is fixed upon plan
+  // creation.
+  google.protobuf.Timestamp end_time = 8;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set

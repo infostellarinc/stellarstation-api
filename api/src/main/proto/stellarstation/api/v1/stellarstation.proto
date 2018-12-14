@@ -501,6 +501,18 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telmetry_metadata = 13;
+
+  // The start time of the plan.
+  //
+  // This value will never be after aos_time. Unlike aos_time, this value is fixed upon plan
+  // creation.
+  google.protobuf.Timestamp start_time = 14;
+
+  // The end time of the plan.
+  //
+  // This value will never be before los_time. Unlike los_time, this value is fixed upon plan
+  // creation.
+  google.protobuf.Timestamp end_time = 15;
 }
 
 // Request for the 'AddTle' method.
