@@ -502,16 +502,16 @@ message Plan {
   // successfully and data processing is complete.
   repeated TelemetryMetadata telmetry_metadata = 13;
 
-  // The start time of the plan.
+  // The start of the time window reserved for the plan.
   //
-  // This value will never be after aos_time. Unlike aos_time, this value is fixed upon plan
-  // creation.
+  // Unlike aos_time, this timestamp does not change after the plan is reserved. aos_time will
+  // never be before this timestamp.
   google.protobuf.Timestamp start_time = 14;
 
-  // The end time of the plan.
+  // The end of the time window reserved for the plan.
   //
-  // This value will never be before los_time. Unlike los_time, this value is fixed upon plan
-  // creation.
+  // Unlike los_time, this timestamp does not change after the plan is reserved. los_time will
+  // never be after this timestamp.
   google.protobuf.Timestamp end_time = 15;
 }
 

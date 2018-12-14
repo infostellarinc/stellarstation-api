@@ -119,16 +119,18 @@ message Plan {
   // need to configure transmission during the plan to match this device.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
 
-  // The start time of the plan.
+  // The start of the time window reserved for the plan.
   //
-  // This value will never be after aos_time. Unlike aos_time, this value is fixed upon plan
-  // creation.
+  // This timestamp is always before aos_time and should be used by the ground station to prepare
+  // for the upcoming plan. Unlike aos_time, this timestamp does not change after the plan is
+  // reserved.
   google.protobuf.Timestamp start_time = 7;
 
-  // The end time of the plan.
+  // The end of the time window reserved for the plan.
   //
-  // This value will never be before los_time. Unlike los_time, this value is fixed upon plan
-  // creation.
+  // This timestamp is always after los_time and should be used by the ground station to perform
+  // cleanup tasks after executing the plan. Unlike los_time, this timestamp does not change after
+  // the plan is reserved.
   google.protobuf.Timestamp end_time = 8;
 }
 
