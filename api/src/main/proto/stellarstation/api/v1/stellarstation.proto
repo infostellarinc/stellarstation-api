@@ -437,6 +437,8 @@ message TelemetryMetadata {
 }
 
 // A plan, specifying a time range within which a satellite will be communicated with.
+//
+// Next ID: 16
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -468,10 +470,22 @@ message Plan {
   // The status of this plan.
   Status status = 3;
 
+  // The start of the time window reserved for the plan. This value does not change over time.
+  google.protobuf.Timestamp start_time = 14;
+
+  // The end of the time window reserved for the plan. This value does not change over time.
+  google.protobuf.Timestamp end_time = 15;
+
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this plan.
+  //
+  // This value is never before 'start_time'. It may change over time (for example, if updated
+  // TLE becomes available).
   google.protobuf.Timestamp aos_time = 4;
 
   // The time of Loss of Signal (LOS) between the ground station and satellite in this plan.
+  //
+  // This value is never after 'end_time'. It may change over time (for example, if updated
+  // TLE becomes available).
   google.protobuf.Timestamp los_time = 5;
 
   // The latitude, in degrees, of the ground station's location.
@@ -501,18 +515,6 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telmetry_metadata = 13;
-
-  // The start of the time window reserved for the plan.
-  //
-  // Unlike aos_time, this timestamp does not change after the plan is reserved. aos_time will
-  // never be before this timestamp.
-  google.protobuf.Timestamp start_time = 14;
-
-  // The end of the time window reserved for the plan.
-  //
-  // Unlike los_time, this timestamp does not change after the plan is reserved. los_time will
-  // never be after this timestamp.
-  google.protobuf.Timestamp end_time = 15;
 }
 
 // Request for the 'AddTle' method.

@@ -98,6 +98,8 @@ message ListPlansResponse {
 
 // A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
 // during a time range between AOS and LOS, unless explicitly cancelled.
+//
+// Next ID: 9
 message Plan {
   // The ID of this plan.
   string plan_id = 1;
@@ -105,10 +107,28 @@ message Plan {
   // The TLE for the satellite in this plan.
   Tle tle = 2;
 
+  // The start of the time window reserved for the plan.
+  //
+  // This timestamp does not change over time, and is set to allow sufficient time at the start
+  // of a plan to allow the ground station to prepare for plan execution.
+  google.protobuf.Timestamp start_time = 7;
+
+  // The end of the time window reserved for the plan.
+  //
+  // This timestamp does not change over time, and is set to allow sufficient time at the end
+  // of a plan to allow the ground station to perform cleanup tasks after executing the plan.
+  google.protobuf.Timestamp end_time = 8;
+
   // The time of AOS between the ground station and satellite in this plan.
+  //
+  // This timestamp will never be before 'start_time'. If may change over time (for example, if
+  // updated TLE becomes available).
   google.protobuf.Timestamp aos_time = 3;
 
   // The time of LOS between the ground station and satellite in this plan.
+  //
+  // This timestamp will never be after 'end_time'. If may change over time (for example, if
+  // updated TLE becomes available).
   google.protobuf.Timestamp los_time = 4;
 
   // Configuration of the radio device used for downlinking from the satellite. Ground stations will
@@ -118,20 +138,6 @@ message Plan {
   // Configuration of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
-
-  // The start of the time window reserved for the plan.
-  //
-  // This timestamp is always before aos_time and should be used by the ground station to prepare
-  // for the upcoming plan. Unlike aos_time, this timestamp does not change after the plan is
-  // reserved.
-  google.protobuf.Timestamp start_time = 7;
-
-  // The end of the time window reserved for the plan.
-  //
-  // This timestamp is always after los_time and should be used by the ground station to perform
-  // cleanup tasks after executing the plan. Unlike los_time, this timestamp does not change after
-  // the plan is reserved.
-  google.protobuf.Timestamp end_time = 8;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
