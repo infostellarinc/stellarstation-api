@@ -43,6 +43,10 @@ protobuf {
         register("python") {
             outputDir.set(file(packageDir))
         }
+
+        register("grpc_python") {
+            outputDir.set(file(packageDir))
+        }
     }
 }
 
