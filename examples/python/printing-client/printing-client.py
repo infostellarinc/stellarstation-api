@@ -19,13 +19,10 @@ import time
 
 import grpc
 
-from google import auth as google_auth
 from google.auth import jwt as google_auth_jwt
 from google.auth.transport import grpc as google_auth_transport_grpc
 from stellarstation.api.v1 import stellarstation_pb2
 from stellarstation.api.v1 import stellarstation_pb2_grpc
-
-os.environ['GRPC_SSL_CIPHER_SUITES'] = 'ECDHE-RSA-AES128-GCM-SHA256'
 
 SATELLITE_ID = '5'
 
@@ -57,7 +54,6 @@ def run():
 # This generator yields the requests to send on the stream opened by OpenSatelliteStream.
 # The client side of the stream will be closed when this generator returns (in this example, it never returns).
 def generate_request():
-
     # Send the first request to activate the stream. Telemetry will start
     # to be received at this point.
     yield stellarstation_pb2.SatelliteStreamRequest(satellite_id=SATELLITE_ID)
