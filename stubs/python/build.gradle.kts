@@ -101,8 +101,10 @@ tasks {
             }
 
             file("$packageDir/stellarstation/__init__.py").writeText("name = 'stellarstation'")
-            file("$packageDir/stellarstation/api/__init__.py").writeText("")
-            file("$packageDir/stellarstation/api/v1/__init__.py").writeText("")
+
+            file("$packageDir/stellarstation/api").walk()
+                    .filter { it.isDirectory }
+                    .forEach { file("$it/__init__.py").writeText("") }
         }
     }
 
