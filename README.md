@@ -106,12 +106,12 @@ authentication of an API client.
 // Load the private key downloaded from the StellarStation Console.
 ServiceAccountJwtAccessCredentials credentials =
     ServiceAccountJwtAccessCredentials.fromStream(
-        Resources.getResource("api-key.json").openStream(),
+        Resources.getResource("stellarstation-private-key.json").openStream(),
         URI.create("https://api.stellarstation.com"));
 
 // Setup the gRPC client.
 ManagedChannel channel =
-    ManagedChannelBuilder.forAddress("localhost", 8081)
+    ManagedChannelBuilder.forAddress("api.stellarstation.com", 443)
         .build();
 StellarStationServiceStub client =
     StellarStationServiceGrpc.newStub(channel)
@@ -124,15 +124,14 @@ StellarStationServiceStub client =
 ```python
 # Load the private key downloaded from the StellarStation Console.
 credentials = google_auth_jwt.Credentials.from_service_account_file(
-  'api-key.json',
+  'stellarstation-private-key.json',
   audience='https://api.stellarstation.com')
 
 # Setup the gRPC client.
 jwt_creds = google_auth_jwt.OnDemandCredentials.from_signing_credentials(
   credentials)
-channel_credential = grpc.ssl_channel_credentials(open('tls.crt', 'br').read())
 channel = google_auth_transport_grpc.secure_authorized_channel(
-  jwt_creds, None, 'localhost:8080', channel_credential)
+  jwt_creds, None, 'api.stellarstation.com:443')
 client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
 ```
 
