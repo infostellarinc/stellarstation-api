@@ -106,12 +106,12 @@ authentication of an API client.
 // Load the private key downloaded from the StellarStation Console.
 ServiceAccountJwtAccessCredentials credentials =
     ServiceAccountJwtAccessCredentials.fromStream(
-        Resources.getResource("api-key.json").openStream(),
+        Resources.getResource("stellarstation-private-key.json").openStream(),
         URI.create("https://api.stellarstation.com"));
 
 // Setup the gRPC client.
 ManagedChannel channel =
-    ManagedChannelBuilder.forAddress("localhost", 8081)
+    ManagedChannelBuilder.forAddress("api.stellarstation.com", 443)
         .build();
 StellarStationServiceStub client =
     StellarStationServiceGrpc.newStub(channel)
