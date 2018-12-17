@@ -128,3 +128,6 @@ typings/
 # Serverless directories
 .serverless
 
+# venv by PyCharm
+venv/
+
