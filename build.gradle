@@ -22,17 +22,8 @@ plugins {
 
 conda {
     'miniconda2-build' {
-        packages.add('cmake')
-        pythonPackages.addAll('conan', 'grpcio-tools', 'twine')
-    }
-}
-
-tools {
-    node {
-        version.set('10.13.0')
-        // TODO(rag): Make the node build work on other OS's too by fixing the nodejs
-        // setup.
-        pathSubDirs.set(['node-v10.13.0-linux-x64/bin'])
+        packages.addAll('cmake', 'pandoc')
+        pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'protoc-docs-plugin', 'twine')
     }
 }
 

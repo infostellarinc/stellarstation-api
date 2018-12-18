@@ -48,8 +48,6 @@ message RadioDeviceConfiguration {
 // A communication protocol used with a radio device. These must contain all the parameters
 // needed to configure the device for use either in transmission or reception.
 message CommunicationProtocol {
-  // The type of framing used for communication on the device. If `bitstream`, the device is only
-  // demodulating / modulating without applying any higher-level framing (i.e., packeting) protocol.
   oneof Framing {
     // AX.25 protocol settings.
     AX25 ax25 = 1;
