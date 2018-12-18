@@ -1,0 +1,12 @@
+{
+  "name": "@infostellarinc/developer-portal",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "echo 'Just a placeholder for now'",
+    "deploy-release": "firebase deploy"
+  },
+  "devDependencies": {
+    "firebase-tools": "6.1.2"
+  }
+}

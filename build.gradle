@@ -126,3 +126,5 @@ task publishStubs {
     dependsOn ':stubs:nodejs:publish'
     dependsOn ':stubs:python:uploadPythonPackage'
 }
+
+tasks.checkNodeResolutions.enabled = false
