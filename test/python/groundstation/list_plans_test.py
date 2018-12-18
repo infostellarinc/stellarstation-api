@@ -26,10 +26,11 @@ GS_ID = '27'
 
 class TestStringMethods(unittest.TestCase):
     def setUp(self):
-        factory = StubFactory()
-        self.client = factory.get_gs_service_stub()
+        self.factory = StubFactory()
 
     def test_list_plans(self):
+        client = self.factory.get_gs_service_stub()
+
         fromTime = Timestamp(seconds=int(datetime(2018, 12, 1, 0, 0).timestamp()))
         toTime = Timestamp(seconds=int(datetime(2018, 12, 31, 0, 0).timestamp()))
 
@@ -38,7 +39,7 @@ class TestStringMethods(unittest.TestCase):
             aos_after=fromTime,
             aos_before=toTime
         )
-        result = self.client.ListPlans(request)
+        result = client.ListPlans(request)
         self.assertIsNotNone(result)
 
 
