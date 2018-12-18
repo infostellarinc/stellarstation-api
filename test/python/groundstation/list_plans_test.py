@@ -31,13 +31,13 @@ class TestStringMethods(unittest.TestCase):
     def test_list_plans(self):
         client = self.factory.get_gs_service_stub()
 
-        fromTime = Timestamp(seconds=int(datetime(2018, 12, 1, 0, 0).timestamp()))
-        toTime = Timestamp(seconds=int(datetime(2018, 12, 31, 0, 0).timestamp()))
+        from_time = Timestamp(seconds=int(datetime(2018, 12, 1, 0, 0).timestamp()))
+        to_time = Timestamp(seconds=int(datetime(2018, 12, 31, 0, 0).timestamp()))
 
         request = groundstation_pb2.ListPlansRequest(
             ground_station_id=GS_ID,
-            aos_after=fromTime,
-            aos_before=toTime
+            aos_after=from_time,
+            aos_before=to_time
         )
         result = client.ListPlans(request)
         self.assertIsNotNone(result)
