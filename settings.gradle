@@ -38,6 +38,7 @@ pluginManagement {
 include ':api'
 include ':examples:fakeserver'
 include ':examples:java:printing-client'
+include ':portal'
 include ':stubs:cpp'
 include ':stubs:golang'
 include ':stubs:nodejs'

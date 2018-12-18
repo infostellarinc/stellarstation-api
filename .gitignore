@@ -234,3 +234,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.firebase
