@@ -24,7 +24,7 @@ from conn.factory import StubFactory
 GS_ID = '27'
 
 
-class TestStringMethods(unittest.TestCase):
+class TestListPlans(unittest.TestCase):
     def setUp(self):
         self.factory = StubFactory()
 
