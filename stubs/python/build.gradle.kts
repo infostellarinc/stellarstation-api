@@ -20,7 +20,7 @@ plugins {
     id("io.spring.dependency-management")
 }
 
-val packageDir = "build/publications/python"
+val packageDir = file("build/publications/python").getAbsolutePath()
 
 repositories {
     jcenter()
@@ -45,6 +45,10 @@ protobuf {
         }
 
         register("grpc_python") {
+            outputDir.set(file(packageDir))
+        }
+
+        register("pydocstring") {
             outputDir.set(file(packageDir))
         }
     }
@@ -78,12 +82,19 @@ tasks {
             val out = file("${outDir}/setup.py")
             out.writeText(filled)
             out.setExecutable(true)
+
+            // pydocstring does not work with a default ASCII encoding so we need to force UTF-8.
+            file("$buildDir/generated/sitecustomize.py").writeText("import sys; sys.setdefaultencoding('utf8')")
         }
     }
 
-    val generateProto = named("generateProto")
+    val generateProto = named<org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask>("generateProto")
     generateProto.configure {
         dependsOn(fillRunProtocScript, prepareSetupPy, ":toolsSetupMiniconda2Build")
+
+        execOverride {
+            environment("PYTHONPATH", "$buildDir/generated")
+        }
     }
 
     val setupPythonPackage by registering() {
@@ -109,6 +120,14 @@ tasks {
             file("$packageDir/stellarstation/api").walk()
                     .filter { it.isDirectory }
                     .forEach { file("$it/__init__.py").writeText("") }
+
+            // pydocstring puts non-ASCII characters into the files, breaking Python 2 compatibility.
+            file("$packageDir/stellarstation").walk()
+                    .filter { it.name.endsWith(".py") }
+                    .forEach {
+                        val fileContent = "# -*- coding: utf-8 -*-\n" + it.readText()
+                        it.writeText(fileContent)
+                    }
         }
     }
 
@@ -142,6 +161,24 @@ tasks {
 
         onlyIf {
             !(version as String).endsWith("SNAPSHOT")
+        }
+    }
+
+    val generateDocs by registering() {
+        dependsOn(buildPythonPackage)
+
+        doFirst {
+            exec {
+                commandLine("pdoc --html stellarstation --overwrite --template-dir=${file("src/misc/templates").getAbsolutePath()}")
+                mkdir("$buildDir/docs")
+                workingDir("$buildDir/docs")
+
+                // pdoc does not work with a default ASCII encoding so we need to force UTF-8.
+                file("$packageDir/build/lib/sitecustomize.py").writeText("import sys; sys.setdefaultencoding('utf8')")
+                environment("PYTHONPATH", "$packageDir/build/lib")
+
+                org.curioswitch.gradle.conda.exec.CondaExecUtil.condaExec(this, project)
+            }
         }
     }
 
