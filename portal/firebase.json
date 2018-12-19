@@ -1,8 +1,6 @@
 {
   "hosting": {
     "public": "build/site",
-    "cleanUrls": true,
-    "trailingSlash": true,
     "headers": [
       {
         "source": "/",
