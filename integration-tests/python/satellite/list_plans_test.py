@@ -20,15 +20,14 @@ from stellarstation.api.v1 import stellarstation_pb2
 SATELLITE_ID = '98'
 
 
-class TestListPlans(object):
-    def test_list_plans(self, stub_factory):
-        client = stub_factory.get_satellite_service_stub()
+def test_list_plans(stub_factory):
+    client = stub_factory.get_satellite_service_stub()
 
-        request = stellarstation_pb2.ListPlansRequest()
-        request.satellite_id = SATELLITE_ID
-        request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
-        request.aos_before.FromDatetime(datetime(2018, 12, 15, 0, 0))
+    request = stellarstation_pb2.ListPlansRequest()
+    request.satellite_id = SATELLITE_ID
+    request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
+    request.aos_before.FromDatetime(datetime(2018, 12, 15, 0, 0))
 
-        result = client.ListPlans(request)
-        assert result
-        assert len(result.plan)
+    result = client.ListPlans(request)
+    assert result
+    assert len(result.plan)

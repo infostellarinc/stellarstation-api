@@ -18,15 +18,14 @@ from stellarstation.api.v1 import stellarstation_pb2
 SATELLITE_ID = '98'
 
 
-class TestListPlans(object):
-    def test_list_plans(self, stub_factory):
-        client = stub_factory.get_satellite_service_stub()
+def test_list_plans(stub_factory):
+    client = stub_factory.get_satellite_service_stub()
 
-        request = stellarstation_pb2.GetTleRequest()
-        request.satellite_id = SATELLITE_ID
+    request = stellarstation_pb2.GetTleRequest()
+    request.satellite_id = SATELLITE_ID
 
-        result = client.GetTle(request)
-        assert result
-        assert result.tle
-        assert result.tle.line_1
-        assert result.tle.line_2
+    result = client.GetTle(request)
+    assert result
+    assert result.tle
+    assert result.tle.line_1
+    assert result.tle.line_2

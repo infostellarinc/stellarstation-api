@@ -18,17 +18,16 @@ from stellarstation.api.v1 import stellarstation_pb2
 SATELLITE_ID = '98'
 
 
-class TestListUpcomingAvailablePasses(object):
-    def test_list_passes(self, stub_factory):
-        client = stub_factory.get_satellite_service_stub()
+def test_list_passes(stub_factory):
+    client = stub_factory.get_satellite_service_stub()
 
-        request = stellarstation_pb2.ListUpcomingAvailablePassesRequest()
-        request.satellite_id = SATELLITE_ID
+    request = stellarstation_pb2.ListUpcomingAvailablePassesRequest()
+    request.satellite_id = SATELLITE_ID
 
-        result = client.ListUpcomingAvailablePasses(request)
-        assert result
+    result = client.ListUpcomingAvailablePasses(request)
+    assert result
 
-        # We need to use getattr to get the array of passes from the result instead of "result.pass"
-        # since "pass" is reserved word in Python.
-        passes = getattr(result, 'pass')
-        assert len(passes) > 0
+    # We need to use getattr to get the array of passes from the result instead of "result.pass"
+    # since "pass" is reserved word in Python.
+    passes = getattr(result, 'pass')
+    assert len(passes) > 0

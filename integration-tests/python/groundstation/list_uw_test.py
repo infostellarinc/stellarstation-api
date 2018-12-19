@@ -20,15 +20,14 @@ from stellarstation.api.v1.groundstation import groundstation_pb2
 GS_ID = '27'
 
 
-class TestListUnavailabilityWindows(object):
-    def test_list_uw(self, stub_factory):
-        client = stub_factory.get_gs_service_stub()
+def test_list_uw(stub_factory):
+    client = stub_factory.get_gs_service_stub()
 
-        request = groundstation_pb2.ListUnavailabilityWindowsRequest()
-        request.ground_station_id = GS_ID
-        request.start_time.FromDatetime(datetime(2018, 12, 1, 0, 0))
-        request.end_time.FromDatetime(datetime(2018, 12, 31, 0, 0))
+    request = groundstation_pb2.ListUnavailabilityWindowsRequest()
+    request.ground_station_id = GS_ID
+    request.start_time.FromDatetime(datetime(2018, 12, 1, 0, 0))
+    request.end_time.FromDatetime(datetime(2018, 12, 31, 0, 0))
 
-        result = client.ListUnavailabilityWindows(request)
-        assert result
-        assert len(result.window) > 0
+    result = client.ListUnavailabilityWindows(request)
+    assert result
+    assert len(result.window) > 0

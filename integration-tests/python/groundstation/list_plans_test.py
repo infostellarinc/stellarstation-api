@@ -20,15 +20,14 @@ from stellarstation.api.v1.groundstation import groundstation_pb2
 GS_ID = '27'
 
 
-class TestListPlans(object):
-    def test_list_plans(self, stub_factory):
-        client = stub_factory.get_gs_service_stub()
+def test_list_plans(stub_factory):
+    client = stub_factory.get_gs_service_stub()
 
-        request = groundstation_pb2.ListPlansRequest()
-        request.ground_station_id = GS_ID
-        request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
-        request.aos_before.FromDatetime(datetime(2018, 12, 31, 0, 0))
+    request = groundstation_pb2.ListPlansRequest()
+    request.ground_station_id = GS_ID
+    request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
+    request.aos_before.FromDatetime(datetime(2018, 12, 31, 0, 0))
 
-        result = client.ListPlans(request)
-        assert result
-        assert len(result.plan) > 0
+    result = client.ListPlans(request)
+    assert result
+    assert len(result.plan) > 0
