@@ -15,7 +15,6 @@
 
 from datetime import datetime
 
-from google.protobuf.timestamp_pb2 import Timestamp
 from stellarstation.api.v1.groundstation import groundstation_pb2
 
 GS_ID = '27'
@@ -25,14 +24,11 @@ class TestListPlans(object):
     def test_list_plans(self, stub_factory):
         client = stub_factory.get_gs_service_stub()
 
-        from_time = Timestamp(seconds=int(datetime(2018, 12, 1, 0, 0).timestamp()))
-        to_time = Timestamp(seconds=int(datetime(2018, 12, 31, 0, 0).timestamp()))
+        request = groundstation_pb2.ListPlansRequest()
+        request.ground_station_id = GS_ID
+        request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
+        request.aos_before.FromDatetime(datetime(2018, 12, 31, 0, 0))
 
-        request = groundstation_pb2.ListPlansRequest(
-            ground_station_id=GS_ID,
-            aos_after=from_time,
-            aos_before=to_time
-        )
         result = client.ListPlans(request)
         assert result
         assert len(result.plan) > 0
