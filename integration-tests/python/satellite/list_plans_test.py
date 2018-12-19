@@ -11,23 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The integration tests for ListPlans API in GroundStationService."""
+"""The integration tests for ListPlans API in StellarStationService."""
 
 from datetime import datetime
 
-from stellarstation.api.v1.groundstation import groundstation_pb2
+from stellarstation.api.v1 import stellarstation_pb2
 
-GS_ID = '27'
+SATELLITE_ID = '98'
 
 
 def test_list_plans(stub_factory):
-    client = stub_factory.get_gs_service_stub()
+    client = stub_factory.get_satellite_service_stub()
 
-    request = groundstation_pb2.ListPlansRequest()
-    request.ground_station_id = GS_ID
+    request = stellarstation_pb2.ListPlansRequest()
+    request.satellite_id = SATELLITE_ID
     request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
-    request.aos_before.FromDatetime(datetime(2018, 12, 31, 0, 0))
+    request.aos_before.FromDatetime(datetime(2018, 12, 15, 0, 0))
 
     result = client.ListPlans(request)
     assert result
-    assert len(result.plan) > 0
+    assert len(result.plan)
