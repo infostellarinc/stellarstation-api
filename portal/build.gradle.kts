@@ -40,11 +40,19 @@ web {
 
 tasks {
     val mergePortal by registering(Copy::class) {
-        dependsOn(":stubs:python:generateDocs", "buildWeb")
+        dependsOn(":api:javadoc", ":stubs:docs:generateProto", ":stubs:python:generateDocs", "buildWeb")
 
         into("build/site")
 
         from("build/web")
+
+        from ("${project(":api").buildDir}/docs/javadoc") {
+            into("java/apidocs")
+        }
+
+        from("${project(":stubs:docs").buildDir}/apidocs") {
+            into("proto/apidocs")
+        }
 
         from("${project(":stubs:python").buildDir}/docs/stellarstation") {
             into("python/apidocs")
