@@ -14,22 +14,16 @@
 """The integration tests for ListPlans API in GroundStationService."""
 
 from datetime import datetime
-import unittest
 
 from google.protobuf.timestamp_pb2 import Timestamp
 from stellarstation.api.v1.groundstation import groundstation_pb2
 
-from conn.factory import StubFactory
-
 GS_ID = '27'
 
 
-class TestListPlans(unittest.TestCase):
-    def setUp(self):
-        self.factory = StubFactory()
-
-    def test_list_plans(self):
-        client = self.factory.get_gs_service_stub()
+class TestListPlans(object):
+    def test_list_plans(self, stub_factory):
+        client = stub_factory.get_gs_service_stub()
 
         from_time = Timestamp(seconds=int(datetime(2018, 12, 1, 0, 0).timestamp()))
         to_time = Timestamp(seconds=int(datetime(2018, 12, 31, 0, 0).timestamp()))
@@ -40,8 +34,5 @@ class TestListPlans(unittest.TestCase):
             aos_before=to_time
         )
         result = client.ListPlans(request)
-        self.assertIsNotNone(result)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert result
+        assert len(result.plan) > 0

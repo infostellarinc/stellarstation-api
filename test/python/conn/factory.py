@@ -17,8 +17,8 @@ import os
 
 from google.auth import jwt as google_auth_jwt
 from google.auth.transport import grpc as google_auth_transport_grpc
-from stellarstation.api.v1.groundstation import groundstation_pb2_grpc
 from stellarstation.api.v1 import stellarstation_pb2_grpc
+from stellarstation.api.v1.groundstation import groundstation_pb2_grpc
 
 # The file of StellarStation API key. The private key downloaded from the StellarStation Console.
 ENV_API_KEY_NAME = "STELLARSTATION_API_KEY"
