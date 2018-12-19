@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The test for gRPC stubs for StellarStation API."""
+"""The integration-tests for gRPC stubs for StellarStation API."""
 
 
 def test_satellite_service_stub(stub_factory):
