@@ -159,6 +159,23 @@ message UnavailabilityWindow {
 
   // End time of the unavailability window.
   google.protobuf.Timestamp end_time = 3;
+
+  // Indicates whether this window is part of a recurring set.
+  enum RecurringPattern {
+    // This is a one-off window that does not recur.
+    NONE = 0;
+
+    // The window recurs daily at the same time.
+    DAILY = 3;
+
+    // The window recurs weekly on the same day.
+    WEEKLY = 1;
+  }
+
+  // Details of the recurrence pattern.
+  //
+  // Note that 'window_id' is the same for all instances of a recurring window.
+  RecurringPattern recurring_pattern = 4;
 }
 
 // A request for a list of unavailability windows for the specified ground station that
