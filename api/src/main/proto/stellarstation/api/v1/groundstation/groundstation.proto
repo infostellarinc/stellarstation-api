@@ -166,10 +166,10 @@ message UnavailabilityWindow {
     NONE = 0;
 
     // The window recurs daily at the same time.
-    DAILY = 3;
+    DAILY = 1;
 
     // The window recurs weekly on the same day.
-    WEEKLY = 1;
+    WEEKLY = 2;
   }
 
   // Details of the recurrence pattern.
