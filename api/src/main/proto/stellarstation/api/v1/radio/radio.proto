@@ -51,11 +51,88 @@ message CommunicationProtocol {
   oneof Framing {
     // AX.25 protocol settings.
     AX25 ax25 = 1;
+
+    // CCSDS framing settings.
+    CCSDS ccsds = 2;
+
+    // Bit stream framing settings.
+    BitStream bit_stream = 3;
   }
 }
 
-// Communication of a stream of bits with no framing defined.
+// CCSDS framing https://public.ccsds.org/Pubs/131x0b3e1.pdf
+// It allows for a few common variations satellites use such
+// as setting a custom synchronization word, inverting the
+// convolutional coding polynomials, etc. The sequence of
+// error-correcting codes will be applied as they are defined
+// in the CCSDS standard.
+message CCSDS {
+  SynchronizationParams synchronization_word = 1;
+
+  message ConvolutionalCodingParams {
+    bool enabled = 1;
+
+    bool g1_inverted = 2;
+
+    bool g2_inverted = 3;
+
+    enum Puncturing {
+      OFF = 0;
+
+      PUNCTURE_2_3 = 1;
+
+      PUNCTURE_3_4 = 2;
+
+      PUNCTURE_4_5 = 3;
+
+      PUNCTURE_5_6 = 4;
+
+      PUNCTURE_6_7 = 5;
+
+      PUNCTURE_7_8 = 6;
+    }
+
+    Puncturing puncturing = 4;
+  }
+
+  ConvolutionalCodingParams convolutional_coding_params = 2;
+
+  message ScramblingParams {
+    bool enabled = 1;
+  }
+
+  ScramblingParams scrambling_params = 3;
+
+  message ReedSolomonParams {
+    bool enabled = 1;
+
+    enum BlockLengthType {
+      RS_223_255 = 0;
+
+      RS_239_255 = 1;
+    }
+  }
+
+  ReedSolomonParams reed_solomon_params = 4;
+}
+
+// Bit stream for satellites that don't conform to a particular
+// standard. Usually, only a synchronization word and expected
+// packet length can be set.
 message BitStream {
+  SynchronizationParams synchronization_word = 1;
+}
+
+// SynchronizationParams contains parameters for frame
+// synchronization.
+message SynchronizationParams {
+  bool disabled = 1;
+
+  // The actual bytes of the synchronization word.
+  bytes synchronization_word = 2;
+
+  // The length in bits of the synchronization word.
+  uint32 length_bits = 3;
 }
 
 // PACKET communication based on AX.25. https://www.sigidwiki.com/wiki/PACKET.
