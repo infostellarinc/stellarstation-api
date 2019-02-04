@@ -163,7 +163,9 @@ message Bitstream {
 // SynchronizationParams contains parameters for frame
 // synchronization.
 message SynchronizationParams {
-  // The actual bytes of the synchronization word.
+  // The actual bytes of the synchronization word. Least significant bit aligned
+  // E.g.
+  // 15-bit sync word of 0x7fff should be represented as 0111 1111 1111 1111 or [0x7f, 0xff]
   bytes synchronization_word = 2;
 
   // The length in bits of the synchronization word.
