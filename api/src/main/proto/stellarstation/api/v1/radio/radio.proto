@@ -67,11 +67,20 @@ message CommunicationProtocol {
 //   G1 = 1111001
 //   G2 = 1011011
 message CCSDSConvolutionalCodingParams {
-  // Whether or not the G1 polynomial is inverted
-  bool g1_inverted = 2;
+  // Polynomial inversion
+  enum PolynomialInversion {
+    // CCSDS with normal phase rotation
+    G1_G2 = 0;
 
-  // Whether or not the G2 polynomial is inverted
-  bool g2_inverted = 3;
+    // CCSDS with inverted phase rotation
+    G1_G2_INVERTED = 1;
+
+    G2_INVERTED_G1 = 2;
+
+    G2_G1 = 3;
+  }
+
+  PolynomialInversion polynomial_inversion = 1;
 
   // Enum describing different rates for puncturing
   enum Puncturing {
@@ -98,7 +107,7 @@ message CCSDSConvolutionalCodingParams {
   }
 
   // Optional puncturing for convolutional code
-  Puncturing puncturing = 4;
+  Puncturing puncturing = 2;
 }
 
 // CCSDS-specific scrambling parameters.
@@ -118,7 +127,7 @@ message CCSDSReedSolomonParams {
     RS_239_255 = 1;
   }
 
-  BlockLengthType block_length_type = 2;
+  BlockLengthType block_length_type = 1;
 }
 
 // https://public.ccsds.org/Pubs/131x0b3e1.pdf
@@ -142,8 +151,11 @@ message CCSDS {
   // Reed-Solomon parameters. Disabled if unset.
   CCSDSReedSolomonParams reed_solomon_params = 4;
 
+  // Frame length in bytes
+  uint32 frame_length_bytes = 5;
+
   // Line Coding used.
-  LineCoding line_coding = 5;
+  LineCoding line_coding = 6;
 }
 
 // Bitstream for satellites that don't conform to a particular
@@ -166,10 +178,10 @@ message SynchronizationParams {
   // The actual bytes of the synchronization word. Least significant bit aligned
   // E.g.
   // 15-bit sync word of 0x7fff should be represented as 0111 1111 1111 1111 or [0x7f, 0xff]
-  bytes synchronization_word = 2;
+  bytes synchronization_word = 1;
 
   // The length in bits of the synchronization word.
-  uint32 length_bits = 3;
+  uint32 length_bits = 2;
 }
 
 // PACKET communication based on AX.25. https://www.sigidwiki.com/wiki/PACKET.
