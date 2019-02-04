@@ -68,9 +68,9 @@ message CommunicationProtocol {
 // in the CCSDS standard.
 message CCSDS {
   // Synchronization word parameters. Although CCSDS defines
-  // a particular synchronization word, we let the user select
-  // a custom one.
-  SynchronizationParams synchronization_word = 1;
+  // a particular synchronization word, this API lets the user
+  // select a custom one.
+  SynchronizationParams synchronization_params = 1;
 
   // CCSDS-specific convolutional coding parameters.
   // Code rate (r): 1/2
@@ -144,6 +144,8 @@ message CCSDS {
       // (255, 239, 8) RS code
       RS_239_255 = 1;
     }
+
+    BlockLengthType block_length_type = 2;
   }
 
   // Reed-Solomon parameters
@@ -154,7 +156,7 @@ message CCSDS {
 // standard. Usually, only a synchronization word and expected
 // packet length can be set.
 message BitStream {
-  SynchronizationParams synchronization_word = 1;
+  SynchronizationParams synchronization_params = 1;
 }
 
 // SynchronizationParams contains parameters for frame
