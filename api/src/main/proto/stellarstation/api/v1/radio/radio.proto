@@ -55,7 +55,7 @@ message CommunicationProtocol {
     // CCSDS framing settings.
     CCSDS ccsds = 2;
 
-    // Bit stream framing settings.
+    // Bitstream framing settings.
     Bitstream bit_stream = 3;
   }
 }
