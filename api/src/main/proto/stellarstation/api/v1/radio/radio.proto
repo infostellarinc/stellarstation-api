@@ -141,6 +141,9 @@ message CCSDS {
 
   // Reed-Solomon parameters. Disabled if unset.
   CCSDSReedSolomonParams reed_solomon_params = 4;
+
+  // Line Coding used.
+  LineCoding line_coding = 5;
 }
 
 // Bitstream for satellites that don't conform to a particular
@@ -152,6 +155,9 @@ message Bitstream {
 
   // Frame length in bytes
   uint32 frame_length_bytes = 2;
+
+  // Line Coding used.
+  LineCoding line_coding = 3;
 }
 
 // SynchronizationParams contains parameters for frame
