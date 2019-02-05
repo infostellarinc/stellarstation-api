@@ -52,7 +52,7 @@ message CommunicationProtocol {
     // AX.25 protocol settings.
     AX25 ax25 = 1;
 
-    // CCSDS framing settings.
+    // CCSDS transfer frame settings.
     CCSDSTransferFrame ccsds = 2;
 
     // Bitstream framing settings.
@@ -132,14 +132,14 @@ message CCSDSReedSolomonParams {
 
 // https://public.ccsds.org/Pubs/131x0b3e1.pdf
 //
-// CCSDS framing allows for a few common variations satellites use such as setting a
+// CCSDS transfer frames allow for a few common variations satellites use such as setting a
 // custom synchronization word, inverting the convolutional coding polynomials,
 // etc. The sequence of error-correcting codes will be applied as they are
 // defined in the CCSDS standard.
 message CCSDSTransferFrame {
   // Synchronization word parameters. If unset, synchronization will be enabled
-  // using the default CCSDS standard synchronization word as in 9.3.5 (Page 9-3)
-  // in the specification.
+  // using the default CCSDS transfer frame standard synchronization word as in
+  // 9.3.5 (Page 9-3) in the specification.
   SynchronizationParams synchronization_params = 1;
 
   // Convolutional coding parameters. Disabled if unset.
