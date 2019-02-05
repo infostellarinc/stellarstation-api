@@ -67,46 +67,48 @@ message CommunicationProtocol {
 //   G1 = 1111001
 //   G2 = 1011011
 message CCSDSConvolutionalCodingParams {
-  // Polynomial inversion
+  // Polynomial inversion.
   enum PolynomialInversion {
-    // CCSDS with normal phase rotation
+    // CCSDS transfer frame with normal phase rotation.
     G1_G2 = 0;
 
-    // CCSDS with inverted phase rotation
+    // CCSDS transfer frame with inverted phase rotation.
     G1_G2_INVERTED = 1;
 
+    // G2-inverted G1.
     G2_INVERTED_G1 = 2;
 
+    // G2-G1.
     G2_G1 = 3;
   }
 
   PolynomialInversion polynomial_inversion = 1;
 
-  // Enum describing different rates for puncturing
+  // Enum describing different rates for puncturing.
   enum Puncturing {
-    // Puncturing unused
+    // No puncturing.
     OFF = 0;
 
-    // Puncturing rate 2/3
+    // Puncturing rate 2/3.
     PUNCTURE_2_3 = 1;
 
-    // Puncturing rate 3/4
+    // Puncturing rate 3/4.
     PUNCTURE_3_4 = 2;
 
-    // Puncturing rate 4/5
+    // Puncturing rate 4/5.
     PUNCTURE_4_5 = 3;
 
-    // Puncturing rate 5/6
+    // Puncturing rate 5/6.
     PUNCTURE_5_6 = 4;
 
-    // Puncturing rate 6/7
+    // Puncturing rate 6/7.
     PUNCTURE_6_7 = 5;
 
-    // Puncturing rate 7/8
+    // Puncturing rate 7/8.
     PUNCTURE_7_8 = 6;
   }
 
-  // Optional puncturing for convolutional code
+  // Optional puncturing for convolutional code.
   Puncturing puncturing = 2;
 }
 
@@ -116,17 +118,18 @@ message CCSDSConvolutionalCodingParams {
 message CCSDSScramblingParams {
 }
 
-// CCSDS-specific Reed-Solomon parameters
+// CCSDS-specific Reed-Solomon parameters.
 message CCSDSReedSolomonParams {
-  // BlockLengthType
+  // Enum defining RS Code block length.
   enum BlockLengthType {
-    // (255, 223, 16) RS code
+    // (255, 223, 16) RS code.
     RS_223_255 = 0;
 
-    // (255, 239, 8) RS code
+    // (255, 239, 8) RS code.
     RS_239_255 = 1;
   }
 
+  // Block length type for RS code.
   BlockLengthType block_length_type = 1;
 }
 
@@ -142,38 +145,36 @@ message CCSDSTransferFrame {
   // 9.3.5 (Page 9-3) in the specification.
   SynchronizationParams synchronization_params = 1;
 
-  // Convolutional coding parameters. Disabled if unset.
+  // Convolutional coding parameters. If unset, convolutional coding is disabled.
   CCSDSConvolutionalCodingParams convolutional_coding_params = 2;
 
-  // Scrambling parameters. Disabled if unset.
+  // Scrambling parameters. If unset, scrambling is disabled.
   CCSDSScramblingParams scrambling_params = 3;
 
-  // Reed-Solomon parameters. Disabled if unset.
+  // Reed-Solomon parameters. If unset, Reed-Solomon is disabled.
   CCSDSReedSolomonParams reed_solomon_params = 4;
 
-  // Frame length in bytes
+  // Frame length, in bytes.
   uint32 frame_length_bytes = 5;
 
-  // Line Coding used.
+  // Line coding used.
   LineCoding line_coding = 6;
 }
 
-// Bitstream for satellites that don't conform to a particular
-// standard. Usually, only a synchronization word and expected
-// frame length can be set.
+// Framing for satellites that don't conform to a particular standard. Usually, only
+// a synchronization word and expected frame length can be set.
 message Bitstream {
-  // Synchronization word parameters. Disabled if unset.
+  // Synchronization word parameters. If unset, synchronization is disabled.
   SynchronizationParams synchronization_params = 1;
 
-  // Frame length in bytes
+  // Frame length, in bytes.
   uint32 frame_length_bytes = 2;
 
-  // Line Coding used.
+  // Line coding used.
   LineCoding line_coding = 3;
 }
 
-// SynchronizationParams contains parameters for frame
-// synchronization.
+// Parameters for frame synchronization.
 message SynchronizationParams {
   // The actual bytes of the synchronization word. Least significant bit aligned
   // E.g.
