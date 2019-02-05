@@ -100,7 +100,7 @@ message ReceiverConfiguration {
 
 // The configuration of the currently executing plan.
 message PlanConfiguration {
-  // The TLE for the satellite in this pass.
+  // The TLE for the satellite in this plan.
   orbit.Tle tle = 1;
 }
 
