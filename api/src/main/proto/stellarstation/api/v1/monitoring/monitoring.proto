@@ -18,6 +18,7 @@ syntax = "proto3";
 
 import "stellarstation/api/v1/antenna/antenna.proto";
 import "stellarstation/api/v1/common/common.proto";
+import "stellarstation/api/v1/orbit/orbit.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 
 package stellarstation.api.v1.monitoring;
@@ -97,6 +98,12 @@ message ReceiverConfiguration {
   bool is_frame_checking_enabled = 12;
 }
 
+// The configuration of the currently executing plan.
+message PlanConfiguration {
+  // The TLE for the satellite in this plan.
+  orbit.Tle tle = 1;
+}
+
 // The current configuration of a ground station. This is controlled by the parameters of a pass,
 // based on the configuration of the satellite it will communicate with. When debugging issues with
 // a pass, it is good to first confirm that the actual reported configuration matches the expected
@@ -104,13 +111,13 @@ message ReceiverConfiguration {
 message GroundStationConfiguration {
 
   // The current configuration of the transmitter in use by the ground station. This configuration
-  // should match the parameters of the executing pass. When debugging issues with data
+  // should match the parameters of the executing plan. When debugging issues with data
   // transmission (e.g., no response from satellite), it can be useful to confirm these values match
   // the expected configuration of the transmitter.
   TransmitterConfiguration transmitter = 1;
 
   // The current configuration of the receiver in use by the ground station. This configuration
-  // should match the parameters of the executing pass. When debugging issues with data
+  // should match the parameters of the executing plan. When debugging issues with data
   // reception (e.g., can't decode signal), it can be useful to confirm these values match
   // the expected configuration of the receiver.
   ReceiverConfiguration receiver = 2;
@@ -121,6 +128,9 @@ message GroundStationConfiguration {
   // tracking a satellite (e.g., getting no signal at all), it can be useful to confirm these values
   // match the expected configuration of the antenna.
   antenna.AntennaConfiguration antenna = 3;
+
+  // The current configuration of the plan being executed by the ground station.
+  PlanConfiguration plan = 4;
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
