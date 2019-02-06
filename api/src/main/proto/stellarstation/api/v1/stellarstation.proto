@@ -209,6 +209,16 @@ enum Framing {
 
   // A decoded PNG image frame.
   IMAGE_PNG = 3;
+
+  // A decoded JPEG image.
+  IMAGE_JPEG = 4;
+
+  // Completely arbitrary, freeform text contained in a frame.
+  FREE_TEXT_UTF8 = 5;
+
+  // A waterfall diagram. This is actually for the whole plan and does not correspond to an
+  // individual frame.
+  WATERFALL = 6;
 }
 
 // A response from the `OpenSatelliteStream` method.
