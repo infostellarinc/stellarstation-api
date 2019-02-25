@@ -236,9 +236,10 @@ message PlanState {
   // The status of the plan.
   enum Status {
     UNKNOWN = 0;
-    EXECUTING = 1;
-    COMPLETE = 2;
-    FAILED = 3;
+    STARTING = 1;
+    EXECUTING = 2;
+    COMPLETE = 3;
+    FAILED = 4;
   }
   Status status = 1;
 
