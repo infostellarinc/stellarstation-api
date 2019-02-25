@@ -241,7 +241,7 @@ message PlanState {
     // the ground station starts preparing for plan execution.
     PREPARING = 1;
 
-    // Plan execution is in progress and has not yet reached the COMPLETE or FAILED state. This
+    // Plan execution is in progress and has not yet reached the COMPLETED or FAILED state. This
     // status will be sent multiple times and acts as a heartbeat for the ground station.
     EXECUTING = 2;
 
