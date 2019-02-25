@@ -236,21 +236,36 @@ message PlanState {
   // The status of the plan.
   enum Status {
     UNKNOWN = 0;
+
+    // Plan execution has started. This will be sent a short time before AOS when the ground
+    // station has started preparing for the upcoming plan.
     STARTED = 1;
+
+    // Plan execution is in progress and has not yet reached the COMPLETE or FAILED state. This
+    // status may be sent multiple times.
     EXECUTING = 2;
-    COMPLETE = 3;
+
+    // Plan execution is complete. This is sent when the ground station has finished executing
+    // the plan and any associated data processing.
+    COMPLETED = 3;
+
+    // Plan execution failed. This is sent when the plan cannot be completed for some reason.
     FAILED = 4;
   }
   Status status = 1;
 
+  // If a plan fails, this message describes the cause of the failure.
   message FailureDetails {
     enum Cause {
       UNKNOWN = 0;
     }
+
     Cause cause = 1;
   }
 
   oneof Details {
+    // When the plan status is FAILED, this field will be populdated with details about the
+    // cause of the failure.
     FailureDetails failure = 2;
   }
 }
