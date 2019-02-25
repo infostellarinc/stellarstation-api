@@ -233,39 +233,42 @@ message AntennaState {
 
 // The current state of the plan being executed by the ground station.
 message PlanState {
-  // The status of the plan.
+  // A description of the plan status.
   enum Status {
     UNKNOWN = 0;
 
-    // Plan execution has started. This will be sent a short time before AOS when the ground
-    // station has started preparing for the upcoming plan.
+    // Plan execution has started. This will be sent only once a short time before AOS when the
+    // ground station has started preparing for the upcoming plan.
     STARTED = 1;
 
     // Plan execution is in progress and has not yet reached the COMPLETE or FAILED state. This
-    // status may be sent multiple times.
+    // status will be sent multiple times and acts as a heartbeat for the ground station.
     EXECUTING = 2;
 
-    // Plan execution is complete. This is sent when the ground station has finished executing
-    // the plan and any associated data processing.
+    // Plan execution is complete. This is sent only once when the ground station has finished
+    // executing the plan and uploading all data.
     COMPLETED = 3;
 
     // Plan execution failed. This is sent when the plan cannot be completed for some reason.
     FAILED = 4;
   }
+
+  // The status of the plan.
   Status status = 1;
 
   // If a plan fails, this message describes the cause of the failure.
   message FailureDetails {
+    // A description of the cause of the failure.
     enum Cause {
       UNKNOWN = 0;
     }
 
+    // The cause of the failure.
     Cause cause = 1;
   }
 
   oneof Details {
-    // When the plan status is FAILED, this field will be populdated with details about the
-    // cause of the failure.
+    // The details about the cause of a failure if status is FAILED.
     FailureDetails failure = 2;
   }
 }
