@@ -237,16 +237,16 @@ message PlanState {
   enum Status {
     UNKNOWN = 0;
 
-    // Plan preparation has started. This will be sent only once a short time before AOS when
-    // the ground station starts preparing for plan execution.
+    // Plan preparation has started. This status is sent when the ground station starts preparing
+    // for plan execution.
     PREPARING = 1;
 
     // Plan execution is in progress and has not yet reached the COMPLETED or FAILED state. This
-    // status will be sent multiple times and acts as a heartbeat for the ground station.
+    // status may be sent multiple times and acts as a heartbeat for the ground station.
     EXECUTING = 2;
 
-    // Plan execution is complete. This is sent only once when the ground station has finished
-    // executing the plan and uploading all data.
+    // Plan execution is complete. This is sent when the ground station has finished executing
+    // the plan and uploading all data.
     COMPLETED = 3;
 
     // Plan execution failed. This is sent when the plan cannot be completed for some reason.
