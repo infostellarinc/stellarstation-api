@@ -194,7 +194,7 @@ message SendSatelliteCommandsRequest {
   repeated bytes command = 2;
 }
 
-// A type of framing of a binary payload used in satellite communicaation.
+// A type of framing of a binary payload used in satellite communication.
 enum Framing {
   // No framing done in the API. All payloads are assumed to be pre-framed and ready for
   // transmission to the satellite or API client with no additional processing.
@@ -247,6 +247,9 @@ message SatelliteStreamResponse {
 message ReceiveTelemetryResponse {
   // The telemetry received.
   Telemetry telemetry = 1;
+
+  // The ID of the plan the telemetry was received for.
+  string plan_id = 2;
 }
 
 // A chunk or frame of telemetry data that has been received from a satellite.
