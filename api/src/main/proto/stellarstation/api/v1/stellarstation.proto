@@ -529,7 +529,7 @@ message Plan {
 
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
-  repeated TelemetryMetadata telmetry_metadata = 13;
+  repeated TelemetryMetadata telemetry_metadata = 13;
 }
 
 // Request for the 'AddTle' method.
