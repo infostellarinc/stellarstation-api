@@ -256,11 +256,11 @@ message GroundStationStreamRequest {
 
 // A request to send telemetry received from a satellite to a user.
 message SendTelemetryRequest {
-  // The telemetry being sent.
-  Telemetry telemetry = 1;
-
   // The ID of the plan the telemetry is being sent for.
-  string plan_id = 2;
+  string plan_id = 1;
+
+  // The telemetry being sent.
+  Telemetry telemetry = 2;
 }
 
 // A response for the `OpenGroundStationStream` method. The ground station must process a response
@@ -271,8 +271,8 @@ message GroundStationStreamResponse {
   string plan_id = 1;
 
   // A unique ID identifying this response. If filled, any `StreamEvent` generated when handling
-  // this GroundStationStreamResponse` must have this value copied into `StreamEvent` must have this
-  // value copied into `StreamEvent.request_id`. Currently, this includes
+  // this GroundStationStreamResponse` must have this value copied into
+  // `StreamEvent.request_id`. Currently, this includes
   //
   // - Returning `CommandSentFromGroundStation` after completing transmission of the commands in a
   //   `SendSatelliteCommandsResponse`.
@@ -287,10 +287,8 @@ message GroundStationStreamResponse {
 }
 
 // A response containing a command to transmit to the satellite.
-//
-// Next ID: 1
 message SendSatelliteCommandsResponse {
   // The command frames to send to the satellite. All commands must be transmitted in sequence
   // immediately. After all commands have been transmitted, telemetry receive will be immediately.
-  repeated bytes command = 2;
+  repeated bytes command = 1;
 }

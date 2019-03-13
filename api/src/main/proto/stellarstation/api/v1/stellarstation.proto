@@ -182,7 +182,9 @@ message SatelliteStreamRequest {
   repeated Framing accepted_framing = 4;
 }
 
-
+// A request to send commands to a satellite.
+//
+// Next ID: 3
 message SendSatelliteCommandsRequest {
   // The command frames to send to the satellite. All commands will be transmitted in sequence
   // immediately, during which time telemetry will not be received. After all commands have been
