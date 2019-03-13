@@ -19,6 +19,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "stellarstation/api/v1/monitoring/monitoring.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
+import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1;
 
@@ -194,33 +195,6 @@ message SendSatelliteCommandsRequest {
   repeated bytes command = 2;
 }
 
-// A type of framing of a binary payload used in satellite communicaation.
-enum Framing {
-  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
-  // transmission to the satellite or API client with no additional processing.
-  BITSTREAM = 0;
-
-  // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
-  AX25 = 1;
-
-  // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
-  // additional processing.
-  IQ = 2;
-
-  // A decoded PNG image frame.
-  IMAGE_PNG = 3;
-
-  // A decoded JPEG image.
-  IMAGE_JPEG = 4;
-
-  // Completely arbitrary, freeform text contained in a frame.
-  FREE_TEXT_UTF8 = 5;
-
-  // A waterfall diagram. This is actually for the whole plan and does not correspond to an
-  // individual frame.
-  WATERFALL = 6;
-}
-
 // A response from the `OpenSatelliteStream` method.
 message SatelliteStreamResponse {
   // The ID of this stream, which can be used in a subsequent call to `OpenSatelliteStream` to
@@ -247,32 +221,6 @@ message SatelliteStreamResponse {
 message ReceiveTelemetryResponse {
   // The telemetry received.
   Telemetry telemetry = 1;
-}
-
-// A chunk or frame of telemetry data that has been received from a satellite.
-message Telemetry {
-  // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
-  // chunk of the bitstream.
-  Framing framing = 1;
-
-  // The payload of this telemetry.
-  bytes data = 2;
-
-  // The actual downlink frequency, in Hz, used when receiving `data`, including adjustments for
-  // doppler shift.
-  uint64 downlink_frequency_hz = 3;
-
-  // Timestamp when the first byte of `data` was received.
-  google.protobuf.Timestamp time_first_byte_received = 4;
-
-  // Timestamp when the last byte of `data` was received.
-  google.protobuf.Timestamp time_last_byte_received = 5;
-
-  // The binary header of the telemetry frame, if `framing` is not `RAW`.
-  //
-  // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
-  //          returned.
-  bytes frame_header = 6;
 }
 
 // A monitoring event that occurred during the execution of the plan. Information about the current

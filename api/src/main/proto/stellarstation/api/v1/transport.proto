@@ -1,0 +1,85 @@
+/*
+ * Copyright 2019 Infostellar, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package stellarstation.api.v1;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1";
+
+option java_multiple_files = true;
+option java_outer_classname = "StellarstationProto";
+option java_package = "com.stellarstation.api.v1";
+
+// This file contains messages that are transported to and from a satellite via a ground station and
+// an API client. A satellite stream is conceptually a symmetric stream of payloads, with the ground
+// station sending telemetry and receiving commands, and the API client sending commands and
+// receiving telemetry - the actual payloads are the same on each side but reversed.
+
+// A type of framing of a binary payload used in satellite communicaation.
+enum Framing {
+  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
+  // transmission to the satellite or API client with no additional processing.
+  BITSTREAM = 0;
+
+  // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
+  AX25 = 1;
+
+  // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
+  // additional processing.
+  IQ = 2;
+
+  // A decoded PNG image frame.
+  IMAGE_PNG = 3;
+
+  // A decoded JPEG image.
+  IMAGE_JPEG = 4;
+
+  // Completely arbitrary, freeform text contained in a frame.
+  FREE_TEXT_UTF8 = 5;
+
+  // A waterfall diagram. This is actually for the whole plan and does not correspond to an
+  // individual frame.
+  WATERFALL = 6;
+}
+
+// A chunk or frame of telemetry data that has been received from a satellite.
+message Telemetry {
+  // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
+  // chunk of the bitstream.
+  Framing framing = 1;
+
+  // The payload of this telemetry.
+  bytes data = 2;
+
+  // The actual downlink frequency, in Hz, used when receiving `data`, including adjustments for
+  // doppler shift.
+  uint64 downlink_frequency_hz = 3;
+
+  // Timestamp when the first byte of `data` was received.
+  google.protobuf.Timestamp time_first_byte_received = 4;
+
+  // Timestamp when the last byte of `data` was received.
+  google.protobuf.Timestamp time_last_byte_received = 5;
+
+  // The binary header of the telemetry frame, if `framing` is not `RAW`.
+  //
+  // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
+  //          returned.
+  bytes frame_header = 6;
+}

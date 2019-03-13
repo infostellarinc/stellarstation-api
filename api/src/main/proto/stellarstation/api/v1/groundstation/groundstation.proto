@@ -208,3 +208,11 @@ message DeleteUnavailabilityWindowRequest {
 message DeleteUnavailabilityWindowResponse {
   // Currently no payload in the response.
 }
+
+// Request for the `OpenGroundStationStream` method.
+message GroundStationStreamRequest {
+  // The ID of the ground station that is opening a stream. The ID of a ground station can be found
+  // on the StellarStation Console page for the ground station.
+  string ground_station_id = 1;
+}
+
