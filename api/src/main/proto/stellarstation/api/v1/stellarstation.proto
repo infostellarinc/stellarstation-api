@@ -221,6 +221,9 @@ message SatelliteStreamResponse {
 message ReceiveTelemetryResponse {
   // The telemetry received.
   Telemetry telemetry = 1;
+
+  // The ID of the plan the telemetry was received for.
+  string plan_id = 2;
 }
 
 // A monitoring event that occurred during the execution of the plan. Information about the current
@@ -474,7 +477,7 @@ message Plan {
 
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
-  repeated TelemetryMetadata telmetry_metadata = 13;
+  repeated TelemetryMetadata telemetry_metadata = 13;
 }
 
 // Request for the 'AddTle' method.
