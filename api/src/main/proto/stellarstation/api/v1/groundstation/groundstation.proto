@@ -233,10 +233,10 @@ message GroundStationStreamRequest {
   // on the StellarStation Console page for the ground station.
   string ground_station_id = 1;
 
-  // A request to send on the ground station stream. The request does not need to be filled on the
+  // A payload to send on the ground station stream. The payload does not need to be filled on the
   // first request to `OpenGroundStationStream`.
   oneof Request {
-    SendTelemetryRequest send_telemetry_request = 2;
+    SatelliteTelemetry satellite_telemetry = 2;
 
     // An event that occurred while processing the stream. Satellite operators will often use these
     // events for debugging and monitoring.
@@ -246,7 +246,7 @@ message GroundStationStreamRequest {
     // - `plan_monitoring_event.ground_station_configuration` must be returned once at the beginning
     //   of the execution of a plan and contains information about the actual configuration of the
     //   ground station at the time.
-    // - `plan_monitoring_event.ground_station_state` must be sent continuously throughout the
+    // - `plan_monitoring_event.ground_station_state` must be sent regularly throughout the
     //   plan and contains real-time monitoring of the hardware of the ground station.
     // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
     //   documented in `PlanLifecycleEvent` when executing a plan.
@@ -254,8 +254,8 @@ message GroundStationStreamRequest {
   }
 }
 
-// A request to send telemetry received from a satellite to a user.
-message SendTelemetryRequest {
+// Telemetry received from a satellite to send to a satellite operator.
+message SatelliteTelemetry {
   // The ID of the plan the telemetry is being sent for.
   string plan_id = 1;
 
@@ -278,17 +278,18 @@ message GroundStationStreamResponse {
   //   `SendSatelliteCommandsResponse`.
   string response_id = 2;
 
-  // A response sent on the stream to be processed by the ground station. Currently only commands to
+  // A payload sent on the stream to be processed by the ground station. Currently only commands to
   // send to a satellite will be returned to the ground station.
   oneof Response {
-    // A response containing commands to send to the satellite.
-    SendSatelliteCommandsResponse send_satellite_commands_response = 3;
+    // Commands to send to the satellite.
+    SatelliteCommands satellite_commands = 3;
   }
 }
 
-// A response containing a command to transmit to the satellite.
-message SendSatelliteCommandsResponse {
+// Command to transmit to the satellite.
+message SatelliteCommands {
   // The command frames to send to the satellite. All commands must be transmitted in sequence
-  // immediately. After all commands have been transmitted, telemetry receive will be immediately.
+  // immediately. After all commands have been transmitted, telemetry receive must be immediately
+  // enabled again.
   repeated bytes command = 1;
 }
