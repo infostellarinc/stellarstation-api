@@ -43,6 +43,9 @@ message RadioDeviceConfiguration {
   // The protocol used by this device when doing RF communication. If unset, the device is only
   // demodulating / modulating without applying any higher-level communication protocol.
   CommunicationProtocol protocol = 4;
+
+  // The polarization used by this radio device.
+  Polarization polarization = 5;
 }
 
 // A communication protocol used with a radio device. These must contain all the parameters
@@ -58,6 +61,27 @@ message CommunicationProtocol {
     // Bitstream framing settings.
     Bitstream bitstream = 3;
   }
+}
+
+// The type of polarization the antenna will use.
+enum Polarization {
+  // Any polarization can be used for communications.
+  ANY = 0;
+
+  // Horizontal polarization.
+  HORIZONTAL = 1;
+
+  // Horizontal polarization.
+  VERTICAL = 2;
+
+  // Left hand circular polarization.
+  LEFT_HAND_CIRCULAR = 3;
+
+  // Right hand circular polarization.
+  RIGHT_HAND_CIRCULAR = 4;
+
+  // Simultaneous left and right hand circular polarization.
+  SIMULTANEOUS_LEFT_HAND_RIGHT_HAND_CIRCULAR = 5;
 }
 
 // CCSDS-specific convolutional coding parameters.
