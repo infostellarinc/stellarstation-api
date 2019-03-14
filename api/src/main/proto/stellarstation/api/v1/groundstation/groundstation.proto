@@ -79,6 +79,14 @@ service GroundStationService {
   // Unless otherwise specified, all configuration is taken from the first request and configuration
   // values in subsequent requests will be ignored.
   //
+  // There is no restriction on the number of active streams from a ground station (i.e., streams
+  // opened with the same `ground_station_id`). Most ground stations will issue a single stream to
+  // receive commands and send telemetry, but in certain cases, such as if uplink and downlink are
+  // handled by different computers, it can be appropriate to have multiple processes with their
+  // own stream. If opening multiple streams for a single ground station, it is the client's
+  // responsibility to handle the streams appropriately, for example by ensuring only one stream
+  // sends commands so they are not duplicated.
+  //
   // If the ground station is not found or the API client is not authorized for it, the stream will
   // be closed with a `NOT_FOUND` error.
   //
@@ -233,10 +241,17 @@ message GroundStationStreamRequest {
   // on the StellarStation Console page for the ground station.
   string ground_station_id = 1;
 
+  // A tag to identify this stream. This tag is not used semantically and is only for logging,
+  // monitoring, and debugging. This does not need to be set if there will only ever be one stream
+  // for a particular `ground_station_id` open at a time. If multiple streams will be open, this
+  // should be set to identify the stream. Some examples include 'uplink', 'downlink', 'uhf',
+  // 's-band'.
+  string stream_tag = 2;
+
   // A payload to send on the ground station stream. The payload does not need to be filled on the
   // first request to `OpenGroundStationStream`.
   oneof Request {
-    SatelliteTelemetry satellite_telemetry = 2;
+    SatelliteTelemetry satellite_telemetry = 3;
 
     // An event that occurred while processing the stream. Satellite operators will often use these
     // events for debugging and monitoring.
@@ -250,7 +265,7 @@ message GroundStationStreamRequest {
     //   plan and contains real-time monitoring of the hardware of the ground station.
     // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
     //   documented in `PlanLifecycleEvent` when executing a plan.
-    StreamEvent stream_event = 3;
+    StreamEvent stream_event = 4;
   }
 }
 
