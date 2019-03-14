@@ -18,6 +18,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 import "stellarstation/api/v1/radio/radio.proto";
+import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1.groundstation;
 
@@ -67,6 +68,31 @@ service GroundStationService {
   // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
   // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
   rpc ListUnavailabilityWindows (ListUnavailabilityWindowsRequest) returns (ListUnavailabilityWindowsResponse);
+
+  // Open a stream from a ground station. The returned stream is bi-directional - it is used by
+  // the ground station to send telemetry received from a satellite and receive commands to send to
+  // the satellite. The ground station must keep this stream open while it is connected to the
+  // StellarStation network for use in executing plans - if the stream is cut, it must be
+  // reconnected with exponential backoff.
+  //
+  // The first `GroundStationStreamRequest` sent on the stream is used for configuring the stream.
+  // Unless otherwise specified, all configuration is taken from the first request and configuration
+  // values in subsequent requests will be ignored.
+  //
+  // There is no restriction on the number of active streams from a ground station (i.e., streams
+  // opened with the same `ground_station_id`). Most ground stations will issue a single stream to
+  // receive commands and send telemetry, but in certain cases, such as if uplink and downlink are
+  // handled by different computers, it can be appropriate to have multiple processes with their
+  // own stream. If opening multiple streams for a single ground station, it is the client's
+  // responsibility to handle the streams appropriately, for example by ensuring only one stream
+  // sends commands so they are not duplicated.
+  //
+  // If the ground station is not found or the API client is not authorized for it, the stream will
+  // be closed with a `NOT_FOUND` error.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  rpc OpenGroundStationStream (stream GroundStationStreamRequest) returns (stream GroundStationStreamResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -207,4 +233,78 @@ message DeleteUnavailabilityWindowRequest {
 // A response to the request for deleting an existing unavailability window.
 message DeleteUnavailabilityWindowResponse {
   // Currently no payload in the response.
+}
+
+// A request for the `OpenGroundStationStream` method.
+message GroundStationStreamRequest {
+  // The ID of the ground station that is opening a stream. The ID of a ground station can be found
+  // on the StellarStation Console page for the ground station.
+  string ground_station_id = 1;
+
+  // A tag to identify this stream. This tag is not used semantically and is only for logging,
+  // monitoring, and debugging. This does not need to be set if there will only ever be one stream
+  // for a particular `ground_station_id` open at a time. If multiple streams will be open, this
+  // should be set to identify the stream. Some examples include 'uplink', 'downlink', 'uhf',
+  // 's-band'.
+  string stream_tag = 2;
+
+  // A payload to send on the ground station stream. The payload does not need to be filled on the
+  // first request to `OpenGroundStationStream`.
+  oneof Request {
+    SatelliteTelemetry satellite_telemetry = 3;
+
+    // An event that occurred while processing the stream. Satellite operators will often use these
+    // events for debugging and monitoring.
+    //
+    // - `command_sent` must be returned right after completing transmission of
+    //    commands received in a `SendSatelliteCommandsResponse`.
+    // - `plan_monitoring_event.ground_station_configuration` must be returned once at the beginning
+    //   of the execution of a plan and contains information about the actual configuration of the
+    //   ground station at the time.
+    // - `plan_monitoring_event.ground_station_state` must be sent regularly throughout the
+    //   plan and contains real-time monitoring of the hardware of the ground station.
+    // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
+    //   documented in `PlanLifecycleEvent` when executing a plan.
+    StreamEvent stream_event = 4;
+  }
+}
+
+// Telemetry received from a satellite to send to a satellite operator.
+message SatelliteTelemetry {
+  // The ID of the plan the telemetry is being sent for.
+  string plan_id = 1;
+
+  // The telemetry being sent.
+  Telemetry telemetry = 2;
+}
+
+// A response for the `OpenGroundStationStream` method. The ground station must process a response
+// immediately when received on the stream.
+message GroundStationStreamResponse {
+  // The ID of the plan this response corresponds to. Unfilled if this response does not correspond
+  // to a plan.
+  string plan_id = 1;
+
+  // A unique ID identifying this response. If filled, any `StreamEvent` generated when handling
+  // this GroundStationStreamResponse` must have this value copied into
+  // `StreamEvent.request_id`. Currently, this includes
+  //
+  // - Returning `CommandSentFromGroundStation` after completing transmission of the commands in a
+  //   `SendSatelliteCommandsResponse`.
+  string response_id = 2;
+
+  // A payload sent on the stream to be processed by the ground station. Currently only commands to
+  // send to a satellite will be returned to the ground station.
+  oneof Response {
+    // Commands to send to the satellite.
+    SatelliteCommands satellite_commands = 3;
+  }
+}
+
+// Command to transmit to the satellite.
+message SatelliteCommands {
+  // The command frames to send to the satellite. All commands must be transmitted in sequence
+  // immediately. After all commands have been transmitted, telemetry receive must be immediately
+  // enabled again.
+  repeated bytes command = 1;
 }
