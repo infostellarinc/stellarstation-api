@@ -71,10 +71,10 @@ enum Polarization {
   ANY = 0;
 
   // Horizontal polarization.
-  H = 1;
+  HORIZONTAL = 1;
 
-  // Horizontal polarization.
-  V = 2;
+  // Vertical polarization.
+  VERTICAL = 2;
 
   // Left hand circular polarization.
   LHCP = 3;
