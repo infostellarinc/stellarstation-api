@@ -64,24 +64,23 @@ message CommunicationProtocol {
 }
 
 // The type of polarization the antenna will use.
+//
+// https://en.wikipedia.org/wiki/Antenna_(radio)#Polarization
 enum Polarization {
   // Any polarization can be used for communications.
   ANY = 0;
 
   // Horizontal polarization.
-  HORIZONTAL = 1;
+  H = 1;
 
   // Horizontal polarization.
-  VERTICAL = 2;
+  V = 2;
 
   // Left hand circular polarization.
-  LEFT_HAND_CIRCULAR = 3;
+  LHCP = 3;
 
   // Right hand circular polarization.
-  RIGHT_HAND_CIRCULAR = 4;
-
-  // Simultaneous left and right hand circular polarization.
-  SIMULTANEOUS_LEFT_HAND_RIGHT_HAND_CIRCULAR = 5;
+  RHCP = 4;
 }
 
 // CCSDS-specific convolutional coding parameters.
