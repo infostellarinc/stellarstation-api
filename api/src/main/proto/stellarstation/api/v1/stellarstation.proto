@@ -17,8 +17,8 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "stellarstation/api/v1/monitoring/monitoring.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
+import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1;
 
@@ -123,8 +123,6 @@ service StellarStationService {
   //
   // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
   // - the TLE cannot be parsed
-  // - the TLE epoch is in the future
-  // - the TLE epoch is older than the most recent TLE known to StellarStation
   // - the TLE norad ID does not correspond to the requested satellite.
   //
   // If the satellite is not found or the client is not authorized for it, the request will return
@@ -184,7 +182,7 @@ message SatelliteStreamRequest {
 
 // A request to send commands to a satellite.
 //
-// Next ID: 1
+// Next ID: 3
 message SendSatelliteCommandsRequest {
   // The command frames to send to the satellite. All commands will be transmitted in sequence
   // immediately, during which time telemetry will not be received. After all commands have been
@@ -192,23 +190,6 @@ message SendSatelliteCommandsRequest {
   // is 2MB. If a command larger than 2MB is received, the stream will be closed with a
   // `RESOURCE_EXHAUSTED` error.
   repeated bytes command = 2;
-}
-
-// A type of framing of a binary payload used in satellite communicaation.
-enum Framing {
-  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
-  // transmission to the satellite or API client with no additional processing.
-  BITSTREAM = 0;
-
-  // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
-  AX25 = 1;
-
-  // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
-  // additional processing.
-  IQ = 2;
-
-  // A decoded PNG image frame.
-  IMAGE_PNG = 3;
 }
 
 // A response from the `OpenSatelliteStream` method.
@@ -228,7 +209,8 @@ message SatelliteStreamResponse {
     ReceiveTelemetryResponse receive_telemetry_response = 2;
 
     // An event that occurred while processing the stream. Often used for monitoring the stream.
-    // Never returned if `SatelliteStreamRequest.enable_events` is false.
+    // Never returned if `SatelliteStreamRequest.enable_events` is false in the first
+    // `SatelliteStreamRequest` of the stream.
     StreamEvent stream_event = 3;
   }
 }
@@ -237,82 +219,9 @@ message SatelliteStreamResponse {
 message ReceiveTelemetryResponse {
   // The telemetry received.
   Telemetry telemetry = 1;
-}
 
-// A chunk or frame of telemetry data that has been received from a satellite.
-message Telemetry {
-  // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
-  // chunk of the bitstream.
-  Framing framing = 1;
-
-  // The payload of this telemetry.
-  bytes data = 2;
-
-  // The actual downlink frequency, in Hz, used when receiving `data`, including adjustments for
-  // doppler shift.
-  uint64 downlink_frequency_hz = 3;
-
-  // Timestamp when the first byte of `data` was received.
-  google.protobuf.Timestamp time_first_byte_received = 4;
-
-  // Timestamp when the last byte of `data` was received.
-  google.protobuf.Timestamp time_last_byte_received = 5;
-
-  // The binary header of the telemetry frame, if `framing` is not `RAW`.
-  //
-  // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
-  //          returned.
-  bytes frame_header = 6;
-}
-
-// A monitoring event that occurred during the execution of the plan. Information about the current
-// configuration of the ground station and state of components is returned to provide information
-// that can help to troubleshoot issues with the plan.
-message PlanMonitoringEvent {
-  // The ID of the plan being monitored.
-  string plan_id = 1;
-
-  oneof Info {
-    // Information about the current configuration of the ground station when beginning to execute
-    // a plan. This will only be returned once at the beginning of execution. Information that is
-    // provided by the ground station executing the plan will be returned - any fields that are not
-    // supported by the ground station will be left unfilled.
-    monitoring.GroundStationConfiguration ground_station_configuration = 2;
-
-    // Information about the current state of the ground station while executing a plan. This will
-    // be returned periodically during execution of the plan. Information that is provided by the
-    // ground station executing the plan will be returned - any fields that are not supported by
-    // the ground station will be left unfilled.
-    monitoring.GroundStationState ground_station_state = 3;
-  }
-}
-
-// An event that occurred while processing the stream. Only returned if `enable_events` was true
-// in the first `SatelliteStreamRequest` of the stream. A `StreamEvent` will have one of several
-// types of event payloads corresponding to event types. Many of these payloads will be empty,
-// depending on the context of an event, but are still returned as messages to allow future
-// extension.
-message StreamEvent {
-  // The ID of the request this event corresponds to, copied from
-  // `SatelliteStreamRequest.request_id` when present. If the event doesn't correspond to a request,
-  // this is always empty.
-  string request_id = 1;
-
-  // An event indicating the commands in the request were sent by the ground station through its
-  // radio.
-  message CommandSentFromGroundStation {
-    // Empty, may be extended in the future.
-  }
-
-  // A stream event payload.
-  oneof Event {
-    // An event indicating the commands in the request were sent by the ground station through its
-    // radio.
-    CommandSentFromGroundStation command_sent = 2;
-
-    // An event with monitoring information for a particular executed plan.
-    PlanMonitoringEvent plan_monitoring_event = 3;
-  }
+  // The ID of the plan the telemetry was received for.
+  string plan_id = 2;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -513,7 +422,7 @@ message Plan {
 
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
-  repeated TelemetryMetadata telmetry_metadata = 13;
+  repeated TelemetryMetadata telemetry_metadata = 13;
 }
 
 // Request for the 'AddTle' method.
