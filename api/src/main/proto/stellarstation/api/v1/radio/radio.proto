@@ -57,6 +57,9 @@ message CommunicationProtocol {
 
     // Bitstream framing settings.
     Bitstream bitstream = 3;
+
+    // AX 100 ASM + Golay mode
+    ASMGolay asm_golay = 4;
   }
 }
 
