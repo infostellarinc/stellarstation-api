@@ -36,6 +36,8 @@ def test_open_satellite_stream(stub_factory):
             # The second last byte of the telemetry indicates the current status of the fake satellite used
             # in the test. The value is either of 0 or 1.
             is_safe_mode = int(telemetry_data[-2])
+            assert (is_safe_mode == 0 or is_safe_mode == 1)
+
             if expected_status < 0:
                 # Set expected status based on the current value.
                 expected_status = 1 - is_safe_mode
