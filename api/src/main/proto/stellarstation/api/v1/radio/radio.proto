@@ -164,22 +164,21 @@ message CCSDSTransferFrame {
   LineCoding line_coding = 6;
 }
 
+// ASM+Golay mode for GOM Space AX100 radio.
 // https://gomspace.com/UserFiles/Subsystems/datasheet/gs-ds-nanocom-ax100-33.pdf
-//
-// ASM+Golay mode for GOM Space AX100 radio
 message ASMGolay {
   // Synchronization word parameters. If unset, the default synchronization word defined
   // by the AX100 will be used.
   SynchronizationParams synchronization_params = 1;
 
-  // Whether or not CCSDS scrambling is used
-  bool ccsds_scramble_enabled = 4;
+  // Whether or not CCSDS scrambling is used.
+  bool enable_ccsds_scramble = 2;
 
-  // Whether or not Reed Solomon is used
-  bool reed_solomon_enabled = 5;
+  // Whether or not Reed Solomon is used.
+  bool enable_reed_solomon = 3;
 
-  // Whether or not CRC is enabled
-  bool crc_check_enabled = 6;
+  // Whether or not CRC is enabled.
+  bool enable_crc_check = 4;
 }
 
 // Framing for satellites that don't conform to a particular standard. Usually, only
