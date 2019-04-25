@@ -58,7 +58,7 @@ message CommunicationProtocol {
     // Bitstream framing settings.
     Bitstream bitstream = 3;
 
-    // AX 100 ASM + Golay mode
+    // AX 100 ASM + Golay mode.
     ASMGolay asm_golay = 4;
   }
 }
@@ -171,13 +171,13 @@ message ASMGolay {
   // by the AX100 will be used.
   SynchronizationParams synchronization_params = 1;
 
-  // Whether or not CCSDS scrambling is used.
+  // Whether to enable CCSDS scrambling.
   bool enable_ccsds_scramble = 2;
 
-  // Whether or not Reed Solomon is used.
+  // Whether to enable Reed Solomon error correction.
   bool enable_reed_solomon = 3;
 
-  // Whether or not CRC is enabled.
+  // Whether to enable CRC checking.
   bool enable_crc_check = 4;
 }
 
