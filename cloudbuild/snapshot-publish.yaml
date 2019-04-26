@@ -12,7 +12,7 @@ steps:
   - --location=us-central1
   - --keyring=cloudbuild
   - --key=deploy-stubs
-- name: openjdk:11-jdk
+- name: curiostack/java-cloud-builder
   entrypoint: bash
   args:
   - -c
