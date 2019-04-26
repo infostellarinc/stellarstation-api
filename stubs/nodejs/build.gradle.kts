@@ -15,8 +15,8 @@
  */
 
 plugins {
+    java
     id("org.curioswitch.gradle-protobuf-plugin")
-    id("io.spring.dependency-management")
     id("com.moowork.node") version "1.2.0"
 }
 
@@ -131,6 +131,14 @@ tasks {
 
     named("clean").configure {
         delete(file("node_modules"))
+    }
+
+    named("compileJava") {
+        enabled = false
+    }
+
+    named("compileTestJava") {
+        enabled = false
     }
 }
 

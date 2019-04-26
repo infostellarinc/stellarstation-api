@@ -16,8 +16,8 @@
 
 
 plugins {
+    java
     id("org.curioswitch.gradle-protobuf-plugin")
-    id("io.spring.dependency-management")
 }
 
 val packageDir = file("build/publications/python").getAbsolutePath()
@@ -184,5 +184,13 @@ tasks {
 
     named("assemble").configure {
         dependsOn(buildPythonPackage)
+    }
+
+    named("compileJava") {
+        enabled = false
+    }
+
+    named("compileTestJava") {
+        enabled = false
     }
 }

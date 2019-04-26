@@ -15,7 +15,6 @@
  */
 
 plugins {
-    id 'com.github.blindpirate.gogradle' version '0.10' apply false
     id 'org.ajoberstar.git-publish' version '2.0.0-rc.2' apply false
     id 'org.curioswitch.gradle-curiostack-plugin'
 }

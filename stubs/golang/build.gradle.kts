@@ -15,9 +15,9 @@
  */
 
 plugins {
+    java
     id("org.curioswitch.gradle-golang-plugin")
     id("org.curioswitch.gradle-protobuf-plugin")
-    id("io.spring.dependency-management")
     id("org.ajoberstar.git-publish")
 }
 
@@ -217,4 +217,12 @@ tasks {
     named("goTest").configure({
         enabled = false
     })
+
+    named("compileJava") {
+        enabled = false
+    }
+
+    named("compileTestJava") {
+        enabled = false
+    }
 }

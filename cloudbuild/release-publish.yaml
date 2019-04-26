@@ -1,0 +1,32 @@
+secrets:
+  - kmsKeyName: projects/infostellar-cluster/locations/us-central1/keyRings/cloudbuild/cryptoKeys/deploy-stubs
+    secretEnv:
+      BINTRAY_KEY: CiQAo3bGoZ8oqTtDBX7G5hReUiSymLSobSDvpa3w9qq7/iTnrf8SUQD6f46OKS7QQjJ0JRTfwcIlgcfWN89NbmlLMtzGP582qvCcDhh57vd1JR/lr/SZ8HolfzEAZP6k/SdfEZ+oF/u7/CiCWOUzRlgLWFg1Mqm8PA==
+      NPM_KEY: CiQAo3bGoRJ721LzjFjReYDlNaQnml+KdXtUFlhNcxjTLu0EI/ISTQD6f46ObEDBR7Sfp2ghkjd2C12bHgjeple0Yt2DctBcumNYT0Ic7s0po4GSFEEX1QVKkFALZZrkCtAv/4prRoZmZlRdm7Ns1Otjvgq4
+      PYPI_KEY: CiQAo3bGoYxDEMHcyJkPIdmcvbfRIbet09HVwIPrxhAGKP3UHGESNQD6f46OLClPEFS8FpMcW+AXpBrxGkJEkY1dGj3iziGQVvGbULd4Mh3/vXQEPU14d2MC/NaC
+steps:
+- id: publish-release
+  waitFor:
+    - '-'
+  name: curiostack/java-cloud-builder
+  entrypoint: ./gradlew
+  args:
+    - -Ppypi.user=istellar-sysadmin
+    - -Ppypi.password=$$PYPI_KEY
+    - -Pbintray.user=istellar-admin
+    - -Pbintray.key=$$BINTRAY_KEY
+    - -Pnpm.key=$$NPM_KEY
+    - -Pcuriostack.release=true
+    - --stacktrace
+    - --no-daemon
+    - publishStubs
+  secretEnv:
+  - BINTRAY_KEY
+  - NPM_KEY
+  - PYPI_KEY
+  env:
+  - CI=true
+  - TAG_NAME=$TAG_NAME
+  - BRANCH_NAME=$BRANCH_NAME
+timeout: 60m
+
