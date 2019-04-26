@@ -12,10 +12,10 @@ steps:
   entrypoint: ./gradlew
   args:
     - -Ppypi.user=istellar-sysadmin
-    - -Ppypi.password=$$PYPI_KEY
+    - -Ppypi.password=$PYPI_KEY
     - -Pbintray.user=istellar-admin
-    - -Pbintray.key=$$BINTRAY_KEY
-    - -Pnpm.key=$$NPM_KEY
+    - -Pbintray.key=$BINTRAY_KEY
+    - -Pnpm.key=$NPM_KEY
     - -Pcuriostack.release=true
     - --stacktrace
     - --no-daemon
