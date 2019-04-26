@@ -9,17 +9,10 @@ steps:
   waitFor:
     - '-'
   name: curiostack/java-cloud-builder
-  entrypoint: ./gradlew
+  entrypoint: bash
   args:
-    - -Ppypi.user=istellar-sysadmin
-    - -Ppypi.password=$PYPI_KEY
-    - -Pbintray.user=istellar-admin
-    - -Pbintray.key=$BINTRAY_KEY
-    - -Pnpm.key=$NPM_KEY
-    - -Pcuriostack.release=true
-    - --stacktrace
-    - --no-daemon
-    - publishStubs
+    - -c
+    - ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pbintray.user=istellar-admin -Pbintray.key=$$BINTRAY_KEY -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
   secretEnv:
   - BINTRAY_KEY
   - NPM_KEY
