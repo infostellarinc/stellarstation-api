@@ -35,6 +35,23 @@ pluginManagement {
     }
 }
 
+buildscript {
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+        maven {
+            url 'https://dl.bintray.com/curioswitch/curiostack'
+        }
+        maven {
+            url 'https://palantir.bintray.com/releases'
+        }
+        mavenLocal()
+    }
+    dependencies {
+        classpath "org.curioswitch.curiostack:gradle-curiostack-plugin:${getProperty('org.curioswitch.curiostack.version')}"
+    }
+}
+
 include ':api'
 include ':examples:fakeserver'
 include ':examples:java:printing-client'
