@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package tools
+package go_stellarstation
 
 import (
 	_ "github.com/golang/protobuf"
