@@ -27,3 +27,5 @@ steps:
   env: ['BINTRAY_USER=istellar-admin']
   secretEnv: ['BINTRAY_KEY']
 timeout: 60m
+options:
+  machineType: N1_HIGHCPU_32
