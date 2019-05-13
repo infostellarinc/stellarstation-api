@@ -22,11 +22,11 @@ steps:
     # The SSH clients are looking in /root/.ssh for keys and config, even although the HOME directory
     # is /builder/home.
     - |
-    mkdir /root/.ssh &&
-    cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
-    chmod 400 /root/.ssh/id_rsa &&
-    echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
-    ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pbintray.user=istellar-admin -Pbintray.key=$$BINTRAY_KEY -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
+      mkdir /root/.ssh &&
+      cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
+      chmod 400 /root/.ssh/id_rsa &&
+      echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
+      ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pbintray.user=istellar-admin -Pbintray.key=$$BINTRAY_KEY -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
   secretEnv:
   - BINTRAY_KEY
   - NPM_KEY
