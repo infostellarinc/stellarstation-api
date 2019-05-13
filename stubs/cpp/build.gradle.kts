@@ -85,11 +85,6 @@ tasks {
                 into(conanDir)
             }
 
-            copy {
-                from("package/src")
-                into("$conanDir/src")
-            }
-
             exec {
                 commandLine("conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan && " +
                         "conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&" +
@@ -119,6 +114,11 @@ tasks {
         dependsOn(generateProto)
 
         doFirst {
+            copy {
+                from("package/src")
+                into("$conanDir/src")
+            }
+
             exec {
                 commandLine("conan create . -s compiler=gcc -s compiler.libcxx=libstdc++ -s compiler.version=7 $reference")
                 workingDir(conanDir)
