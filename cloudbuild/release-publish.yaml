@@ -25,6 +25,8 @@ steps:
       mkdir /root/.ssh &&
       cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
       chmod 400 /root/.ssh/id_rsa &&
+      apt-get -y update &&
+      apt-get -y install binutils &&
       echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
       ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pbintray.user=istellar-admin -Pbintray.key=$$BINTRAY_KEY -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
   secretEnv:
