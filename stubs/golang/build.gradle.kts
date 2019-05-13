@@ -131,7 +131,7 @@ tasks {
 
         dependsOn(generateProto, installMockGen, runModVendoring)
 
-        val goModLines = File("${System.getProperty("user.dir")}/stubs/golang/go.mod").readLines()
+        val goModLines = file("go.mod").readLines()
         var foundRequire = false
 
         for (line in goModLines) {
