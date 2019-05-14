@@ -1,6 +1,7 @@
 # API stubs
 
-This directory builds language specific stubs from the proto definition.
+This directory builds language specific stubs from the proto definition. This documentation is mainly
+intended to be read by infostellar employees.
 
 ## Versioning
 
@@ -38,6 +39,8 @@ an appropriate version number is generated.
 The published stubs are hosted by bintray and available through jcenter automatically:
 - https://jcenter.bintray.com/com/stellarstation/api/stellarstation-api/
 
+Gradle users simply need to add the 'jcenter' repo into their build to get access to the stubs.
+
 Infostellar employees can log in to bintray to manage the packages which have already been released etc.
 
 #### maven central
@@ -49,7 +52,7 @@ central).
 
 ### Snapshot
 
-Snapshot builds are hosted on an artifactory repo:
+Snapshot builds are hosted by artifactory since jcenter doesn't support the concept of snapshots:
 
 - https://oss.jfrog.org/libs-snapshot/com/stellarstation/api/stellarstation-api/
 
