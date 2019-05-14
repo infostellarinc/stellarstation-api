@@ -137,7 +137,10 @@ tasks {
 
         doFirst {
             exec {
-                commandLine("conan upload stellarstation-api/$version@$reference --all -r=stellarstation")
+                environment(Pair("CONAN_LOGIN_USERNAME", findProperty("bintray.user")))
+                environment(Pair("CONAN_PASSWORD", findProperty("bintray.key")))
+                commandLine("conan user --remote stellarstation --password && " +
+                        "conan upload stellarstation-api/$version@$reference --all -r=stellarstation")
                 workingDir(conanDir)
 
                 org.curioswitch.gradle.conda.exec.CondaExecUtil.condaExec(this, project)

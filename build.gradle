@@ -120,8 +120,7 @@ allprojects {
 task publishStubs {
     description 'Publishes API stubs (only works for non-snapshot versions)'
     dependsOn ':api:bintrayUpload'
-    // Disabled temporarily until we investigate why publishing failed.
-    //dependsOn ':stubs:cpp:uploadPackage'
+    dependsOn ':stubs:cpp:uploadPackage'
     dependsOn ':stubs:golang:gitPublishCommit'
     // dependsOn ':stubs:nodejs:publish'
     dependsOn ':stubs:python:uploadPythonPackage'
