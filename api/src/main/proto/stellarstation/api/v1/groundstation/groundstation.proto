@@ -270,9 +270,9 @@ message GroundStationStreamRequest {
 
     // The status of plan execution. The client can tell the server that it cannot continue
     // executing the plan by sending a FAILED status. If the status is sent, the server aborts
-    // the current plan and broadcast the status to all the connecting clients.
+    // the current plan and broadcast the status to all the connected clients.
     //
-    // This field is ignored unless the client is connecting to an endpoint at the edge device
+    // This field is ignored unless the client is connected to an endpoint at the edge device
     // (StarPass).
     PlanExecutionStatus plan_status = 5;
   }
@@ -309,7 +309,7 @@ message GroundStationStreamResponse {
 
     // An important life cycle event of the plan that is currently running.
     //
-    // This field is filled only when the client is connecting to an endpoint at the edge device
+    // This field is filled only when the client is connected to an endpoint at the edge device
     // (StarPass).
     PlanExecutionEvent plan_event = 4;
   }
