@@ -26,20 +26,20 @@ option java_multiple_files = true;
 option java_outer_classname = "PlanExecution";
 option java_package = "com.stellarstation.api.v1.groundstation";
 
-// An important life cycle event of a plan.
+// A life cycle event of a plan.
 message PlanExecutionEvent {
   oneof Event {
     // The plan is beginning. Sent at the plan's `start_time'.
     PlanWillBegin begin = 2;
 
-    // The plan has finished. Sent when the plan's execution state is determined.
+    // The plan has ended. Sent when the plan's execution state is determined.
     PlanDidEnd end = 3;
   }
 }
 
 // An event notifying a plan is beginning.
 message PlanWillBegin {
-  // The desired state of the ground station's devices for each point of time between AOS and LOS.
+  // The desired state of the ground station's devices at each point of time between AOS and LOS.
   repeated DeviceState state = 1;
 }
 
@@ -49,9 +49,9 @@ message PlanDidEnd {
   PlanExecutionStatus status = 1;
 }
 
-// A state of the ground station's device
+// A state of the ground station's devices.
 message DeviceState {
-  // The time of the state.
+  // The time the state is for.
   google.protobuf.Timestamp time = 1;
 
   // The rotator angle.

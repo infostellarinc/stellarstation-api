@@ -270,7 +270,7 @@ message GroundStationStreamRequest {
 
     // The status of plan execution. The client can tell the server that it cannot continue
     // executing the plan by sending a FAILED status. If the status is sent, the server aborts
-    // the current plan and broadcast the status to all the connecting client.
+    // the current plan and broadcast the status to all the connecting clients.
     //
     // This field is ignored unless the client is connecting to an endpoint at the edge device
     // (StarPass).
