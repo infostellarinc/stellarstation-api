@@ -17,6 +17,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/groundstation/plan-execution.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 
@@ -266,6 +267,8 @@ message GroundStationStreamRequest {
     // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
     //   documented in `PlanLifecycleEvent` when executing a plan.
     StreamEvent stream_event = 4;
+
+    PlanExecutionStatus plan_status = 5;
   }
 }
 
@@ -298,6 +301,8 @@ message GroundStationStreamResponse {
   oneof Response {
     // Commands to send to the satellite.
     SatelliteCommands satellite_commands = 3;
+
+    PlanExecutionEvent plan_event = 4;
   }
 }
 
