@@ -268,6 +268,12 @@ message GroundStationStreamRequest {
     //   documented in `PlanLifecycleEvent` when executing a plan.
     StreamEvent stream_event = 4;
 
+    // The status of plan execution. The client can tell the server that it cannot continue
+    // executing the plan by sending a FAILED status. If the status is sent, the server aborts
+    // the current plan and broadcast the status to all the connecting client.
+    //
+    // This field is ignored unless the client is connecting to an endpoint at the edge device
+    // (StarPass).
     PlanExecutionStatus plan_status = 5;
   }
 }
@@ -296,12 +302,15 @@ message GroundStationStreamResponse {
   //   `SendSatelliteCommandsResponse`.
   string response_id = 2;
 
-  // A payload sent on the stream to be processed by the ground station. Currently only commands to
-  // send to a satellite will be returned to the ground station.
+  // A payload sent on the stream to be processed by the ground station.
   oneof Response {
     // Commands to send to the satellite.
     SatelliteCommands satellite_commands = 3;
 
+    // An important life cycle event of the plan that is currently running.
+    //
+    // This field is filled only when the client is connecting to an endpoint at the edge device
+    // (StarPass).
     PlanExecutionEvent plan_event = 4;
   }
 }

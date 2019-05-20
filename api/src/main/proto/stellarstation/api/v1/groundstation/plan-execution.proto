@@ -26,37 +26,58 @@ option java_multiple_files = true;
 option java_outer_classname = "PlanExecution";
 option java_package = "com.stellarstation.api.v1.groundstation";
 
+// An important life cycle event of a plan.
 message PlanExecutionEvent {
   oneof Event {
+    // The plan is beginning. Sent at the plan's `start_time'.
     PlanWillBegin begin = 2;
+
+    // The plan has finished. Sent when the plan's execution state is determined.
     PlanDidEnd end = 3;
   }
 }
 
+// An event notifying a plan is beginning.
 message PlanWillBegin {
+  // The desired state of the ground station's devices for each point of time between AOS and LOS.
   repeated DeviceState state = 1;
 }
 
+// An event notifying a plan has ended.
 message PlanDidEnd {
+  // The execution status of the plan.
   PlanExecutionStatus status = 1;
 }
 
+// A state of the ground station's device
 message DeviceState {
+  // The time of the state.
   google.protobuf.Timestamp time = 1;
 
+  // The rotator angle.
   Angle rotator_angle = 2;
 
+  // The uplink frequency, in Hz.
   uint64 uplink_frequency_hz = 3;
 
+  // The downlink frequency, in Hz.
   uint64 downlink_frequency_hz = 4;
 }
 
+// An az/el angle.
 message Angle {
+  // The azimuth.
   double azimuth = 1;
+
+  // The elevation.
   double elevation = 2;
 }
 
+// Execution status of a plan.
 enum PlanExecutionStatus {
+  // The plan finished successfully.
   SUCCESSFUL = 0;
-  ABORTED = 1;
+
+  // The plan failed.
+  FAILED = 1;
 }
