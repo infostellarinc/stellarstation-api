@@ -58,11 +58,12 @@ message DeviceState {
   Angle rotator_angle = 2;
 
   // The uplink frequency to use, in Hz. Doppler shift is not applied. You can derive the Doppler
-  // shifted frequency using this equation.
+  // shifted frequency using this equation:
   //   shifted = freq * (1.0 + range_rage / speed_of_light) where speed_of_light is 299792458.0 m/s.
   uint64 uplink_frequency_hz = 3;
 
-  // The downlink frequency to use, in Hz. Dopplier shift is not applied.
+  // The downlink frequency to use, in Hz. Dopplier shift is not applied. You can derive the Doppler
+  // shifted frequency using this equation:
   //   shifted = freq * (1.0 - range_rage / speed_of_light) where speed_of_light is 299792458.0 m/s.
   uint64 downlink_frequency_hz = 4;
 
