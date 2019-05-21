@@ -39,8 +39,10 @@ message PlanExecutionEvent {
 
 // An event notifying a plan is beginning.
 message PlanWillBegin {
-  // The desired state of the ground station's devices at each point of time between AOS and LOS.
-  repeated DeviceState state = 1;
+  // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
+  // information is intended for calculating device states such as rotator angles and radio
+  // frequencies.
+  repeated SatelliteCoordinates satellite_coordinates = 1;
 }
 
 // An event notifying a plan has ended.
@@ -49,26 +51,22 @@ message PlanDidEnd {
   PlanExecutionStatus status = 1;
 }
 
-// A state of the ground station's devices.
-message DeviceState {
-  // The time the state is for.
+// Coordinates of the tracked satellite observed from the ground station,.
+message SatelliteCoordinates {
+  // The time the coordinates are for.
   google.protobuf.Timestamp time = 1;
 
-  // The rotator angle.
-  Angle rotator_angle = 2;
+  // The angle of the satellite.
+  Angle angle = 2;
 
-  // The uplink frequency to use, in Hz. Doppler shift is not applied. You can derive the Doppler
-  // shifted frequency using this equation:
-  //   shifted = freq * (1.0 + range_rage / speed_of_light) where speed_of_light is 299792458.0 m/s.
-  uint64 uplink_frequency_hz = 3;
-
-  // The downlink frequency to use, in Hz. Dopplier shift is not applied. You can derive the Doppler
-  // shifted frequency using this equation:
-  //   shifted = freq * (1.0 - range_rage / speed_of_light) where speed_of_light is 299792458.0 m/s.
-  uint64 downlink_frequency_hz = 4;
-
-  // The range rate (change rate of distance) of the tracked satellite.
-  double range_rate = 5;
+  // The range rate (change rate of distance) of the satellite. You can use this value to calculate
+  // Doppler shifted communication frequencies using the following formulae.
+  //   uplink:
+  //     shifted_freq = original_freq * (1.0 + range_rage / speed_of_light)
+  //   downlink:
+  //     shifted_freq = original_freq * (1.0 - range_rage / speed_of_light)
+  //   where speed_of_light is 299792458.0 m/s.
+  double range_rate = 3;
 }
 
 // An az/el angle.
