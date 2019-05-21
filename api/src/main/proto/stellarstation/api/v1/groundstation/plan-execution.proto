@@ -17,6 +17,8 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/stellarstation.proto";
+import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1.groundstation;
 
@@ -27,17 +29,19 @@ option java_outer_classname = "PlanExecution";
 option java_package = "com.stellarstation.api.v1.groundstation";
 
 // A life cycle event of a plan.
-message PlanExecutionEvent {
+message PlanLifeCycleEvent {
   oneof Event {
-    // The plan is beginning. Sent at the plan's `start_time'.
-    PlanWillBegin begin = 2;
+    // The plan has begun. Sent soon after the plan's `start_time'. The client should start setting
+    // up the ground station facility for the plan and be ready by `aos_time'.
+    PlanWillBegin begin = 1;
 
-    // The plan has ended. Sent when the plan's execution state is determined.
-    PlanDidEnd end = 3;
+    // The plan has ended. Sent when the plan's final status is determined. The client should tear
+    // down the ground statoin facility by the plan's `end_time'.
+    PlanDidEnd end = 2;
   }
 }
 
-// An event notifying a plan is beginning.
+// An event notifying a plan has begun.
 message PlanWillBegin {
   // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
   // information is intended for calculating device states such as rotator angles and radio
@@ -47,13 +51,13 @@ message PlanWillBegin {
 
 // An event notifying a plan has ended.
 message PlanDidEnd {
-  // The execution status of the plan.
-  PlanExecutionStatus status = 1;
+  // The final status of the plan.
+  Plan.Status status = 1;
 }
 
 // Coordinates of the tracked satellite observed from the ground station,.
 message SatelliteCoordinates {
-  // The time the coordinates are for.
+  // The time which the coordinates are for.
   google.protobuf.Timestamp time = 1;
 
   // The angle of the satellite.
@@ -78,11 +82,18 @@ message Angle {
   double elevation = 2;
 }
 
-// Execution status of a plan.
-enum PlanExecutionStatus {
-  // The plan finished successfully.
-  SUCCESSFUL = 0;
+// An event generated in the client during a plan.
+message PlanClientEvent {
+  oneof Event {
+    // An even to notify the server that the plan should be aborted. When the server receives this
+    // event it stops executing the plan and sets its status to FAILED.
+    PlanShouldAbort abort = 1;
+  }
+}
 
-  // The plan failed.
-  FAILED = 1;
+// A client-generated message to inform the server that the currently executing plan should be
+// aborted.
+message PlanShouldAbort {
+  // The reason for the abortion.
+  string reason = 1;
 }
