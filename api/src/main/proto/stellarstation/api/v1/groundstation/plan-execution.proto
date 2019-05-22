@@ -66,9 +66,9 @@ message SatelliteCoordinates {
   // The range rate (change rate of distance) of the satellite. You can use this value to calculate
   // Doppler shifted communication frequencies using the following formulae.
   //   uplink:
-  //     shifted_freq = original_freq * (1.0 + range_rage / speed_of_light)
+  //     shifted_freq = original_freq * (1.0 + range_rate / speed_of_light)
   //   downlink:
-  //     shifted_freq = original_freq * (1.0 - range_rage / speed_of_light)
+  //     shifted_freq = original_freq * (1.0 - range_rate / speed_of_light)
   //   where speed_of_light is 299792458.0 m/s.
   double range_rate = 3;
 }
@@ -85,7 +85,7 @@ message Angle {
 // An event generated in the client during a plan.
 message PlanClientEvent {
   oneof Event {
-    // An even to notify the server that the plan should be aborted. When the server receives this
+    // An event to notify the server that the plan should be aborted. When the server receives this
     // event it stops executing the plan and sets its status to FAILED.
     PlanShouldAbort abort = 1;
   }
