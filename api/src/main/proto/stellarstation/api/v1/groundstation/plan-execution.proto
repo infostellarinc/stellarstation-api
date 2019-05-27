@@ -36,8 +36,8 @@ message PlanExecutionServerMessage {
     // up the ground station facility for the plan and be ready by `aos_time'.
     PlanWillBegin begin = 1;
 
-    // The plan has ended. Sent when the plan's final status is determined. The client should tear
-    // down the ground station facility by the plan's `end_time'.
+    // The plan has ended. Sent when the plan's final status is determined. The client should
+    // finish cleanup jobs if any by the plan's `end_time'.
     PlanDidEnd end = 2;
   }
 }
