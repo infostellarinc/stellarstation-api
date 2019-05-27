@@ -16,7 +16,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "stellarstation/api/v1/groundstation/plan-execution.proto";
+import "stellarstation/api/v1/groundstation/plan_execution.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 
