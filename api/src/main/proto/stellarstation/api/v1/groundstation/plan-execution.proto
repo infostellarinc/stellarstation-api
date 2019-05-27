@@ -31,7 +31,7 @@ option java_package = "com.stellarstation.api.v1.groundstation";
 // A message sent during execution of a plan to inform the client of events or updates about
 // the plan.
 message PlanExecutionServerMessage {
-  oneof Event {
+  oneof Message {
     // The plan has begun. Sent soon after the plan's `start_time'. The client should start setting
     // up the ground station facility for the plan and be ready by `aos_time'.
     PlanWillBegin begin = 1;
@@ -42,7 +42,7 @@ message PlanExecutionServerMessage {
   }
 }
 
-// A server-generated message to inform the client that a plan is about to begin.
+// A server-generated message to inform the client that a plan has begun.
 message PlanWillBegin {
   // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
   // information is intended for calculating device states such as rotator angles and radio
@@ -86,7 +86,7 @@ message Angle {
 // A message sent during execution of a plan to inform the server of events or updates about
 // the plan.
 message PlanExecutionClientMessage {
-  oneof Event {
+  oneof Message {
     // Informs the server that the plan should be aborted. When the server receives this event it
     // stops execution of the plan immediately and sets its status to FAILED.
     PlanShouldAbort abort = 1;
