@@ -272,7 +272,7 @@ message GroundStationStreamRequest {
     //
     // This field is ignored unless the client is connected to an endpoint at the edge device
     // (StarPass).
-    PlanClientEvent plan_event = 5;
+    PlanExecutionClientMessage plan_execution = 5;
   }
 }
 
@@ -305,11 +305,12 @@ message GroundStationStreamResponse {
     // Commands to send to the satellite.
     SatelliteCommands satellite_commands = 3;
 
-    // A life cycle event of the plan that is about to start or currently running.
+    // A message sent during execution of a plan to inform the client of events or updates about
+    // the plan.
     //
     // This field is filled only when the client is connected to an endpoint at the edge device
     // (StarPass).
-    PlanLifeCycleEvent plan_event = 4;
+    PlanExecutionServerMessage plan_execution = 4;
   }
 }
 

@@ -28,20 +28,21 @@ option java_multiple_files = true;
 option java_outer_classname = "PlanExecution";
 option java_package = "com.stellarstation.api.v1.groundstation";
 
-// A life cycle event of a plan.
-message PlanLifeCycleEvent {
+// A message sent during execution of a plan to inform the client of events or updates about
+// the plan.
+message PlanExecutionServerMessage {
   oneof Event {
     // The plan has begun. Sent soon after the plan's `start_time'. The client should start setting
     // up the ground station facility for the plan and be ready by `aos_time'.
     PlanWillBegin begin = 1;
 
     // The plan has ended. Sent when the plan's final status is determined. The client should tear
-    // down the ground statoin facility by the plan's `end_time'.
+    // down the ground station facility by the plan's `end_time'.
     PlanDidEnd end = 2;
   }
 }
 
-// An event notifying a plan has begun.
+// A server-generated message to inform the client that a plan is about to begin.
 message PlanWillBegin {
   // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
   // information is intended for calculating device states such as rotator angles and radio
@@ -49,7 +50,7 @@ message PlanWillBegin {
   repeated SatelliteCoordinates satellite_coordinates = 1;
 }
 
-// An event notifying a plan has ended.
+// A server-generated message to inform the client that a plan has ended.
 message PlanDidEnd {
   // The final status of the plan.
   Plan.Status status = 1;
@@ -82,11 +83,12 @@ message Angle {
   double elevation = 2;
 }
 
-// An event generated in the client during a plan.
-message PlanClientEvent {
+// A message sent during execution of a plan to inform the server of events or updates about
+// the plan.
+message PlanExecutionClientMessage {
   oneof Event {
-    // An event to notify the server that the plan should be aborted. When the server receives this
-    // event it stops executing the plan and sets its status to FAILED.
+    // Informs the server that the plan should be aborted. When the server receives this event it
+    // stops execution of the plan immediately and sets its status to FAILED.
     PlanShouldAbort abort = 1;
   }
 }
