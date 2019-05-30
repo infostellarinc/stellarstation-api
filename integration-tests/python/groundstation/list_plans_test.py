@@ -17,7 +17,7 @@ from datetime import datetime
 
 from stellarstation.api.v1.groundstation import groundstation_pb2
 
-GS_ID = '27'
+GS_ID = '26'
 
 
 def test_list_plans(stub_factory):

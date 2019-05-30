@@ -26,8 +26,8 @@ def test_list_plans(stub_factory):
     request = stellarstation_pb2.ListPlansRequest()
     request.satellite_id = SATELLITE_ID
     request.aos_after.FromDatetime(datetime(2018, 12, 1, 0, 0))
-    request.aos_before.FromDatetime(datetime(2018, 12, 15, 0, 0))
+    request.aos_before.FromDatetime(datetime(2018, 12, 31, 0, 0))
 
     result = client.ListPlans(request)
     assert result
-    assert len(result.plan)
+    assert len(result.plan) > 0
