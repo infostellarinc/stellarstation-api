@@ -16,7 +16,6 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "stellarstation/api/v1/groundstation/plan_execution.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 
@@ -266,14 +265,6 @@ message GroundStationStreamRequest {
     // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
     //   documented in `PlanLifecycleEvent` when executing a plan.
     StreamEvent stream_event = 4;
-
-    // A message sent during execution of a plan to inform the server of events or updates that
-    // might affect the plan's execution. The message is consumed by the server and will not be
-    // directly forwarded to the satellite operator.
-    //
-    // This field is ignored unless the client is connected to an endpoint at the edge device
-    // (StarPass).
-    PlanExecutionClientMessage plan_execution = 5;
   }
 }
 
@@ -301,17 +292,11 @@ message GroundStationStreamResponse {
   //   `SendSatelliteCommandsResponse`.
   string response_id = 2;
 
-  // A payload sent on the stream to be processed by the ground station.
+  // A payload sent on the stream to be processed by the ground station. Currently only commands to
+  // send to a satellite will be returned to the ground station.
   oneof Response {
     // Commands to send to the satellite.
     SatelliteCommands satellite_commands = 3;
-
-    // A message sent during execution of a plan to inform the client of events or updates about
-    // the plan.
-    //
-    // This field is filled only when the client is connected to an endpoint at the edge device
-    // (StarPass).
-    PlanExecutionServerMessage plan_execution = 4;
   }
 }
 
