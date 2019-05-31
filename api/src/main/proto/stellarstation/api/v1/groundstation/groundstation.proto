@@ -125,7 +125,7 @@ message ListPlansResponse {
 // A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
 // during a time range between AOS and LOS, unless explicitly cancelled.
 //
-// Next ID: 9
+// Next ID: 10
 message Plan {
   // The ID of this plan.
   string plan_id = 1;
