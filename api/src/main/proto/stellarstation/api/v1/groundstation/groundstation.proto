@@ -164,6 +164,11 @@ message Plan {
   // Configuration of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
+
+  // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
+  // information is intended for calculating device states such as rotator angles and radio
+  // frequencies.
+  repeated SatelliteCoordinates satellite_coordinates = 9;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
@@ -173,6 +178,24 @@ message Tle {
 
   // The second line of the TLE.
   string line_2 = 2;
+}
+
+// Coordinates of a satellite observed from a ground station tracking it.
+message SatelliteCoordinates {
+  // The time which the coordinates are for.
+  google.protobuf.Timestamp time = 1;
+
+  // The angle of the satellite.
+  stellarstation.api.v1.common.Angle angle = 2;
+
+  // The range rate (change rate of distance) of the satellite. You can use this value to calculate
+  // Doppler shifted communication frequencies using the following formulae.
+  //   uplink:
+  //     shifted_freq = original_freq * (1.0 + range_rate / speed_of_light)
+  //   downlink:
+  //     shifted_freq = original_freq * (1.0 - range_rate / speed_of_light)
+  //   where speed_of_light is 299792458.0 m/s.
+  double range_rate = 3;
 }
 
 // A time window during which a ground station is unavailable e.g. for local maintenance.
