@@ -27,7 +27,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 dependencies {
-    compile 'com.stellarstation.api:stellarstation-api:0.0.8'
+    compile "com.stellarstation.api:stellarstation-api:$project.version"
 
     compile 'org.bouncycastle:bcpkix-jdk15on'
     compile 'org.curioswitch.curiostack:curio-server-framework'
