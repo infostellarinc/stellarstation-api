@@ -3,12 +3,13 @@
 This is a set of Python code that tests StellarStation API aiming to show how you can write API clients 
 for StellarStation API.
 
-Since these code are intended to server as sample code of the API, tests will not pass in your environment.
-If you want to run and pass tests, 
-  - You need to change satellite ID and ground station ID in the code.
-  - You may need to disable tests for satellites API or ground station API when you don't have 
-  any of theses.
-  - Commands and telemetries used in open-stream tests are specific to our test environment.
+Since this code is intended to show real world usage of the API, you will need to make some changes
+if you want the tests to pass in your environment:
+  - You need to change satellite ID and ground station ID in the code to match the satellites and ground
+stations that you own.
+  - If you don't own any satellites or ground stations, you may need to disable the corresponding tests.
+  - open-stream tests depend on command and telemetry messages, as well as server infrastructure, specific to
+our test environment.
 
 
 # How to run tests
