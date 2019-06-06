@@ -83,6 +83,8 @@ tasks {
     }
 
     val generatePackageJson by registering() {
+        mustRunAfter(generateProto)
+
         inputs.property("version", version)
         inputs.property("grpc-tools-version", GRPC_TOOLS_VERSION)
         inputs.property("grpc-tools-ts-version", GRPC_TOOLS_TS_VERSION)
@@ -99,7 +101,7 @@ tasks {
     }
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
-        dependsOn(installProtocPlugins, generatePackageJson)
+        dependsOn(installProtocPlugins)
 
         execOverride {
             org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
@@ -107,7 +109,7 @@ tasks {
     }
 
     named("assemble").configure {
-        dependsOn(generateProto)
+        dependsOn(generateProto, generatePackageJson)
     }
 
     val publish by registering(org.curioswitch.gradle.plugins.nodejs.tasks.NodeTask::class) {
@@ -120,10 +122,9 @@ tasks {
         }
 
         dependsOn("assemble")
-        args("publish", "--access=public")
+        args("publish", "--access=public", "--cwd=$projectDir/build/web/")
         execOverride {
             environment("NPM_TOKEN", rootProject.findProperty("npm.key"))
-            workingDir(file("build/web"))
         }
 
         onlyIf {
