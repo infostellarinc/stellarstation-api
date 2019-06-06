@@ -17,13 +17,13 @@
 plugins {
     java
     id("org.curioswitch.gradle-protobuf-plugin")
-    id("com.moowork.node") version "1.2.0"
+    id("com.moowork.node") version "1.3.1"
 }
 
-val GRPC_TOOLS_VERSION = "1.6.6"
-val GRPC_TOOLS_TS_VERSION = "2.3.1"
+val GRPC_TOOLS_VERSION = "1.7.3"
+val GRPC_TOOLS_TS_VERSION = "2.5.1"
 
-val GRPC_VERSION = "1.16.0"
+val GRPC_VERSION = "1.21.1"
 val GOOGLE_PROTOBUF_VERSION = "3.6.1"
 
 repositories {
@@ -71,7 +71,9 @@ val isSnapshot = (version as String).endsWith("SNAPSHOT")
 tasks {
     val installProtocPlugins by registering(org.curioswitch.gradle.plugins.nodejs.tasks.NodeTask::class) {
         setCommand("npm")
-        args("install", "--no-save", "grpc-tools@${GRPC_TOOLS_VERSION}", "grpc_tools_node_protoc_ts@${GRPC_TOOLS_TS_VERSION}")
+        // unsafe-perm seems to be needed when this command is run as root (e.g. in cloud build).
+        args("install", "--unsafe-perm", "--no-save", "grpc-tools@${GRPC_TOOLS_VERSION}",
+                "grpc_tools_node_protoc_ts@${GRPC_TOOLS_TS_VERSION}")
 
         inputs.property("grpc-tools-version", GRPC_TOOLS_VERSION)
         inputs.property("grpc-tools-ts-version", GRPC_TOOLS_TS_VERSION)
@@ -81,6 +83,8 @@ tasks {
     }
 
     val generatePackageJson by registering() {
+        mustRunAfter(generateProto)
+
         inputs.property("version", version)
         inputs.property("grpc-tools-version", GRPC_TOOLS_VERSION)
         inputs.property("grpc-tools-ts-version", GRPC_TOOLS_TS_VERSION)
@@ -97,7 +101,7 @@ tasks {
     }
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
-        dependsOn(installProtocPlugins, generatePackageJson)
+        dependsOn(installProtocPlugins)
 
         execOverride {
             org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
@@ -105,7 +109,7 @@ tasks {
     }
 
     named("assemble").configure {
-        dependsOn(generateProto)
+        dependsOn(generateProto, generatePackageJson)
     }
 
     val publish by registering(org.curioswitch.gradle.plugins.nodejs.tasks.NodeTask::class) {
@@ -118,10 +122,9 @@ tasks {
         }
 
         dependsOn("assemble")
-        args("publish", "--access=public")
+        args("publish", "--access=public", "--cwd=$projectDir/build/web/")
         execOverride {
             environment("NPM_TOKEN", rootProject.findProperty("npm.key"))
-            workingDir(file("build/web"))
         }
 
         onlyIf {
@@ -143,7 +146,7 @@ tasks {
 }
 
 node {
-    version = "8.11.4"
-    yarnVersion = "1.9.4"
+    version = "10.16.0"
+    yarnVersion = "1.13.0"
     download = true
 }
