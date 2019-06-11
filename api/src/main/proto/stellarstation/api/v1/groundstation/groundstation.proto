@@ -168,6 +168,8 @@ message Plan {
   // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
   // information is intended for calculating device states such as rotator angles and radio
   // frequencies.
+  //
+  // This field is only populated for future plans.
   repeated SatelliteCoordinates satellite_coordinates = 9;
 }
 
