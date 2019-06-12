@@ -16,6 +16,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/common/common.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 
@@ -124,7 +125,7 @@ message ListPlansResponse {
 // A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
 // during a time range between AOS and LOS, unless explicitly cancelled.
 //
-// Next ID: 9
+// Next ID: 10
 message Plan {
   // The ID of this plan.
   string plan_id = 1;
@@ -163,6 +164,13 @@ message Plan {
   // Configuration of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
+
+  // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
+  // information is intended for calculating device states such as rotator angles and radio
+  // frequencies.
+  //
+  // This field is only populated for future plans.
+  repeated SatelliteCoordinates satellite_coordinates = 9;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
@@ -172,6 +180,24 @@ message Tle {
 
   // The second line of the TLE.
   string line_2 = 2;
+}
+
+// Coordinates of a satellite observed from a ground station tracking it.
+message SatelliteCoordinates {
+  // The time which the coordinates are for.
+  google.protobuf.Timestamp time = 1;
+
+  // The angle of the satellite.
+  stellarstation.api.v1.common.Angle angle = 2;
+
+  // The range rate (change rate of distance) of the satellite. You can use this value to calculate
+  // Doppler shifted communication frequencies using the following formulae.
+  //   uplink:
+  //     shifted_freq = original_freq * (1.0 + range_rate / speed_of_light)
+  //   downlink:
+  //     shifted_freq = original_freq * (1.0 - range_rate / speed_of_light)
+  //   where speed_of_light is 299792458.0 m/s.
+  double range_rate = 3;
 }
 
 // A time window during which a ground station is unavailable e.g. for local maintenance.

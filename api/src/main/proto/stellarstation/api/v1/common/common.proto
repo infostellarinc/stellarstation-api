@@ -36,3 +36,13 @@ message Bits {
   // be used.
   bytes payload = 2;
 }
+
+// An az/el angle.
+message Angle {
+
+  // The azimuth.
+  double azimuth = 1;
+
+  // The elevation.
+  double elevation = 2;
+}
