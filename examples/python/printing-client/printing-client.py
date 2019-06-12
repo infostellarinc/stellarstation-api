@@ -1,4 +1,4 @@
-# Copyright 2018 Infostellar, Inc.
+# Copyright 2019 Infostellar, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """The Python implementation of the gRPC stellarstation-api client."""
+
+from queue import Queue
 
 import base64
 import os
@@ -43,37 +45,44 @@ def run():
     client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
 
     # Open satellite stream
-    request_iterator = generate_request()
-    for value in client.OpenSatelliteStream(request_iterator):
-        print(
-            "Got response: ",
-            base64.b64encode(
-                value.receive_telemetry_response.telemetry.data)[:100])
+    request_queue = Queue()
+    request_iterator = generate_request(request_queue)
 
+    for response in client.OpenSatelliteStream(request_iterator):
+        if response.HasField("receive_telemetry_response"):
+            print(
+                "Got response: ",
+                base64.b64encode(
+                    response.receive_telemetry_response.telemetry.data)[:100])
 
-# This generator yields the requests to send on the stream opened by OpenSatelliteStream.
-# The client side of the stream will be closed when this generator returns (in this example, it never returns).
-def generate_request():
-    # Send the first request to activate the stream. Telemetry will start
-    # to be received at this point.
-    yield stellarstation_pb2.SatelliteStreamRequest(satellite_id=SATELLITE_ID)
-
-    while True:
-        command_request = stellarstation_pb2.SendSatelliteCommandsRequest(
-            command=[
+            command = [
                 bytes(b'a' * 5000),
                 bytes(b'b' * 5000),
                 bytes(b'c' * 5000),
                 bytes(b'd' * 5000),
                 bytes(b'e' * 5000),
-            ])
+            ]
+            request_queue.put(command)
+            time.sleep(1)
+
+
+# This generator yields the requests to send on the stream opened by OpenSatelliteStream.
+# The client side of the stream will be closed when this generator returns (in this example, it never returns).
+def generate_request(queue):
+    # Send the first request to activate the stream. Telemetry will start
+    # to be received at this point.
+    yield stellarstation_pb2.SatelliteStreamRequest(satellite_id=SATELLITE_ID)
+
+    while True:
+        commands = queue.get()
+        command_request = stellarstation_pb2.SendSatelliteCommandsRequest(command=commands)
 
         satellite_stream_request = stellarstation_pb2.SatelliteStreamRequest(
             satellite_id=SATELLITE_ID,
             send_satellite_commands_request=command_request)
 
         yield satellite_stream_request
-        time.sleep(3)
+        queue.task_done()
 
 
 if __name__ == '__main__':
