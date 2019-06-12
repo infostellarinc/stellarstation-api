@@ -26,7 +26,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v5-dependencies-
+          - v6-dependencies-
 
       - run: ./gradlew build
 
