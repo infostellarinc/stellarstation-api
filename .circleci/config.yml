@@ -26,7 +26,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v6-dependencies-
+          - v7-dependencies-
 
       - run: ./gradlew build
 
@@ -35,4 +35,4 @@ jobs:
             - ~/.gradle
             - ~/.conan
             - /usr/local/share/cache
-          key: v5-dependencies-
+          key: v7-dependencies-
