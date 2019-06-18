@@ -20,6 +20,8 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 dependencies {
+    // You will need to replace the dependency to stellarstation-api with
+    // implementation 'com.stellarstation.api:stellarstation-api:0.x.x' in your project.
     implementation project(':api')
 
     implementation 'com.google.auth:google-auth-library-oauth2-http:0.16.1'
@@ -31,8 +33,8 @@ dependencies {
     implementation 'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
     implementation 'org.slf4j:slf4j-simple:1.7.26'
 
-    annotationProcessor 'com.google.dagger:dagger-compiler'
-    testAnnotationProcessor 'com.google.dagger:dagger-compiler'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.23.1'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.23.1'
 
     testImplementation 'com.typesafe:config:1.3.4'
     testImplementation 'org.assertj:assertj-core:3.11.1'

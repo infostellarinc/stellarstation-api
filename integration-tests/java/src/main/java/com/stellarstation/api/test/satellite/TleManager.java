@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 public class TleManager {
-  private StellarStationServiceBlockingStub client;
+  private final StellarStationServiceBlockingStub client;
 
   @Inject
   public TleManager(StellarStationServiceBlockingStub client) {

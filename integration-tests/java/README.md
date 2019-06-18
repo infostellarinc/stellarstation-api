@@ -1,4 +1,4 @@
-# Integration tests by Java
+# Java integration tests
 
 This is a set of Java code that tests StellarStation API aiming to show how you can write API clients
 for StellarStation API.
@@ -24,7 +24,7 @@ should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
  
 
 ### Run tests
-You can run tests at the top directory with the following command.
+You can run tests from the top level directory with the following command.
 
 ```bash
 $ ./gradlew integration-tests:java:test 
