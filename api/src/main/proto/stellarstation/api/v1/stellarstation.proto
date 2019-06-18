@@ -287,6 +287,8 @@ message ListPlansResponse {
 }
 
 // A pass during which a satellite can be communicated with from a given ground station.
+//
+// Next ID: 12
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
   string reservation_token = 1;
@@ -320,6 +322,22 @@ message Pass {
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
   uint64 uplink_center_frequency_hz = 10;
+
+  // A mapping of channel set to its unique reservation token.
+  message ChannelSetToken {
+    // An ID of a compatible channel set.
+    string channel_set_id = 1;
+
+    // A name of a compatible channel set.
+    string channel_set_name = 2;
+
+    // A unique token for this pass, specific to this channel set, that can
+    // be used for scheduling it by copying to ReservePassRequest.reservation_token.
+    string reservation_token = 3;
+  }
+
+  // List of channel set and corresponding reservation token groupings.
+  repeated ChannelSetToken channel_set_token = 11;
 }
 
 // Metadata for telemetry downlinked during a pass.
