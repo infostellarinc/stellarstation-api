@@ -253,7 +253,8 @@ message ListUpcomingAvailablePassesResponse {
 
 // Request for the `ReservePass` method.
 message ReservePassRequest {
-  // The token that specifies the pass, as returned in `Pass.reservation_token`.
+  // The token that specifies the pass, as returned in `Pass.reservation_token` or one of the
+  // `Pass.channel_set_token.reservation_token` values.
   string reservation_token = 1;
 }
 
@@ -286,12 +287,25 @@ message ListPlansResponse {
   repeated Plan plan = 1;
 }
 
+// A channel set defines one or both of the uplink and downlink `RadioDeviceConfiguration`s to be
+// used when executing a pass. A channel set is unique to a specific satellite, and a satellite may
+// have one or more channel sets.
+message ChannelSet {
+  // The unique ID of the channel set.
+  string id = 1;
+
+  // The name used to identify the channel set (for example, TT&C UHF).
+  string name = 2;
+}
+
 // A pass during which a satellite can be communicated with from a given ground station.
 //
 // Next ID: 12
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
-  string reservation_token = 1;
+  //
+  // Deprecated. Use one of channel_set_token's reservation_tokens.
+  string reservation_token = 1 [deprecated = true];
 
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
@@ -325,18 +339,16 @@ message Pass {
 
   // A mapping of channel set to its unique reservation token.
   message ChannelSetToken {
-    // An ID of a compatible channel set.
-    string channel_set_id = 1;
-
-    // A name of a compatible channel set.
-    string channel_set_name = 2;
+    // A channel set that can be reserved.
+    ChannelSet channel_set = 1;
 
     // A unique token for this pass, specific to this channel set, that can
     // be used for scheduling it by copying to ReservePassRequest.reservation_token.
-    string reservation_token = 3;
+    string reservation_token = 2;
   }
 
-  // List of channel set and corresponding reservation token groupings.
+  // List of channel set and corresponding reservation token groupings. Only channel sets that are
+  // compatible with this pass's ground station will be present.
   repeated ChannelSetToken channel_set_token = 11;
 }
 
@@ -363,7 +375,7 @@ message TelemetryMetadata {
 
 // A plan, specifying a time range within which a satellite will be communicated with.
 //
-// Next ID: 16
+// Next ID: 17
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -440,6 +452,9 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telemetry_metadata = 13;
+
+  // The channel set used to reserve this plan.
+  ChannelSet channel_set = 16;
 }
 
 // Request for the 'AddTle' method.
