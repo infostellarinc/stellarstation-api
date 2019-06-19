@@ -55,6 +55,7 @@ buildscript {
 include ':api'
 include ':examples:fakeserver'
 include ':examples:java:printing-client'
+include ':integration-tests:java'
 include ':portal'
 include ':stubs:cpp'
 include ':stubs:docs'
