@@ -290,6 +290,10 @@ message ListPlansResponse {
 // A channel set defines one or both of the uplink and downlink `RadioDeviceConfiguration`s to be
 // used when executing a pass. A channel set is unique to a specific satellite, and a satellite may
 // have one or more channel sets.
+//
+// A common example is to have a channel set for TT&C with both uplink and downlink configurations,
+// and a second channel set only for mission downlink. In this case it is necessary to select the
+// configuration that will be used during plan execution.
 message ChannelSet {
   // The unique ID of the channel set.
   string id = 1;
