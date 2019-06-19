@@ -27,5 +27,5 @@ should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
 You can run tests from the top level directory with the following command.
 
 ```bash
-$ ./gradlew integration-tests:java:test 
+$ ./gradlew integration-tests:java:integrationTest
 ``` 
