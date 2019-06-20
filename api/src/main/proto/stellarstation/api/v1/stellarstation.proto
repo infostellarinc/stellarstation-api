@@ -309,7 +309,7 @@ message Pass {
   // A unique token for this pass that can be used for scheduling it.
   //
   // Deprecated. Use one of channel_set_token's reservation_tokens.
-  string reservation_token = 1 [deprecated = true];
+  string reservation_token = 1;
 
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
@@ -353,6 +353,9 @@ message Pass {
 
   // List of channel set and corresponding reservation token groupings. Only channel sets that are
   // compatible with this pass's ground station will be present.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
   repeated ChannelSetToken channel_set_token = 11;
 }
 
@@ -458,6 +461,9 @@ message Plan {
   repeated TelemetryMetadata telemetry_metadata = 13;
 
   // The channel set used to reserve this plan.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
   ChannelSet channel_set = 16;
 }
 
