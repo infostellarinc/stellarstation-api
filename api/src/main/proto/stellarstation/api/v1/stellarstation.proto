@@ -253,7 +253,8 @@ message ListUpcomingAvailablePassesResponse {
 
 // Request for the `ReservePass` method.
 message ReservePassRequest {
-  // The token that specifies the pass, as returned in `Pass.reservation_token`.
+  // The token that specifies the pass, as returned in `Pass.reservation_token` or one of the
+  // `Pass.channel_set_token.reservation_token` values.
   string reservation_token = 1;
 }
 
@@ -286,7 +287,24 @@ message ListPlansResponse {
   repeated Plan plan = 1;
 }
 
+// A channel set defines one or both of the uplink and downlink `RadioDeviceConfiguration`s to be
+// used when executing a pass. A channel set is unique to a specific satellite, and a satellite may
+// have one or more channel sets.
+//
+// A common example is to have a channel set for TT&C with both uplink and downlink configurations,
+// and a second channel set only for mission downlink. In this case it is necessary to select the
+// configuration that will be used during plan execution.
+message ChannelSet {
+  // The unique ID of the channel set.
+  string id = 1;
+
+  // The name used to identify the channel set (for example, TT&C UHF).
+  string name = 2;
+}
+
 // A pass during which a satellite can be communicated with from a given ground station.
+//
+// Next ID: 12
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
   string reservation_token = 1;
@@ -320,6 +338,23 @@ message Pass {
   // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
   // this pass.
   uint64 uplink_center_frequency_hz = 10;
+
+  // A mapping of channel set to its unique reservation token.
+  message ChannelSetToken {
+    // A channel set that can be reserved.
+    ChannelSet channel_set = 1;
+
+    // A unique token for this pass, specific to this channel set, that can
+    // be used for scheduling it by copying to ReservePassRequest.reservation_token.
+    string reservation_token = 2;
+  }
+
+  // List of channel set and corresponding reservation token groupings. Only channel sets that are
+  // compatible with this pass's ground station will be present.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  repeated ChannelSetToken channel_set_token = 11;
 }
 
 // Metadata for telemetry downlinked during a pass.
@@ -345,7 +380,7 @@ message TelemetryMetadata {
 
 // A plan, specifying a time range within which a satellite will be communicated with.
 //
-// Next ID: 16
+// Next ID: 17
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -422,6 +457,12 @@ message Plan {
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
   repeated TelemetryMetadata telemetry_metadata = 13;
+
+  // The channel set used to reserve this plan.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  ChannelSet channel_set = 16;
 }
 
 // Request for the 'AddTle' method.
