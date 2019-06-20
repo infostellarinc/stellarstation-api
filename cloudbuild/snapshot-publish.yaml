@@ -27,6 +27,7 @@ steps:
   env:
     - BINTRAY_USER=istellar-admin
     - CI=true
+    - CI_MASTER=true
   secretEnv: ['BINTRAY_KEY']
 timeout: 60m
 options:
