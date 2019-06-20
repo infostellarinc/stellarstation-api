@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-. gradle/get-jdk.sh
+. ./gradle/get-jdk.sh
 
 ##############################################################################
 ##
