@@ -22,6 +22,8 @@ steps:
     mkdir /root/.ssh &&
     cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
     chmod 400 /root/.ssh/id_rsa &&
+    apt-get -y update &&
+    apt-get -y install wget &&
     echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
     ./gradlew :api:artifactoryPublish :stubs:golang:gitPublishPush -Pbintray.user=$$BINTRAY_USER -Pbintray.key=$$BINTRAY_KEY --stacktrace --no-daemon
   env: ['BINTRAY_USER=istellar-admin']
