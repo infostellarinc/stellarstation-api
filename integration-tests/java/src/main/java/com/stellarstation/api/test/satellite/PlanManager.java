@@ -34,8 +34,7 @@ public class PlanManager {
   }
 
   @Nullable
-  public List<Plan> list(
-          String satelliteId, Instant aosAfter, Instant aosBefore) {
+  public List<Plan> list(String satelliteId, Instant aosAfter, Instant aosBefore) {
     ListPlansResponse res =
         client.listPlans(
             ListPlansRequest.newBuilder()
