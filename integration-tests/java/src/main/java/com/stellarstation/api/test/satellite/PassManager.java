@@ -15,7 +15,6 @@
  */
 package com.stellarstation.api.test.satellite;
 
-import com.google.common.collect.ImmutableList;
 import com.stellarstation.api.v1.ListUpcomingAvailablePassesRequest;
 import com.stellarstation.api.v1.ListUpcomingAvailablePassesResponse;
 import com.stellarstation.api.v1.Pass;
@@ -42,6 +41,6 @@ public class PassManager {
       return null;
     }
 
-    return ImmutableList.copyOf(res.getPassList());
+    return res.getPassList();
   }
 }

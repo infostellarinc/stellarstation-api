@@ -15,7 +15,6 @@
  */
 package com.stellarstation.api.test.satellite;
 
-import com.google.common.collect.ImmutableList;
 import com.stellarstation.api.test.util.TimestampUtilities;
 import com.stellarstation.api.v1.ListPlansRequest;
 import com.stellarstation.api.v1.ListPlansResponse;
@@ -50,6 +49,6 @@ public class PlanManager {
       return null;
     }
 
-    return ImmutableList.copyOf(res.getPlanList());
+    return res.getPlanList();
   }
 }
