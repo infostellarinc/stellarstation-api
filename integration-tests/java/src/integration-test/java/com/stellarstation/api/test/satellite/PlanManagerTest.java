@@ -62,7 +62,12 @@ public class PlanManagerTest {
     Instant aos = TimestampUtilities.toInstant(plan.getAosTime());
     Instant los = TimestampUtilities.toInstant(plan.getLosTime());
     Instant now = Instant.now();
+
+    // We are assuming that the server will not return passes that are due to start very soon
+    // which could cause this to fail. (e.g. within the next few seconds)
+    // Also, this could fail when the server and client have significant clock skew.
     assertThat(aos).isBefore(now);
+
     assertThat(los).isBefore(now);
     assertThat(los).isAfter(aos);
 
