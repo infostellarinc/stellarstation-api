@@ -25,14 +25,14 @@ import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TleTest {
+public class TleManagerTest {
   private TleManager manager;
 
   private static final String SATELLITE_ID = "98";
 
   @BeforeEach
   void setUp() {
-    manager = DaggerTleTest_TleComponent.create().manager();
+    manager = DaggerTleManagerTest_TleComponent.create().manager();
   }
 
   @Component(modules = ApiClientModule.class)
