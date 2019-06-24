@@ -20,8 +20,7 @@ import com.stellarstation.api.v1.ListPlansRequest;
 import com.stellarstation.api.v1.ListPlansResponse;
 import com.stellarstation.api.v1.Plan;
 import com.stellarstation.api.v1.StellarStationServiceGrpc.StellarStationServiceBlockingStub;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -36,13 +35,13 @@ public class PlanManager {
 
   @Nullable
   public List<Plan> list(
-      String satelliteId, LocalDateTime aosAfter, LocalDateTime aosBefore, ZoneOffset zone) {
+          String satelliteId, Instant aosAfter, Instant aosBefore) {
     ListPlansResponse res =
         client.listPlans(
             ListPlansRequest.newBuilder()
                 .setSatelliteId(satelliteId)
-                .setAosAfter(TimestampUtilities.fromLocalDateTime(aosAfter, zone))
-                .setAosBefore(TimestampUtilities.fromLocalDateTime(aosBefore, zone))
+                .setAosAfter(TimestampUtilities.fromInstant(aosAfter))
+                .setAosBefore(TimestampUtilities.fromInstant(aosBefore))
                 .build());
 
     if (res == null) {

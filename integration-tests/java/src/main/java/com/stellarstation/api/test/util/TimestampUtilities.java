@@ -18,21 +18,18 @@ package com.stellarstation.api.test.util;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.Timestamps;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 public class TimestampUtilities {
 
-  public static Timestamp fromLocalDateTime(LocalDateTime localDateTime, ZoneOffset zone) {
-    Instant instant = localDateTime.toInstant(zone);
+  public static Timestamp fromInstant(Instant instant) {
     return Timestamp.newBuilder()
         .setSeconds(instant.getEpochSecond())
         .setNanos(instant.getNano())
         .build();
   }
 
-  public static LocalDateTime toLocalDateTime(Timestamp timestamp, ZoneOffset zone) {
-    return LocalDateTime.ofEpochSecond(Timestamps.toSeconds(timestamp), timestamp.getNanos(), zone);
+  public static Instant toInstant(Timestamp timestamp) {
+    return Instant.ofEpochSecond(Timestamps.toSeconds(timestamp), timestamp.getNanos());
   }
 
   private TimestampUtilities() {}

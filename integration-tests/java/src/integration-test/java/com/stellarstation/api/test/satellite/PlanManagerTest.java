@@ -22,6 +22,7 @@ import com.stellarstation.api.test.auth.ApiClientModule;
 import com.stellarstation.api.test.util.TimestampUtilities;
 import com.stellarstation.api.v1.Plan;
 import dagger.Component;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -33,7 +34,7 @@ public class PlanManagerTest {
   private PlanManager manager;
 
   private static final String SATELLITE_ID = "98";
-  private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
+  private static final ZoneOffset UTC = ZoneOffset.UTC;
 
   @BeforeEach
   void setUp() {
@@ -48,19 +49,19 @@ public class PlanManagerTest {
 
   @Test
   void list() {
-    LocalDateTime aosAfter = LocalDateTime.of(2018, 12, 1, 0, 0);
-    LocalDateTime aosBefore = LocalDateTime.of(2018, 12, 31, 0, 0);
+    Instant aosAfter = LocalDateTime.of(2018, 12, 1, 0, 0).toInstant(UTC);
+    Instant aosBefore = LocalDateTime.of(2018, 12, 31, 0, 0).toInstant(UTC);
 
-    List<Plan> plans = manager.list(SATELLITE_ID, aosAfter, aosBefore, ZONE_OFFSET);
+    List<Plan> plans = manager.list(SATELLITE_ID, aosAfter, aosBefore);
     assertThat(plans).isNotNull();
     assertThat(plans.size()).isNotZero();
 
     Plan plan = plans.get(0);
 
     // Check AOS and LOS.
-    LocalDateTime aos = TimestampUtilities.toLocalDateTime(plan.getAosTime(), ZONE_OFFSET);
-    LocalDateTime los = TimestampUtilities.toLocalDateTime(plan.getLosTime(), ZONE_OFFSET);
-    LocalDateTime now = LocalDateTime.now(ZONE_OFFSET);
+    Instant aos = TimestampUtilities.toInstant(plan.getAosTime());
+    Instant los = TimestampUtilities.toInstant(plan.getLosTime());
+    Instant now = Instant.now();
     assertThat(aos).isBefore(now);
     assertThat(los).isBefore(now);
     assertThat(los).isAfter(aos);

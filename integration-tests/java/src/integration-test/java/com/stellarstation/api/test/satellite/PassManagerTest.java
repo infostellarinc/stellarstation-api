@@ -22,8 +22,7 @@ import com.stellarstation.api.test.auth.ApiClientModule;
 import com.stellarstation.api.test.util.TimestampUtilities;
 import com.stellarstation.api.v1.Pass;
 import dagger.Component;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.List;
 import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,6 @@ public class PassManagerTest {
   private PassManager manager;
 
   private static final String SATELLITE_ID = "98";
-  private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
   @BeforeEach
   void setUp() {
@@ -55,9 +53,9 @@ public class PassManagerTest {
     Pass pass = passes.get(0);
 
     // Check AOS and LOS.
-    LocalDateTime aos = TimestampUtilities.toLocalDateTime(pass.getAosTime(), ZONE_OFFSET);
-    LocalDateTime los = TimestampUtilities.toLocalDateTime(pass.getLosTime(), ZONE_OFFSET);
-    LocalDateTime now = LocalDateTime.now(ZONE_OFFSET);
+    Instant aos = TimestampUtilities.toInstant(pass.getAosTime());
+    Instant los = TimestampUtilities.toInstant(pass.getLosTime());
+    Instant now = Instant.now();
     assertThat(aos).isAfter(now);
     assertThat(los).isAfter(now);
     assertThat(los).isAfter(aos);
