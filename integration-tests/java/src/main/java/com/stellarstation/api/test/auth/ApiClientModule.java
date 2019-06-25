@@ -48,7 +48,8 @@ public class ApiClientModule {
 
   @Provides
   @Singleton
-  public static StellarStationServiceGrpc.StellarStationServiceBlockingStub client(Config config) {
+  public static StellarStationServiceGrpc.StellarStationServiceBlockingStub blockingClient(
+      Config config) {
     Config apiConfig = config.getConfig(CONFIG);
 
     try {
@@ -63,6 +64,31 @@ public class ApiClientModule {
               .build();
       StellarStationServiceGrpc.StellarStationServiceBlockingStub client =
           StellarStationServiceGrpc.newBlockingStub(channel)
+              .withCallCredentials(MoreCallCredentials.from(credentials));
+
+      return client;
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  @Provides
+  @Singleton
+  public static StellarStationServiceGrpc.StellarStationServiceStub client(Config config) {
+    Config apiConfig = config.getConfig(CONFIG);
+
+    try {
+      ServiceAccountJwtAccessCredentials credentials =
+          ServiceAccountJwtAccessCredentials.fromStream(
+              Files.newInputStream(Paths.get(apiConfig.getString(API_KEY))),
+              URI.create("https://api.stellarstation.com"));
+
+      ManagedChannel channel =
+          ManagedChannelBuilder.forAddress(
+                  apiConfig.getString(API_SERVER_URL_KEY), apiConfig.getInt(API_SERVER_PORT_KEY))
+              .build();
+      StellarStationServiceGrpc.StellarStationServiceStub client =
+          StellarStationServiceGrpc.newStub(channel)
               .withCallCredentials(MoreCallCredentials.from(credentials));
 
       return client;
