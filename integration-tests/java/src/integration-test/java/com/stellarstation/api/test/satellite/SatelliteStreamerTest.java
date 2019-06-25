@@ -120,7 +120,10 @@ public class SatelliteStreamerTest {
 
     // Sends commands in the blocking queue to the API.
     requestObserver.onNext(
-        SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
+        SatelliteStreamRequest.newBuilder()
+            .setSatelliteId(SATELLITE_ID)
+            .setEnableEvents(true)
+            .build());
 
     ListenableFuture<Boolean> timeoutFuture =
         Futures.withTimeout(
