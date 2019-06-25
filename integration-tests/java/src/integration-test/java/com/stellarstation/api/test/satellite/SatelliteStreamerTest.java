@@ -65,7 +65,7 @@ public class SatelliteStreamerTest {
     final List<Double> azimuthMeasured = new ArrayList();
     final List<Double> elevationCommand = new ArrayList();
     final List<Double> elevationMeasured = new ArrayList();
-    final List<Integer> stateList = new ArrayList();
+    final List<Integer> safeModeStates = new ArrayList();
 
     StreamObserver<SatelliteStreamRequest> requestObserver =
         streamer.openStream(
@@ -79,9 +79,9 @@ public class SatelliteStreamerTest {
                     // The second last byte of the telemetry indicates the current state of the
                     // fake satellite used in the test. The value is either of 0 or 1.
                     int state = data.byteAt(data.size() - 2);
-                    stateList.add(state);
+                    safeModeStates.add(state);
 
-                    if (stateList.size() == 2) {
+                    if (safeModeStates.size() == 2) {
                       latch.countDown();
                     }
 
@@ -141,9 +141,9 @@ public class SatelliteStreamerTest {
     }
 
     // Check safe mode state is changed..
-    assertThat(stateList).hasSize(2);
-    int expected = 1 - stateList.get(0);
-    assertThat(expected).isEqualTo(stateList.get(1));
+    assertThat(safeModeStates).hasSize(2);
+    int expected = 1 - safeModeStates.get(0);
+    assertThat(expected).isEqualTo(safeModeStates.get(1));
 
     // Check antenna states are valid.
     assertThat(azimuthCommand).containsOnly(1.0);
