@@ -118,25 +118,27 @@ public class SatelliteStreamerTest {
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
 
+    // Stop tests after 30 seconds.
     Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(
         () -> {
           try {
-            // Sends commands in the blocking queue to the API.
-            while (latch.getCount() > 0) {
-              SendSatelliteCommandsRequest commandsRequest = queue.take();
-              requestObserver.onNext(
-                  SatelliteStreamRequest.newBuilder()
-                      .setSatelliteId(SATELLITE_ID)
-                      .setSendSatelliteCommandsRequest(commandsRequest)
-                      .build());
-            }
+            latch.await(30, TimeUnit.SECONDS);
+            latch.countDown();
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
         });
 
-    latch.await(30, TimeUnit.SECONDS);
+    // Sends commands in the blocking queue to the API.
+    while (latch.getCount() > 0) {
+      SendSatelliteCommandsRequest commandsRequest = queue.take();
+      requestObserver.onNext(
+          SatelliteStreamRequest.newBuilder()
+              .setSatelliteId(SATELLITE_ID)
+              .setSendSatelliteCommandsRequest(commandsRequest)
+              .build());
+    }
 
     // Check safe mode state is changed..
     assertThat(stateList).hasSize(2);
