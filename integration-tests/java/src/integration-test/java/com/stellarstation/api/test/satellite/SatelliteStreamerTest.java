@@ -118,7 +118,6 @@ public class SatelliteStreamerTest {
             });
     requestObserverFuture.set(requestObserver);
 
-    // Sends commands in the blocking queue to the API.
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder()
             .setSatelliteId(SATELLITE_ID)
