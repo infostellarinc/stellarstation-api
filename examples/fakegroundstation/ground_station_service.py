@@ -1,0 +1,99 @@
+import time
+
+import grpc
+from google.protobuf.timestamp_pb2 import Timestamp
+
+from stellarstation.api.v1.groundstation import groundstation_pb2_grpc
+from stellarstation.api.v1.groundstation import groundstation_pb2
+
+
+SECONDS_BEFORE_PLAN_START = 10
+PLAN_DURATION_SECONDS = 600
+PLAN_ID = "3"
+
+
+class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceServicer):
+    def ListPlans(self, request, context) -> groundstation_pb2.ListPlansResponse:
+        if request.ground_station_id is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Ground station ID not set')
+            raise RuntimeError('Ground station ID not set')
+        if request.aos_after is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('AOS after not set')
+            raise RuntimeError('AOS after not set')
+        if request.aos_before is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('AOS before not set')
+            raise RuntimeError('AOS before not set')
+
+        aos_after = request.aos_after.seconds + request.aos_after.nanos / 10.**9
+        aos_before = request.aos_before.seconds + request.aos_before.nanos / 10. ** 9
+
+        if aos_before - aos_after > 31 * 24 * 3600:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Duration between aos_after and aos_before > 31 days')
+            raise RuntimeError('Duration between aos_after and aos_before > 31 days')
+
+        now = time.time()
+
+        satellite_coordinates = [
+            groundstation_pb2.SatelliteCoordinates(
+                time=Timestamp(seconds=int(now + SECONDS_BEFORE_PLAN_START + i)),
+                range_rate=(2.1e7 + i * 1e4)
+            )
+            for i in range(PLAN_DURATION_SECONDS)
+        ]
+        # TODO: Fill in the other fields of plan
+        response = groundstation_pb2.ListPlansResponse(
+            plan=[groundstation_pb2.Plan(
+                plan_id=PLAN_ID,
+                satellite_coordinates=satellite_coordinates)]
+        )
+        return response
+
+    def OpenGroundStationStream(self, request_iterator, context):
+        """Open a stream from a ground station. The returned stream is bi-directional - it is used by
+        the ground station to send telemetry received from a satellite and receive commands to send to
+        the satellite. The ground station must keep this stream open while it is connected to the
+        StellarStation network for use in executing plans - if the stream is cut, it must be
+        reconnected with exponential backoff.
+
+        The first `GroundStationStreamRequest` sent on the stream is used for configuring the stream.
+        Unless otherwise specified, all configuration is taken from the first request and configuration
+        values in subsequent requests will be ignored.
+
+        There is no restriction on the number of active streams from a ground station (i.e., streams
+        opened with the same `ground_station_id`). Most ground stations will issue a single stream to
+        receive commands and send telemetry, but in certain cases, such as if uplink and downlink are
+        handled by different computers, it can be appropriate to have multiple processes with their
+        own stream. If opening multiple streams for a single ground station, it is the client's
+        responsibility to handle the streams appropriately, for example by ensuring only one stream
+        sends commands so they are not duplicated.
+
+        If the ground station is not found or the API client is not authorized for it, the stream will
+        be closed with a `NOT_FOUND` error.
+
+        Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+        incompatible ways in the future.
+        """
+        ground_station_id = next(request_iterator).ground_station_id
+        for request in request_iterator:
+            if request.ground_station_id != ground_station_id:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details('Unexpected ground station ID')
+                raise RuntimeError('Unexpected ground staiton ID')
+            print("Received request")
+            print("Ground station ID", request.ground_station_id)
+            print("Stream tag", request.stream_tag)
+            print("Satellite telemetry", request.satellite_telemetry)
+            print("Stream event", request.stream_event)
+            response = groundstation_pb2.GroundStationStreamResponse(
+                plan_id=PLAN_ID,
+                satellite_commands=groundstation_pb2.SatelliteCommands(
+                    command=[bytes('command1', encoding='ascii'),
+                             bytes('command2', encoding='ascii'),
+                             bytes('command3', encoding='ascii')],
+                )
+            )
+            yield response
