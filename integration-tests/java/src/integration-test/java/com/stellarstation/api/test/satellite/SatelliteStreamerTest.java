@@ -115,9 +115,6 @@ public class SatelliteStreamerTest {
               }
             });
 
-    requestObserver.onNext(
-        SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
-
     // Stop tests after 30 seconds.
     Executor executor = Executors.newSingleThreadExecutor();
     executor.execute(
@@ -131,6 +128,9 @@ public class SatelliteStreamerTest {
         });
 
     // Sends commands in the blocking queue to the API.
+    requestObserver.onNext(
+        SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
+
     while (latch.getCount() > 0) {
       SendSatelliteCommandsRequest commandsRequest = queue.take();
       requestObserver.onNext(
