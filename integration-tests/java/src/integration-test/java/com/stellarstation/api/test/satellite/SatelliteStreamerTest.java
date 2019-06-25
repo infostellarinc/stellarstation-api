@@ -18,6 +18,9 @@ package com.stellarstation.api.test.satellite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.ByteString;
 import com.stellarstation.api.test.auth.ApiClientModule;
 import com.stellarstation.api.v1.SatelliteStreamRequest;
@@ -29,11 +32,7 @@ import dagger.Component;
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,20 +55,20 @@ public class SatelliteStreamerTest {
   }
 
   @Test
-  void openStream() throws InterruptedException {
-    final CountDownLatch latch = new CountDownLatch(1);
-    final BlockingQueue<SendSatelliteCommandsRequest> queue =
-        new LinkedBlockingQueue<SendSatelliteCommandsRequest>();
-
+  void openStream() throws Exception {
     final List<Double> azimuthCommand = new ArrayList();
     final List<Double> azimuthMeasured = new ArrayList();
     final List<Double> elevationCommand = new ArrayList();
     final List<Double> elevationMeasured = new ArrayList();
-    final List<Integer> safeModeStates = new ArrayList();
+
+    final SettableFuture<Boolean> commandTestFuture = SettableFuture.create();
+    final SettableFuture<StreamObserver<SatelliteStreamRequest>> requestObserverFuture =
+        SettableFuture.create();
 
     StreamObserver<SatelliteStreamRequest> requestObserver =
         streamer.openStream(
             new StreamObserver<SatelliteStreamResponse>() {
+              private int initialState = -1;
 
               @Override
               public void onNext(SatelliteStreamResponse response) {
@@ -79,18 +78,23 @@ public class SatelliteStreamerTest {
                     // The second last byte of the telemetry indicates the current state of the
                     // fake satellite used in the test. The value is either of 0 or 1.
                     int state = data.byteAt(data.size() - 2);
-                    safeModeStates.add(state);
-
-                    if (safeModeStates.size() == 2) {
-                      latch.countDown();
+                    if (initialState < 0) {
+                      initialState = state;
+                    } else {
+                      commandTestFuture.set(initialState == 1 - state);
                     }
 
                     // Send a command to toggle the state.
-                    SendSatelliteCommandsRequest command =
+                    SendSatelliteCommandsRequest commandsRequest =
                         SendSatelliteCommandsRequest.newBuilder()
                             .addCommand(ByteString.copyFrom(new byte[] {0x01, 0x01}))
                             .build();
-                    queue.add(command);
+                    Futures.getUnchecked(requestObserverFuture)
+                        .onNext(
+                            SatelliteStreamRequest.newBuilder()
+                                .setSatelliteId(SATELLITE_ID)
+                                .setSendSatelliteCommandsRequest(commandsRequest)
+                                .build());
                   }
                 } else {
                   GroundStationState gsState =
@@ -106,44 +110,24 @@ public class SatelliteStreamerTest {
 
               @Override
               public void onError(Throwable t) {
-                latch.countDown();
+                commandTestFuture.setException(t);
               }
 
               @Override
-              public void onCompleted() {
-                latch.countDown();
-              }
+              public void onCompleted() {}
             });
-
-    // Stop tests after 30 seconds.
-    Executor executor = Executors.newSingleThreadExecutor();
-    executor.execute(
-        () -> {
-          try {
-            latch.await(30, TimeUnit.SECONDS);
-            latch.countDown();
-          } catch (Exception e) {
-            throw new RuntimeException(e);
-          }
-        });
+    requestObserverFuture.set(requestObserver);
 
     // Sends commands in the blocking queue to the API.
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
 
-    while (latch.getCount() > 0) {
-      SendSatelliteCommandsRequest commandsRequest = queue.take();
-      requestObserver.onNext(
-          SatelliteStreamRequest.newBuilder()
-              .setSatelliteId(SATELLITE_ID)
-              .setSendSatelliteCommandsRequest(commandsRequest)
-              .build());
-    }
+    ListenableFuture<Boolean> timeoutFuture =
+        Futures.withTimeout(
+            commandTestFuture, 30, TimeUnit.SECONDS, Executors.newSingleThreadScheduledExecutor());
 
     // Check safe mode state is changed..
-    assertThat(safeModeStates).hasSize(2);
-    int expected = 1 - safeModeStates.get(0);
-    assertThat(expected).isEqualTo(safeModeStates.get(1));
+    assertThat(timeoutFuture.get()).isTrue();
 
     // Check antenna states are valid.
     assertThat(azimuthCommand).containsOnly(1.0);
