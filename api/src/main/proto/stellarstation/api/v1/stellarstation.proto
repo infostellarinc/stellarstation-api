@@ -300,6 +300,18 @@ message ChannelSet {
 
   // The name used to identify the channel set (for example, TT&C UHF).
   string name = 2;
+
+  // The center frequency used for uplink, in Hz. Set to 0 if the channel set is downlink only.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  uint64 uplink_center_frequency_hz = 3;
+
+  // The center frequency used for downlink, in Hz. Set to 0 if the channel set is uplink only.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  uint64 downlink_center_frequency_hz = 4;
 }
 
 // A pass during which a satellite can be communicated with from a given ground station.
