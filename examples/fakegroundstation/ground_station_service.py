@@ -1,3 +1,6 @@
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import time
 from concurrent import futures
 
@@ -8,6 +11,7 @@ from stellarstation.api.v1.groundstation import groundstation_pb2_grpc
 from stellarstation.api.v1.groundstation import groundstation_pb2
 
 
+ONE_DAY_IN_SECONDS = 60 * 60 * 24
 SECONDS_BEFORE_PLAN_START = 10
 PLAN_DURATION_SECONDS = 600
 CURRENT_PLAN_ID = "3"
@@ -22,7 +26,7 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
         31 days.
         """
         print('Got request for ListPlans')
-        if request.ground_station_id is None or request.ground_station_id == "":
+        if not request.ground_station_id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Ground station ID not set')
             raise RuntimeError('Ground station ID not set')
@@ -35,10 +39,8 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
             context.set_details('AOS before not set')
             raise RuntimeError('AOS before not set')
 
-        aos_after = request.aos_after.seconds + request.aos_after.nanos / 10.**9
-        aos_before = request.aos_before.seconds + request.aos_before.nanos / 10. ** 9
-
-        if aos_before - aos_after > 31 * 24 * 3600:
+        delta = request.aos_before.ToDatetime() - request.aos_after.ToDatetime()
+        if delta.days > 31:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Duration between aos_after and aos_before > 31 days')
             raise RuntimeError('Duration between aos_after and aos_before > 31 days')
@@ -87,7 +89,7 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
         """
         request = next(request_iterator)
         ground_station_id = request.ground_station_id
-        if ground_station_id is None or ground_station_id == "":
+        if not request.ground_station_id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Ground station ID not set')
             raise RuntimeError('Ground station ID not set')
@@ -116,9 +118,6 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
             yield response
 
 
-_ONE_DAY_IN_SECONDS = 60 * 60 * 24
-
-
 if __name__ == '__main__':
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     groundstation_pb2_grpc.add_GroundStationServiceServicer_to_server(
@@ -131,6 +130,6 @@ if __name__ == '__main__':
 
     try:
         while True:
-            time.sleep(_ONE_DAY_IN_SECONDS)
+            time.sleep(ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
         server.stop(0)
