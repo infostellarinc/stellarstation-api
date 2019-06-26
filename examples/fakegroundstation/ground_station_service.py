@@ -1,4 +1,5 @@
 import time
+from concurrent import futures
 
 import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -9,12 +10,19 @@ from stellarstation.api.v1.groundstation import groundstation_pb2
 
 SECONDS_BEFORE_PLAN_START = 10
 PLAN_DURATION_SECONDS = 600
-PLAN_ID = "3"
+CURRENT_PLAN_ID = "3"
 
 
 class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceServicer):
     def ListPlans(self, request, context) -> groundstation_pb2.ListPlansResponse:
-        if request.ground_station_id is None:
+        """Lists the plans for a particular ground station.
+
+        The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+        `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
+        31 days.
+        """
+        print('Got request for ListPlans')
+        if request.ground_station_id is None or request.ground_station_id == "":
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Ground station ID not set')
             raise RuntimeError('Ground station ID not set')
@@ -47,7 +55,7 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
         # TODO: Fill in the other fields of plan
         response = groundstation_pb2.ListPlansResponse(
             plan=[groundstation_pb2.Plan(
-                plan_id=PLAN_ID,
+                plan_id=CURRENT_PLAN_ID,
                 satellite_coordinates=satellite_coordinates)]
         )
         return response
@@ -77,7 +85,12 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
         Status: ALPHA This API is under development and may not work correctly or be changed in backwards
         incompatible ways in the future.
         """
-        ground_station_id = next(request_iterator).ground_station_id
+        request = next(request_iterator)
+        ground_station_id = request.ground_station_id
+        if ground_station_id is None or ground_station_id == "":
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Ground station ID not set')
+            raise RuntimeError('Ground station ID not set')
         for request in request_iterator:
             if request.ground_station_id != ground_station_id:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -86,10 +99,14 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
             print("Received request")
             print("Ground station ID", request.ground_station_id)
             print("Stream tag", request.stream_tag)
-            print("Satellite telemetry", request.satellite_telemetry)
-            print("Stream event", request.stream_event)
+            if request.HasField('satellite_telemetry'):
+                print("Satellite telemetry", request.satellite_telemetry)
+                if request.satellite_telemetry.plan_id != CURRENT_PLAN_ID:
+                    print("WARNING: plan ID from client telemetry is not equal to current plan ID")
+            if request.HasField('stream_event'):
+                print("Stream event", repr(request.stream_event))
             response = groundstation_pb2.GroundStationStreamResponse(
-                plan_id=PLAN_ID,
+                plan_id=CURRENT_PLAN_ID,
                 satellite_commands=groundstation_pb2.SatelliteCommands(
                     command=[bytes('command1', encoding='ascii'),
                              bytes('command2', encoding='ascii'),
@@ -97,3 +114,23 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
                 )
             )
             yield response
+
+
+_ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+
+if __name__ == '__main__':
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    groundstation_pb2_grpc.add_GroundStationServiceServicer_to_server(
+        GroundStationServiceServicer(), server
+    )
+    server.add_insecure_port('[::]:50051')
+    server.start()
+
+    print('started server')
+
+    try:
+        while True:
+            time.sleep(_ONE_DAY_IN_SECONDS)
+    except KeyboardInterrupt:
+        server.stop(0)
