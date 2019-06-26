@@ -308,7 +308,7 @@ message ChannelSet {
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  radio.RadioDeviceConfiguration uplink = 3;
+  stellarstation.api.v1.radio.RadioDeviceConfiguration uplink = 3;
 
   // The radio device configuration used for downlinking.
   //
@@ -316,7 +316,7 @@ message ChannelSet {
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  radio.RadioDeviceConfiguration downlink = 4;
+  stellarstation.api.v1.radio.RadioDeviceConfiguration downlink = 4;
 }
 
 // A pass during which a satellite can be communicated with from a given ground station.
