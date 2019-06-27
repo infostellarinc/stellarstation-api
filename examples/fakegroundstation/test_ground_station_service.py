@@ -1,5 +1,20 @@
+# Copyright 2019 Infostellar, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import time
 
+import grpc
 import grpc_testing
 
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -40,9 +55,8 @@ def test_request() -> None:
 
     response, metadata, code, details = list_plans_method.termination()
     print(response.plan[0].satellite_coordinates[:3])
-    print(metadata)
-    print(code)
-    print(details)
+    assert response.plan[0].plan_id == "3"
+    assert code == grpc.StatusCode.OK
 
 
 def test_stream() -> None:
@@ -72,7 +86,14 @@ def test_stream() -> None:
     )
     client.send_request(telemetry_request)
     response = client.take_response()
-    print(response)
+    assert response.plan_id == "3"
+    assert response.satellite_commands == groundstation_pb2.SatelliteCommands(
+        command=[
+            bytes("command1", 'ascii'),
+            bytes("command2", 'ascii'),
+            bytes("command3", 'ascii'),
+        ]
+    )
 
     client.requests_closed()
     client.termination()
