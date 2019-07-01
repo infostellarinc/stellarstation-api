@@ -28,4 +28,42 @@ You can run tests from the top level directory with the following command.
 
 ```bash
 $ ./gradlew integration-tests:java:integrationTest
-``` 
+```
+
+# How to initiate a new project from this example
+This section explains how you can write your Java clients based on this example.
+
+### Set up a new directory
+Create a new directory, and copy entire code Java integration tests to there.
+
+```bash
+$ mkdir my-client
+$ cd my-client
+$ copy -R PATH_TO_STELLARSTATION_API/integration-tests/java/* ./
+```
+
+### Replace a dependency in build.gradle
+In order to run those test outside of stellarstation-api, you need to replace the dependency
+to stellarstation-api from internal reference to external one.
+
+In order to do that, open `build.gradle` and replace `implementation project(':api')` in dependencies section to
+`implementation 'com.stellarstation.api:stellarstation-api:0.4.0'`.
+
+
+### Set your API key
+You need to obtain an API key for StellarStation and set it in a configuration file.
+Open `src/main/resources/application.conf` and replace `PATH_TO_YOUR_API_KEY` to your API key.
+
+For example, if you saved the key as `stellarstation-private-key.json ` in `/home/kevin/stellarstation`, they value
+should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
+
+
+### Run tests
+You can run tests from the top level directory with the following command.
+
+```bash
+$ ./gradlew :integrationTest
+```
+
+### Develop your client
+Congratulations! You are ready to build your own API client.
