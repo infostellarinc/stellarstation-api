@@ -32,7 +32,7 @@ Gradle users should add the `stellarstation-api` artifact to their `dependencies
 
 ```groovy
 dependencies {
-    compile 'com.stellarstation.api:stellarstation-api:0.3.0'
+    compile 'com.stellarstation.api:stellarstation-api:0.4.0'
 }
 ```
 
