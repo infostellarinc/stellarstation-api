@@ -48,7 +48,8 @@ Maven users would add to their `pom.xml`
 </dependencies>
 ```
 
-A full example of a Java API client can be found [here](./examples/java/printing-client).
+A full example of a Java API client can be found [here](./integration-tests/java).
+You can also find tutorials to start your own Java client [here](./integration-tests/java/README.md#How-to-initiate-a-new-project-from-this-example).
 
 We publish `SNAPSHOT` builds to https://oss.jfrog.org/libs-snapshot/ for access to preview features.
 The same caveats as using non-tagged releases applies - not all functions in `SNAPSHOT` builds may
