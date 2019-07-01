@@ -17,9 +17,9 @@ our test environment.
 
 ### Set your API key
 You need to obtain an API key for StellarStation and set it in a configuration file. 
-Open `src/main/resources/application.conf` and replace `PATH_TO_YOUR_API_KEY` to your API key.
+Open `src/main/resources/application.conf` and replace `PATH_TO_YOUR_API_KEY` with the path to your API key.
 
-For example, if you saved the key as `stellarstation-private-key.json ` in `/home/kevin/stellarstation`, they value
+For example, if you saved the key as `stellarstation-private-key.json ` in `/home/kevin/stellarstation`, the value
 should be `/home/kevin/stellarstation/stellarstation-private-key.json`.     
  
 
@@ -34,7 +34,7 @@ $ ./gradlew integration-tests:java:integrationTest
 This section explains how you can write your Java clients based on this example.
 
 ### Set up a new directory
-Create a new directory, and copy entire code Java integration tests to there.
+Create a new directory, and copy the entire contents of the java integration directory into it.
 
 ```bash
 $ mkdir my-client
@@ -42,19 +42,19 @@ $ cd my-client
 $ copy -R PATH_TO_STELLARSTATION_API/integration-tests/java/* ./
 ```
 
-### Replace a dependency in build.gradle
-In order to run those test outside of stellarstation-api, you need to replace the dependency
-to stellarstation-api from internal reference to external one.
+### Replace dependencies in build.gradle
+In order to run these tests in your own copy of the source code, you need to update the dependency
+on stellarstation-api from an internal reference to the external one.
 
-In order to do that, open `build.gradle` and replace `implementation project(':api')` in dependencies section to
+To do that, open `build.gradle` and replace `implementation project(':api')` in dependencies section with
 `implementation 'com.stellarstation.api:stellarstation-api:0.4.0'`.
 
 
 ### Set your API key
 You need to obtain an API key for StellarStation and set it in a configuration file.
-Open `src/main/resources/application.conf` and replace `PATH_TO_YOUR_API_KEY` to your API key.
+Open `src/main/resources/application.conf` and replace `PATH_TO_YOUR_API_KEY` with the path to your API key.
 
-For example, if you saved the key as `stellarstation-private-key.json ` in `/home/kevin/stellarstation`, they value
+For example, if you saved the key as `stellarstation-private-key.json ` in `/home/kevin/stellarstation`, the value
 should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
 
 
