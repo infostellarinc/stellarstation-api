@@ -43,7 +43,7 @@ Maven users would add to their `pom.xml`
   <dependency>
     <groupId>com.stellarstation.api</groupId>
     <artifactId>stellarstation-api</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
   </dependency>
 </dependencies>
 ```
