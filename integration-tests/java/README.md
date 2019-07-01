@@ -58,11 +58,11 @@ For example, if you saved the key as `stellarstation-private-key.json ` in `/hom
 should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
 
 
-### Run tests
-You can run tests from the top level directory with the following command.
+### Build the source code
+You can build the source code from the top level directory with the following command.
 
 ```bash
-$ ./gradlew :integrationTest
+$ ./gradlew build
 ```
 
 ### Develop your client
