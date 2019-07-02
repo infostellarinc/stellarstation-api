@@ -28,6 +28,7 @@ public class TimestampUtilities {
         .build();
   }
 
+  @SuppressWarnings("ProtoTimestampGetSecondsGetNano")
   public static Instant toInstant(Timestamp timestamp) {
     return Instant.ofEpochSecond(Timestamps.toSeconds(timestamp), timestamp.getNanos());
   }

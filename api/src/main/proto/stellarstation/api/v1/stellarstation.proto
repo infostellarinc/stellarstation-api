@@ -17,6 +17,7 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
+import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1;
@@ -300,6 +301,22 @@ message ChannelSet {
 
   // The name used to identify the channel set (for example, TT&C UHF).
   string name = 2;
+
+  // The radio device configuration used for uplinking.
+  //
+  // Optional if downlink is set.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  stellarstation.api.v1.radio.RadioDeviceConfiguration uplink = 3;
+
+  // The radio device configuration used for downlinking.
+  //
+  // Optional if uplink is set.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  stellarstation.api.v1.radio.RadioDeviceConfiguration downlink = 4;
 }
 
 // A pass during which a satellite can be communicated with from a given ground station.
