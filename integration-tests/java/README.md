@@ -62,7 +62,7 @@ should be `/home/kevin/stellarstation/stellarstation-private-key.json`.
 You can build the source code from the top level directory with the following command.
 
 ```bash
-$ ./gradlew build
+$ ./gradlew :integrationTestClasses
 ```
 
 ### Develop your client
