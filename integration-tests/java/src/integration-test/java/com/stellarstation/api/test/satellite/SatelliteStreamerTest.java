@@ -18,6 +18,7 @@ package com.stellarstation.api.test.satellite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -27,7 +28,6 @@ import com.stellarstation.api.v1.SatelliteStreamRequest;
 import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
 import com.stellarstation.api.v1.monitoring.AntennaState;
-import com.stellarstation.api.v1.monitoring.GroundStationState;
 import dagger.Component;
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
@@ -55,88 +55,149 @@ public class SatelliteStreamerTest {
   }
 
   @Test
-  void openStream() throws Exception {
-    final List<Double> azimuthCommand = new ArrayList();
-    final List<Double> azimuthMeasured = new ArrayList();
-    final List<Double> elevationCommand = new ArrayList();
-    final List<Double> elevationMeasured = new ArrayList();
-
-    final SettableFuture<Boolean> commandTestFuture = SettableFuture.create();
+  void telemetryAndCommand() throws Exception {
+    final SettableFuture<Boolean> testCompletionFuture = SettableFuture.create();
     final SettableFuture<StreamObserver<SatelliteStreamRequest>> requestObserverFuture =
         SettableFuture.create();
 
-    StreamObserver<SatelliteStreamRequest> requestObserver =
-        streamer.openStream(
-            new StreamObserver<SatelliteStreamResponse>() {
-              private int initialState = -1;
+    class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
+      private boolean isClosing;
+      private final List<Integer> safeModeStates = new ArrayList();
+      private int telemetryReceived;
 
-              @Override
-              public void onNext(SatelliteStreamResponse response) {
-                if (response.hasReceiveTelemetryResponse()) {
-                  ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
-                  if (data.size() > 2) {
-                    // The second last byte of the telemetry indicates the current state of the
-                    // fake satellite used in the test. The value is either of 0 or 1.
-                    int state = data.byteAt(data.size() - 2);
-                    if (initialState < 0) {
-                      initialState = state;
-                    } else {
-                      commandTestFuture.set(initialState == 1 - state);
-                    }
+      @Override
+      public void onNext(SatelliteStreamResponse response) {
+        if (isClosing) {
+          return;
+        }
 
-                    // Send a command to toggle the state.
-                    SendSatelliteCommandsRequest commandsRequest =
-                        SendSatelliteCommandsRequest.newBuilder()
-                            .addCommand(ByteString.copyFrom(new byte[] {0x01, 0x01}))
-                            .build();
-                    Futures.getUnchecked(requestObserverFuture)
-                        .onNext(
-                            SatelliteStreamRequest.newBuilder()
-                                .setSatelliteId(SATELLITE_ID)
-                                .setSendSatelliteCommandsRequest(commandsRequest)
-                                .build());
-                  }
-                } else {
-                  GroundStationState gsState =
-                      response.getStreamEvent().getPlanMonitoringEvent().getGroundStationState();
-                  AntennaState antennaState = gsState.getAntenna();
+        if (response.hasReceiveTelemetryResponse()) {
+          ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
+          if (data.size() > 2) {
+            // The second last byte of the telemetry indicates the current state of the
+            // fake satellite used in the test. The value is either of 0 or 1.
+            int state = data.byteAt(data.size() - 2);
+            safeModeStates.add(state);
 
-                  azimuthCommand.add(antennaState.getAzimuth().getCommand());
-                  azimuthMeasured.add(antennaState.getAzimuth().getMeasured());
-                  elevationCommand.add(antennaState.getElevation().getCommand());
-                  elevationMeasured.add(antennaState.getElevation().getMeasured());
-                }
-              }
+            // Send a command to toggle the state.
+            SendSatelliteCommandsRequest commandsRequest =
+                SendSatelliteCommandsRequest.newBuilder()
+                    .addCommand(ByteString.copyFrom(new byte[] {0x01, 0x01}))
+                    .build();
+            Futures.getUnchecked(requestObserverFuture)
+                .onNext(
+                    SatelliteStreamRequest.newBuilder()
+                        .setSatelliteId(SATELLITE_ID)
+                        .setSendSatelliteCommandsRequest(commandsRequest)
+                        .build());
+          }
 
-              @Override
-              public void onError(Throwable t) {
-                commandTestFuture.setException(t);
-              }
+          telemetryReceived++;
+          if (telemetryReceived == 2) {
+            Futures.getUnchecked(requestObserverFuture).onCompleted();
+            isClosing = true;
+          }
+        }
+      }
 
-              @Override
-              public void onCompleted() {}
-            });
+      @Override
+      public void onError(Throwable t) {
+        testCompletionFuture.setException(t);
+      }
+
+      @Override
+      public void onCompleted() {
+        testCompletionFuture.set(true);
+      }
+
+      public List<Integer> getSafeModeStates() {
+        return ImmutableList.copyOf(safeModeStates);
+      }
+    }
+
+    TelemetryAndCommandTestStreamObserver responseObserver =
+        new TelemetryAndCommandTestStreamObserver();
+    StreamObserver<SatelliteStreamRequest> requestObserver = streamer.openStream(responseObserver);
     requestObserverFuture.set(requestObserver);
+
+    requestObserver.onNext(
+        SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
+
+    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 30);
+    assertThat(timeoutFuture.get()).isTrue();
+
+    assertThat(responseObserver.getSafeModeStates()).containsExactlyInAnyOrder(0, 1);
+  }
+
+  @Test
+  void events() throws Exception {
+    final SettableFuture<Boolean> testCompletionFuture = SettableFuture.create();
+    final SettableFuture<StreamObserver<SatelliteStreamRequest>> requestObserverFuture =
+        SettableFuture.create();
+
+    class EventTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
+      private AntennaState antennaState;
+
+      @Override
+      public void onNext(SatelliteStreamResponse response) {
+        if (antennaState != null) {
+          return;
+        }
+
+        if (response.hasStreamEvent()) {
+          antennaState =
+              response
+                  .getStreamEvent()
+                  .getPlanMonitoringEvent()
+                  .getGroundStationState()
+                  .getAntenna();
+
+          Futures.getUnchecked(requestObserverFuture).onCompleted();
+        }
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        testCompletionFuture.setException(t);
+      }
+
+      @Override
+      public void onCompleted() {
+        testCompletionFuture.set(true);
+      }
+
+      public AntennaState getAntennaState() {
+        return antennaState;
+      }
+    }
+
+    EventTestStreamObserver responseObserver = new EventTestStreamObserver();
+    StreamObserver<SatelliteStreamRequest> requestObserver = streamer.openStream(responseObserver);
 
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder()
             .setSatelliteId(SATELLITE_ID)
             .setEnableEvents(true)
             .build());
+    requestObserverFuture.set(requestObserver);
 
-    ListenableFuture<Boolean> timeoutFuture =
-        Futures.withTimeout(
-            commandTestFuture, 30, TimeUnit.SECONDS, Executors.newSingleThreadScheduledExecutor());
-
-    // Check safe mode state is changed..
+    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 10);
     assertThat(timeoutFuture.get()).isTrue();
 
     // Check antenna states are valid.
-    assertThat(azimuthCommand).containsOnly(1.0);
-    assertThat(azimuthMeasured).containsOnly(1.02);
-    assertThat(elevationCommand).containsOnly(20.0);
-    assertThat(elevationMeasured).containsOnly(19.5);
+    assertThat(responseObserver.getAntennaState()).isNotNull();
+    assertThat(responseObserver.getAntennaState().getAzimuth().getCommand()).isEqualTo(1.0);
+    assertThat(responseObserver.getAntennaState().getAzimuth().getMeasured()).isEqualTo(1.02);
+    assertThat(responseObserver.getAntennaState().getElevation().getCommand()).isEqualTo(20.0);
+    assertThat(responseObserver.getAntennaState().getElevation().getMeasured()).isEqualTo(19.5);
+  }
 
-    requestObserver.onCompleted();
+  private static <T> ListenableFuture<T> createTimeoutFuture(
+      SettableFuture<T> testCompletionFuture, int timeout) {
+    return Futures.withTimeout(
+        testCompletionFuture,
+        timeout,
+        TimeUnit.SECONDS,
+        Executors.newSingleThreadScheduledExecutor());
   }
 }
