@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.ByteString;
 import com.stellarstation.api.test.auth.ApiClientModule;
@@ -31,6 +32,8 @@ import dagger.Component;
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,18 +64,10 @@ public class SatelliteStreamerTest {
       private boolean isClosing;
       private final List<Integer> safeModeStates = new ArrayList();
       private int telemetryReceived;
-      private int totalResponseReceived;
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
         if (isClosing) {
-          return;
-        }
-
-        totalResponseReceived++;
-        if (totalResponseReceived > 30) {
-          Futures.getUnchecked(requestObserverFuture).onCompleted();
-          isClosing = true;
           return;
         }
 
@@ -128,7 +123,9 @@ public class SatelliteStreamerTest {
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
 
-    assertThat(testCompletionFuture.get()).isTrue();
+    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 30);
+    assertThat(timeoutFuture.get()).isTrue();
+
     assertThat(responseObserver.getSafeModeStates()).containsExactlyInAnyOrder(0, 1);
   }
 
@@ -184,7 +181,8 @@ public class SatelliteStreamerTest {
             .build());
     requestObserverFuture.set(requestObserver);
 
-    assertThat(testCompletionFuture.get()).isTrue();
+    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 10);
+    assertThat(timeoutFuture.get()).isTrue();
 
     // Check antenna states are valid.
     assertThat(responseObserver.getAntennaState()).isNotNull();
@@ -192,5 +190,14 @@ public class SatelliteStreamerTest {
     assertThat(responseObserver.getAntennaState().getAzimuth().getMeasured()).isEqualTo(1.02);
     assertThat(responseObserver.getAntennaState().getElevation().getCommand()).isEqualTo(20.0);
     assertThat(responseObserver.getAntennaState().getElevation().getMeasured()).isEqualTo(19.5);
+  }
+
+  private static <T> ListenableFuture<T> createTimeoutFuture(
+      SettableFuture<T> testCompletionFuture, int timeout) {
+    return Futures.withTimeout(
+        testCompletionFuture,
+        timeout,
+        TimeUnit.SECONDS,
+        Executors.newSingleThreadScheduledExecutor());
   }
 }
