@@ -62,7 +62,7 @@ public class SatelliteStreamerTest {
         SettableFuture.create();
 
     class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
-      private List<Integer> safeModeStates = new ArrayList();
+      private final List<Integer> safeModeStates = new ArrayList();
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
@@ -112,7 +112,6 @@ public class SatelliteStreamerTest {
     requestObserver.onNext(
         SatelliteStreamRequest.newBuilder()
             .setSatelliteId(SATELLITE_ID)
-            .setEnableEvents(true)
             .build());
 
     TimeUnit.SECONDS.sleep(20);
@@ -129,7 +128,7 @@ public class SatelliteStreamerTest {
     final SettableFuture<Boolean> testCompletionFuture = SettableFuture.create();
 
     class EventTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
-      private List<AntennaState> antennaStates = new ArrayList();
+      private final List<AntennaState> antennaStates = new ArrayList();
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
