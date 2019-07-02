@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.protobuf.ByteString;
 import com.stellarstation.api.test.auth.ApiClientModule;
@@ -28,13 +27,10 @@ import com.stellarstation.api.v1.SatelliteStreamRequest;
 import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
 import com.stellarstation.api.v1.monitoring.AntennaState;
-import com.stellarstation.api.v1.monitoring.GroundStationState;
 import dagger.Component;
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,10 +59,17 @@ public class SatelliteStreamerTest {
 
     class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
       private final List<Integer> safeModeStates = new ArrayList();
+      private int telemetryReceived;
+      private int totalResponseReceived;
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
         if (response.hasReceiveTelemetryResponse()) {
+          totalResponseReceived++;
+          if (totalResponseReceived > 30) {
+            onCompleted();
+          }
+
           ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
           if (data.size() > 2) {
             // The second last byte of the telemetry indicates the current state of the
@@ -85,6 +88,11 @@ public class SatelliteStreamerTest {
                         .setSatelliteId(SATELLITE_ID)
                         .setSendSatelliteCommandsRequest(commandsRequest)
                         .build());
+
+            telemetryReceived++;
+            if (telemetryReceived == 2) {
+              onCompleted();
+            }
           }
         }
       }
@@ -110,16 +118,9 @@ public class SatelliteStreamerTest {
     requestObserverFuture.set(requestObserver);
 
     requestObserver.onNext(
-        SatelliteStreamRequest.newBuilder()
-            .setSatelliteId(SATELLITE_ID)
-            .build());
+        SatelliteStreamRequest.newBuilder().setSatelliteId(SATELLITE_ID).build());
 
-    TimeUnit.SECONDS.sleep(20);
-    requestObserver.onCompleted();
-
-    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 3);
-    assertThat(timeoutFuture.get()).isTrue();
-
+    assertThat(testCompletionFuture.get()).isTrue();
     assertThat(responseObserver.getSafeModeStates()).containsExactlyInAnyOrder(0, 1);
   }
 
@@ -128,14 +129,25 @@ public class SatelliteStreamerTest {
     final SettableFuture<Boolean> testCompletionFuture = SettableFuture.create();
 
     class EventTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
-      private final List<AntennaState> antennaStates = new ArrayList();
+      private AntennaState antennaState;
+      private int totalResponseReceived;
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
+        totalResponseReceived++;
+        if (totalResponseReceived > 10) {
+          onCompleted();
+        }
+
         if (response.hasStreamEvent()) {
-          GroundStationState gsState =
-              response.getStreamEvent().getPlanMonitoringEvent().getGroundStationState();
-          antennaStates.add(gsState.getAntenna());
+          antennaState =
+              response
+                  .getStreamEvent()
+                  .getPlanMonitoringEvent()
+                  .getGroundStationState()
+                  .getAntenna();
+
+          onCompleted();
         }
       }
 
@@ -149,8 +161,8 @@ public class SatelliteStreamerTest {
         testCompletionFuture.set(true);
       }
 
-      public List<AntennaState> getAntennaStates() {
-        return ImmutableList.copyOf(antennaStates);
+      public AntennaState getAntennaState() {
+        return antennaState;
       }
     }
 
@@ -163,34 +175,13 @@ public class SatelliteStreamerTest {
             .setEnableEvents(true)
             .build());
 
-    TimeUnit.SECONDS.sleep(10);
-    requestObserver.onCompleted();
-
-    ListenableFuture<Boolean> timeoutFuture = createTimeoutFuture(testCompletionFuture, 3);
-    assertThat(timeoutFuture.get()).isTrue();
+    assertThat(testCompletionFuture.get()).isTrue();
 
     // Check antenna states are valid.
-    assertThat(responseObserver.getAntennaStates()).hasSizeGreaterThan(0);
-    assertThat(responseObserver.getAntennaStates())
-        .extracting(antennaState -> antennaState.getAzimuth().getCommand())
-        .containsOnly(1.0);
-    assertThat(responseObserver.getAntennaStates())
-        .extracting(antennaState -> antennaState.getAzimuth().getMeasured())
-        .containsOnly(1.02);
-    assertThat(responseObserver.getAntennaStates())
-        .extracting(antennaState -> antennaState.getElevation().getCommand())
-        .containsOnly(20.0);
-    assertThat(responseObserver.getAntennaStates())
-        .extracting(antennaState -> antennaState.getElevation().getMeasured())
-        .containsOnly(19.5);
-  }
-
-  private static <T> ListenableFuture<T> createTimeoutFuture(
-      SettableFuture<T> testCompletionFuture, int timeout) {
-    return Futures.withTimeout(
-        testCompletionFuture,
-        timeout,
-        TimeUnit.SECONDS,
-        Executors.newSingleThreadScheduledExecutor());
+    assertThat(responseObserver.getAntennaState()).isNotNull();
+    assertThat(responseObserver.getAntennaState().getAzimuth().getCommand()).isEqualTo(1.0);
+    assertThat(responseObserver.getAntennaState().getAzimuth().getMeasured()).isEqualTo(1.02);
+    assertThat(responseObserver.getAntennaState().getElevation().getCommand()).isEqualTo(20.0);
+    assertThat(responseObserver.getAntennaState().getElevation().getMeasured()).isEqualTo(19.5);
   }
 }
