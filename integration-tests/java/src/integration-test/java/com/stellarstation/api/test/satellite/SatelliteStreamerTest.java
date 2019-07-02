@@ -58,18 +58,25 @@ public class SatelliteStreamerTest {
         SettableFuture.create();
 
     class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
+      private boolean isClosing;
       private final List<Integer> safeModeStates = new ArrayList();
       private int telemetryReceived;
       private int totalResponseReceived;
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
-        if (response.hasReceiveTelemetryResponse()) {
-          totalResponseReceived++;
-          if (totalResponseReceived > 30) {
-            onCompleted();
-          }
+        if (isClosing) {
+          return;
+        }
 
+        totalResponseReceived++;
+        if (totalResponseReceived > 30) {
+          Futures.getUnchecked(requestObserverFuture).onCompleted();
+          isClosing = true;
+          return;
+        }
+
+        if (response.hasReceiveTelemetryResponse()) {
           ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
           if (data.size() > 2) {
             // The second last byte of the telemetry indicates the current state of the
@@ -88,11 +95,12 @@ public class SatelliteStreamerTest {
                         .setSatelliteId(SATELLITE_ID)
                         .setSendSatelliteCommandsRequest(commandsRequest)
                         .build());
+          }
 
-            telemetryReceived++;
-            if (telemetryReceived == 2) {
-              onCompleted();
-            }
+          telemetryReceived++;
+          if (telemetryReceived == 2) {
+            Futures.getUnchecked(requestObserverFuture).onCompleted();
+            isClosing = true;
           }
         }
       }
@@ -127,16 +135,16 @@ public class SatelliteStreamerTest {
   @Test
   void events() throws Exception {
     final SettableFuture<Boolean> testCompletionFuture = SettableFuture.create();
+    final SettableFuture<StreamObserver<SatelliteStreamRequest>> requestObserverFuture =
+        SettableFuture.create();
 
     class EventTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
       private AntennaState antennaState;
-      private int totalResponseReceived;
 
       @Override
       public void onNext(SatelliteStreamResponse response) {
-        totalResponseReceived++;
-        if (totalResponseReceived > 10) {
-          onCompleted();
+        if (antennaState != null) {
+          return;
         }
 
         if (response.hasStreamEvent()) {
@@ -147,7 +155,7 @@ public class SatelliteStreamerTest {
                   .getGroundStationState()
                   .getAntenna();
 
-          onCompleted();
+          Futures.getUnchecked(requestObserverFuture).onCompleted();
         }
       }
 
@@ -174,6 +182,7 @@ public class SatelliteStreamerTest {
             .setSatelliteId(SATELLITE_ID)
             .setEnableEvents(true)
             .build());
+    requestObserverFuture.set(requestObserver);
 
     assertThat(testCompletionFuture.get()).isTrue();
 
