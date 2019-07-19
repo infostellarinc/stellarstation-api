@@ -25,7 +25,7 @@ from stellarstation.api.v1.groundstation import groundstation_pb2
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 SECONDS_BEFORE_PLAN_START = 10
 PLAN_DURATION_SECONDS = 600
-CURRENT_PLAN_ID = "3"
+CURRENT_PLAN_ID = "10"
 
 
 class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceServicer):
@@ -108,12 +108,15 @@ class GroundStationServiceServicer(groundstation_pb2_grpc.GroundStationServiceSe
             if request.ground_station_id != ground_station_id:
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
                 context.set_details('Unexpected ground station ID')
-                raise RuntimeError('Unexpected ground staiton ID')
+                raise RuntimeError('Unexpected ground station ID')
             print("Received request")
             print("Ground station ID", request.ground_station_id)
             print("Stream tag", request.stream_tag)
             if request.HasField('satellite_telemetry'):
-                print("Satellite telemetry", request.satellite_telemetry)
+                print("Satellite telemetry received. plan id {}. framing {}. data {}".format(
+                    request.satellite_telemetry.plan_id,
+                    request.satellite_telemetry.telemetry.framing,
+                    request.satellite_telemetry.telemetry.data[:10]))
                 if request.satellite_telemetry.plan_id != CURRENT_PLAN_ID:
                     print("WARNING: plan ID from client telemetry is not equal to current plan ID")
             if request.HasField('stream_event'):
