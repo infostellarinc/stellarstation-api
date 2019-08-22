@@ -191,7 +191,7 @@ message SendSatelliteCommandsRequest {
   // `RESOURCE_EXHAUSTED` error.
   repeated bytes command = 2;
 
-  // The ID of the channel to be used when sending the command. Required if two uplink-capable
+  // The ID of the channel set to be used when sending the command. Required if two uplink-capable
   // plans are simultaneously executing. If not provided and only one plan is executing, the
   // channel set will be automatically determined.
   //
