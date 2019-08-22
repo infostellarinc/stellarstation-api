@@ -118,7 +118,7 @@ service StellarStationService {
   // Adds TLE for a satellite.
   //
   // The TLE will be used for satellite orbit calculation until it is superseded by a newly
-  // inserted TLE. This happens automatically if StellarStation pulls new TLE data from external
+  // added TLE. This happens automatically if StellarStation pulls new TLE data from external
   // sources, or manually through this API etc.
   //
   // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
