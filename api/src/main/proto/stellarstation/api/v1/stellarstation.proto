@@ -198,31 +198,32 @@ message SendSatelliteCommandsRequest {
   repeated bytes command = 2;
 }
 
-// A request to control a ground station
+// A request to modify configuration of graoundstation hardware.
 //
 // Next ID: 2
-message GroundStationControlRequest {
-  // A request to control a transmitter at a ground station.
-  TransmitterControlRequest transmitter_control_request = 1;
+message GroundStationConfigurationRequest {
+  // A request to modify transmitter configuration at a ground station.
+  TransmitterConfigurationRequest transmitter_configuration_request = 1;
 }
 
-// A request to control a transmitter at a ground station. Default state of these parameters
-// depends on hardware configuration at each ground station. It isn't always supported to control
-// them. If field isn't set, it's ignored.
+// A request to configure a transmitter at a ground station. Default state of these parameters
+// depends on hardware configuration at each ground station. Please check TransmitterConfiguration
+// in monitoring message. (Currently, some parameters are not supported.)
+// It isn't always supported to control them. If field isn't set, it's ignored.
 //
 // Next ID: 5
-message TransmitterControlRequest {
-  // Enable carrier transmission
+message TransmitterConfigurationRequest {
+  //  Whether the carrier is enabled.
   google.protobuf.BoolValue enable_carrier = 1;
 
-  // Enable modulation
-  google.protobuf.BoolValue enable_modulation = 2;
+  // Enable IF modulation
+  google.protobuf.BoolValue enable_if_modulation = 2;
 
   // Enable idle pattern transmission
   google.protobuf.BoolValue enable_idle_pattern = 3;
 
-  // Enable carrier sweep
-  google.protobuf.BoolValue enable_carrier_sweep = 4;
+  // Enable IF sweep
+  google.protobuf.BoolValue enable_if_sweep = 4;
 }
 
 // A response from the `OpenSatelliteStream` method.

@@ -34,6 +34,8 @@ option java_package = "com.stellarstation.api.v1.monitoring";
 //
 // A transmitter takes a bitstream and applies signal processing to create the final waveform sent
 // to a satellite.
+// TODO: Add parameters which describes whether modulation, idle pattern and IF sweep is enabled.
+// TODO: Add way to check whether parameter modification through API is supported.
 message TransmitterConfiguration {
   // The modulation type of the transmitter.
   radio.Modulation modulation = 1;
