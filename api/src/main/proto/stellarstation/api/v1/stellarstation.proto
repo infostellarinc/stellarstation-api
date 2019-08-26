@@ -178,6 +178,9 @@ message SatelliteStreamRequest {
     SendSatelliteCommandsRequest send_satellite_commands_request = 3;
 
     // A request to control a ground station
+    //
+    // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+    //         incompatible ways in the future.
     GroundStationControlRequest ground_station_control_request = 7;
   }
 
@@ -201,6 +204,8 @@ message SendSatelliteCommandsRequest {
 // A request to modify configuration of ground station hardware.
 //
 // Next ID: 2
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
 message GroundStationConfigurationRequest {
   // A request to modify transmitter configuration at a ground station.
   TransmitterConfigurationRequest transmitter_configuration_request = 1;
@@ -212,6 +217,8 @@ message GroundStationConfigurationRequest {
 // It isn't always supported to control them. If field isn't set, it's ignored.
 //
 // Next ID: 5
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
 message TransmitterConfigurationRequest {
   //  Whether the carrier is enabled.
   google.protobuf.BoolValue enable_carrier = 1;
