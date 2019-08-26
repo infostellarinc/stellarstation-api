@@ -198,7 +198,7 @@ message SendSatelliteCommandsRequest {
   repeated bytes command = 2;
 }
 
-// A request to modify configuration of graoundstation hardware.
+// A request to modify configuration of ground station hardware.
 //
 // Next ID: 2
 message GroundStationConfigurationRequest {
