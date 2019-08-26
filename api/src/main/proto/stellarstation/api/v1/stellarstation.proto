@@ -208,7 +208,7 @@ message GroundStationControlRequest {
 
 // A request to control a transmitter at a ground station. Default state of these parameters
 // depends on hardware configuration at each ground station. It isn't always supported to control
-// these parameters. If field isn't set, it's ignored.
+// them. If field isn't set, it's ignored.
 //
 // Next ID: 5
 message TransmitterControlRequest {
