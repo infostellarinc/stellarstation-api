@@ -177,11 +177,11 @@ message SatelliteStreamRequest {
     // A request to send commands to the satellite.
     SendSatelliteCommandsRequest send_satellite_commands_request = 3;
 
-    // A request to control a ground station
+    // A request to modify a configuration of a ground station
     //
     // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
     //         incompatible ways in the future.
-    GroundStationControlRequest ground_station_control_request = 7;
+    GroundStationConfigurationRequest ground_station_configuration_request = 7;
   }
 
   // The `Framing` types to accept, for satellites that have been configured for multiple framings
