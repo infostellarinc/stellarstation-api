@@ -16,6 +16,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
@@ -144,6 +145,8 @@ service StellarStationService {
 //----------------------------------------------------------------------------------------------
 
 // Request for the `OpenSatelliteStream` method.
+//
+// Next ID: 8
 message SatelliteStreamRequest {
   // The ID of the satellite to open a stream with. The ID of a satellite can be found on the
   // StellarStation Console page for the satellite.
@@ -173,6 +176,12 @@ message SatelliteStreamRequest {
   oneof Request {
     // A request to send commands to the satellite.
     SendSatelliteCommandsRequest send_satellite_commands_request = 3;
+
+    // A request to modify a configuration of a ground station.
+    //
+    // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+    //         incompatible ways in the future.
+    GroundStationConfigurationRequest ground_station_configuration_request = 7;
   }
 
   // The `Framing` types to accept, for satellites that have been configured for multiple framings
@@ -201,6 +210,36 @@ message SendSatelliteCommandsRequest {
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
   string channel_set_id = 3;
+}
+
+// A request to modify configuration of ground station hardware.
+//
+// Next ID: 2
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
+message GroundStationConfigurationRequest {
+  // A request to modify transmitter configuration at a ground station.
+  TransmitterConfigurationRequest transmitter_configuration_request = 1;
+}
+
+// A request to configure a transmitter at a ground station. Default state of these parameters
+// depends on hardware configuration at each ground station. Please check TransmitterConfiguration
+// in monitoring message.
+// It isn't always supported to control them. If field isn't set, it's ignored.
+//
+// Next ID: 5
+message TransmitterConfigurationRequest {
+  // Enable carrier transmission.
+  google.protobuf.BoolValue enable_carrier = 1;
+
+  // Enable IF modulation.
+  google.protobuf.BoolValue enable_if_modulation = 2;
+
+  // Enable idle pattern transmission.
+  google.protobuf.BoolValue enable_idle_pattern = 3;
+
+  // Enable IF sweep.
+  google.protobuf.BoolValue enable_if_sweep = 4;
 }
 
 // A response from the `OpenSatelliteStream` method.
