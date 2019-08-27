@@ -177,7 +177,7 @@ message SatelliteStreamRequest {
     // A request to send commands to the satellite.
     SendSatelliteCommandsRequest send_satellite_commands_request = 3;
 
-    // A request to modify a configuration of a ground station
+    // A request to modify a configuration of a ground station.
     //
     // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
     //         incompatible ways in the future.
@@ -213,23 +213,21 @@ message GroundStationConfigurationRequest {
 
 // A request to configure a transmitter at a ground station. Default state of these parameters
 // depends on hardware configuration at each ground station. Please check TransmitterConfiguration
-// in monitoring message. (Currently, some parameters are not supported.)
+// in monitoring message.
 // It isn't always supported to control them. If field isn't set, it's ignored.
 //
 // Next ID: 5
-// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
-//         incompatible ways in the future.
 message TransmitterConfigurationRequest {
-  //  Whether the carrier is enabled.
+  // Enable carrier transmission.
   google.protobuf.BoolValue enable_carrier = 1;
 
-  // Enable IF modulation
+  // Enable IF modulation.
   google.protobuf.BoolValue enable_if_modulation = 2;
 
-  // Enable idle pattern transmission
+  // Enable idle pattern transmission.
   google.protobuf.BoolValue enable_idle_pattern = 3;
 
-  // Enable IF sweep
+  // Enable IF sweep.
   google.protobuf.BoolValue enable_if_sweep = 4;
 }
 
