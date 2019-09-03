@@ -42,8 +42,9 @@ option java_package = "com.stellarstation.api.v1.groundstation";
 service GroundStationService {
   // Adds a new unavailability window to the requested ground station.
   //
-  // Existing plans that overlap the unavailability window will not be canceled and the request
-  // will be closed with a 'FAILED_PRECONDITION' status.
+  // Existing plans that overlap the unavailability window will be canceled. However, there
+  // are cases when the plan cannot be canceled. When this happens, the request will be closed
+  // with a 'FAILED_PRECONDITION' status.
   //
   // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
   // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
