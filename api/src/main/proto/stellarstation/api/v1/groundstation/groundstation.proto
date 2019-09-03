@@ -50,6 +50,25 @@ service GroundStationService {
   // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
   rpc AddUnavailabilityWindow (AddUnavailabilityWindowRequest) returns (AddUnavailabilityWindowResponse);
 
+  // Cancel a previously reserved upcoming plan. Cancelling the plan will cause it to not be
+  // executed. This action cannot be undone, but it is still possible for the pass to be reserved
+  // again. The plan cannot be cancelled less than ten minutes before AOS.
+  //
+  // Canceling a plan may incur a charge based on the time left to AOS. See our cancellation policy
+  // for details.
+  //
+  // If the plan is not found, the request will return a `NOT_FOUND` error.
+  //
+  // If the plan has already been canceled or is less than ten minutes away from its AOS, the
+  // request will return a `FAILED_PRECONDITION` error.
+  //
+  // If the plan is ongoing or has already finished executing, the request will return a
+  // `OUT_OF_RANGE` error.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  rpc CancelPlan (CancelPlanRequest) returns (CancelPlanResponse);
+
   // Deletes an existing unavailability window of the requested ground station.
   //
   // The request will be closed with an `INVALID_ARGUMENT` status if `window_id` is missing
@@ -98,6 +117,17 @@ service GroundStationService {
 //----------------------------------------------------------------------------------------------
 // Scheduling APIs.
 //----------------------------------------------------------------------------------------------
+
+// Request for the `CancelPlan` method.
+message CancelPlanRequest {
+    // The id of the plan to cancel, i.e., the value of `Plan.id`.
+    string plan_id = 1;
+}
+
+// Response for the `CancelPlan` method.
+message CancelPlanResponse {
+    // Currently no payload in the response.
+}
 
 // Request for the `ListPlans` method.
 message ListPlansRequest {
