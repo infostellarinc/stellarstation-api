@@ -15,6 +15,7 @@
  */
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/antenna/antenna.proto";
 import "stellarstation/api/v1/common/common.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
@@ -136,12 +137,25 @@ message GroundStationConfiguration {
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
+// Next ID: 7
 message TransmitterState {
   // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
 
   // The current level of the carrier signal, in dBm (decibal-milliwatts).
   double carrier_level_dbm = 2;
+
+  // Whether modulation is enabled.
+  google.protobuf.BoolValue is_modulation_enabled = 3;
+
+  // Whether the carrier is enabled.
+  google.protobuf.BoolValue is_carrier_enabled = 4;
+
+  // Whether IF sweeping is enabled.
+  google.protobuf.BoolValue is_if_sweep_enabled = 5;
+
+  // Whether transmitting idle pattern is enabled.
+  google.protobuf.BoolValue is_idle_pattern_enabled = 6;
 }
 
 // A current status of convolutional coding.
