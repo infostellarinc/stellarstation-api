@@ -25,5 +25,3 @@ python3 stream_benchmark.py
 
 * CTRL-C will stop the test and write output to a file
 
-# Copyright 2019 Infostellar, Inc. All Rights Reserved.
-
