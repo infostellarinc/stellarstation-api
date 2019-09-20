@@ -235,3 +235,6 @@ venv.bak/
 .mypy_cache/
 
 .firebase
+
+#VS Code
+.vscode/
