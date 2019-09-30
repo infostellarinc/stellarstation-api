@@ -17,10 +17,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
 	api "github.com/infostellarinc/go-stellarstation/api/v1/groundstation"
 )
 
@@ -28,11 +30,14 @@ import (
  * Plan Watcher *
  ****************/
 
+type PlanStartFunction func(plan *api.Plan)
+type PlanEndFunction func(plan *api.Plan)
+
 // PlanWatcher periodically checks for plans for a ground station.
 type PlanWatcher struct {
 	runner    *Runner
 	client    *Client
-	plans     map[string]*api.Plan
+	plans     []*api.Plan
 	plansLock *sync.Mutex
 }
 
@@ -40,7 +45,7 @@ type PlanWatcher struct {
 func NewPlanWatcher(client *Client) *PlanWatcher {
 	watcher := &PlanWatcher{
 		runner:    NewRunner(),
-		plans:     make(map[string]*api.Plan),
+		plans:     make([]*api.Plan, 0),
 		plansLock: &sync.Mutex{},
 		client:    client,
 	}
@@ -48,21 +53,26 @@ func NewPlanWatcher(client *Client) *PlanWatcher {
 }
 
 // Start begins checking for plans.
-func (w *PlanWatcher) Start(planCheckInterval time.Duration) {
+func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStartFunction, planEnd PlanEndFunction) {
 	startFunction := func() {
 		log.Printf("Starting plan watcher.\n")
 
 		go w.UpdatePlans()
 
 		updatePlans := time.NewTicker(planCheckInterval)
+		checkPlans := time.NewTicker(time.Second)
 
 		go func() {
 			for {
 				select {
 				case <-w.runner.Done():
+					updatePlans.Stop()
+					checkPlans.Stop()
 					return
 				case <-updatePlans.C:
 					go w.UpdatePlans()
+				case <-checkPlans.C:
+					w.CheckPlanState(planStart, planEnd)
 				}
 			}
 		}()
@@ -89,15 +99,107 @@ func (w *PlanWatcher) Wait() {
 func (w *PlanWatcher) UpdatePlans() {
 	w.plansLock.Lock()
 	defer w.plansLock.Unlock()
-	plans, err := w.client.ListPlans()
+
+	now := time.Now()
+	start := now.Add(-time.Hour)
+	end := now.Add(time.Hour)
+
+	plans, err := w.client.ListPlans(start, end)
 	if err != nil {
 		log.Printf("Failed to list plans: %v\n", err)
 		return
 	}
-	for id := range w.plans {
-		delete(w.plans, id)
+
+	existingPlans := make(map[string]bool, len(w.plans))
+	for _, plan := range w.plans {
+		existingPlans[plan.PlanId] = true
 	}
+
 	for _, plan := range plans {
-		w.plans[plan.PlanId] = plan
+		_, found := existingPlans[plan.PlanId]
+		if !found {
+			log.Printf("===== New Plan. %v\n", shortPlanData(plan))
+		}
 	}
+
+	w.plans = plans
+}
+
+// CheckPlanState checks for any plan state changes that occurred in the past second
+func (w *PlanWatcher) CheckPlanState(planStart PlanStartFunction, planEnd PlanEndFunction) {
+	w.plansLock.Lock()
+	defer w.plansLock.Unlock()
+	now := time.Now()
+	for i, plan := range w.plans {
+		if plan == nil {
+			continue
+		}
+
+		start, _, _, end, err := parseTimestamps(plan)
+		if err != nil {
+			log.Printf("Could not parse plan timestamps. Err: %+v\n", err)
+			w.plans[i] = nil
+			continue
+		}
+
+		startDelta := now.Sub(start)
+		endDelta := now.Sub(end)
+
+		if startDelta >= 0 && startDelta <= time.Second {
+			go planStart(plan)
+		}
+
+		if endDelta >= 0 && endDelta <= time.Second {
+			go planEnd(plan)
+		}
+	}
+}
+
+func parseTimestamps(plan *api.Plan) (start, aos, los, end time.Time, err error) {
+	if plan == nil {
+		err = fmt.Errorf("could not parse plan timestamps: no plan provided")
+		return
+	}
+
+	start, err = ptypes.Timestamp(plan.StartTime)
+	if err != nil {
+		err = fmt.Errorf("could not parse plan start time: %+v", err)
+		return
+	}
+
+	end, err = ptypes.Timestamp(plan.EndTime)
+	if err != nil {
+		err = fmt.Errorf("could not parse plan end time: %+v", err)
+		return
+	}
+	aos, err = ptypes.Timestamp(plan.AosTime)
+	if err != nil {
+		err = fmt.Errorf("could not parse plan aos time: %+v", err)
+		return
+	}
+
+	los, err = ptypes.Timestamp(plan.LosTime)
+	if err != nil {
+		err = fmt.Errorf("could not parse plan los time: %+v", err)
+		return
+	}
+	return
+}
+
+func localTimeString(t time.Time) string {
+	return t.Local().Format("15:04:05")
+}
+
+func shortPlanData(plan *api.Plan) string {
+	start, aos, los, end, err := parseTimestamps(plan)
+	if err != nil {
+		return fmt.Sprintf("Plan ID: %v, Error: %v\n", plan.PlanId, err)
+	}
+	return fmt.Sprintf("Plan ID: %v, Start: %v, AOS: %v, LOS: %v, End: %v (%v)",
+		plan.PlanId,
+		localTimeString(start),
+		localTimeString(aos),
+		localTimeString(los),
+		localTimeString(end),
+		end.Local().Format("-0700 MST"))
 }

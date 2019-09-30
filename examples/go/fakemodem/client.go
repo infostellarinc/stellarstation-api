@@ -109,27 +109,24 @@ func (c *Client) connect() {
 }
 
 // ListPlans gets upcoming plans for the given ground station
-func (c *Client) ListPlans() ([]*api.Plan, error) {
-	now := time.Now()
-	end := now.Add(time.Hour)
-
-	nowTs, _ := ptypes.TimestampProto(now)
+func (c *Client) ListPlans(start time.Time, end time.Time) ([]*api.Plan, error) {
+	startTs, _ := ptypes.TimestampProto(start)
 	endTs, _ := ptypes.TimestampProto(end)
 
 	listPlansRequest := &api.ListPlansRequest{
 		GroundStationId: c.groundstation.ID,
-		AosAfter:        nowTs,
+		AosAfter:        startTs,
 		AosBefore:       endTs,
 	}
 
-	log.Printf("ListPlans Request: %+v\n", listPlansRequest)
+	//log.Printf("ListPlans Request: %+v\n", listPlansRequest)
 
 	listPlansResponse, err := c.client.ListPlans(context.Background(), listPlansRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("ListPlans Response: %+v\n", listPlansResponse)
+	//log.Printf("ListPlans Response: %+v\n", listPlansResponse)
 
 	return listPlansResponse.Plan, nil
 }

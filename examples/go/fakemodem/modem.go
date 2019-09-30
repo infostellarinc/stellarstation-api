@@ -18,7 +18,10 @@ package main
 
 import (
 	"log"
+	"sync"
 	"time"
+
+	api "github.com/infostellarinc/go-stellarstation/api/v1/groundstation"
 )
 
 /***************
@@ -31,6 +34,8 @@ type Modem struct {
 	groundstations map[string]GroundStationConfig      // Indexed by name
 	satellites     map[string]SatelliteConfig          // Indexed by ID
 	channels       map[string]map[string]ChannelConfig // Indexed by satellite ID and channel ID
+	runners        map[string]*Runner                  // Indexed by plan ID
+	runnersLock    *sync.Mutex
 	client         *Client
 	planWatcher    *PlanWatcher
 }
@@ -42,6 +47,8 @@ func NewModem(config *Config) *Modem {
 		groundstations: make(map[string]GroundStationConfig),
 		satellites:     make(map[string]SatelliteConfig),
 		channels:       make(map[string]map[string]ChannelConfig),
+		runners:        make(map[string]*Runner),
+		runnersLock:    &sync.Mutex{},
 		client:         NewClient(),
 	}
 
@@ -115,7 +122,7 @@ func (m *Modem) ConnectToGroundStation(name string) {
 
 	planUpdateInterval := time.Minute * time.Duration(gs.PlanUpdateIntervalInMinutes)
 
-	m.planWatcher.Start(planUpdateInterval)
+	m.planWatcher.Start(planUpdateInterval, m.PlanStart, m.PlanEnd)
 }
 
 // Stop will stop the modem
@@ -138,4 +145,42 @@ func (m *Modem) Client() *Client {
 // PlanWatcher returns the Plan Watcher used by this modem
 func (m *Modem) PlanWatcher() *PlanWatcher {
 	return m.planWatcher
+}
+
+// PlanStart is executed when a plan starts
+func (m *Modem) PlanStart(plan *api.Plan) {
+	m.runnersLock.Lock()
+	defer m.runnersLock.Unlock()
+
+	_, found := m.runners[plan.PlanId]
+	if found {
+		log.Printf("!!!!! Plan already running. %v\n", shortPlanData(plan))
+		return
+	}
+
+	startFunction := func() {
+		log.Printf(">>>>> Plan started. %v\n", shortPlanData(plan))
+	}
+
+	stopFunction := func() {
+		log.Printf("<<<<< Plan ended. %v\n", shortPlanData(plan))
+	}
+
+	runner := NewRunner()
+	go runner.Start(startFunction, stopFunction)
+	m.runners[plan.PlanId] = runner
+}
+
+// PlanEnd is executed when a plan ends.
+func (m *Modem) PlanEnd(plan *api.Plan) {
+	m.runnersLock.Lock()
+	defer m.runnersLock.Unlock()
+
+	runner, found := m.runners[plan.PlanId]
+	if !found {
+		log.Printf("!!!!! Plan not running. %v\n", shortPlanData(plan))
+		return
+	}
+	go runner.Stop()
+	delete(m.runners, plan.PlanId)
 }
