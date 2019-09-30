@@ -17,6 +17,7 @@
 package main
 
 import (
+	"context"
 	"sync"
 )
 
@@ -31,7 +32,8 @@ type Runner struct {
 	runningLock *sync.Mutex
 }
 
-type StateChangeFunction func(r *Runner)
+type StartFunction func(ctx context.Context)
+type StopFunction func()
 
 // NewRunner creates a new Runner instance
 func NewRunner() *Runner {
@@ -43,7 +45,7 @@ func NewRunner() *Runner {
 }
 
 // Start begins execution
-func (r *Runner) Start(startFunction StateChangeFunction, stopFunction StateChangeFunction) {
+func (r *Runner) Start(startFunction StartFunction, stopFunction StopFunction) {
 	// First stop any currently running operations
 	r.Stop()
 	r.Wait()
@@ -56,12 +58,15 @@ func (r *Runner) Start(startFunction StateChangeFunction, stopFunction StateChan
 
 	r.done = make(chan struct{})
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	go func() {
 		<-r.done
-		stopFunction(r)
+		cancel()
+		stopFunction()
 	}()
 
-	startFunction(r)
+	startFunction(ctx)
 }
 
 // Stop ends execution

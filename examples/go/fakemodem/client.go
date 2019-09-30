@@ -50,7 +50,7 @@ func NewClient() *Client {
 
 // Connect connects to the ground station.
 func (c *Client) Connect(groundstation GroundStationConfig) {
-	startFunction := func(r *Runner) {
+	startFunction := func(ctx context.Context) {
 		log.Printf("Connecting to ground station %v (%v).\n", groundstation.Name, groundstation.ID)
 		log.Printf("Ground station configuration: %+v\n", groundstation)
 
@@ -59,7 +59,7 @@ func (c *Client) Connect(groundstation GroundStationConfig) {
 		c.connect()
 	}
 
-	stopFunction := func(r *Runner) {
+	stopFunction := func() {
 		log.Printf("Disconnecting from ground station %v (%v).\n", groundstation.Name, groundstation.ID)
 	}
 

@@ -171,13 +171,17 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 		return
 	}
 
-	startFunction := func(r *Runner) {
+	log.Printf("~~~~~ Loaded %v bytes of data. Plan ID: %v\n", len(data), plan.PlanId)
+
+	startFunction := func(ctx context.Context) {
+		defer func() {
+			e := recover()
+			log.Printf("Exiting startFunction. Error: %v\n", e)
+		}()
+
 		log.Printf(">>>>> Plan started. %v\n", shortPlanData(plan))
 		// TODO: Adjust timing to match data rate
 		ticker := time.NewTicker(time.Second)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
 
 		stream, err := m.client.OpenGroundStationStream(ctx)
 		if err != nil {
@@ -185,9 +189,11 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 			return
 		}
 
+		log.Printf("||||| Stream opened.  Plan ID: %v\n", plan.PlanId)
+
 		for {
 			select {
-			case <-r.Done():
+			case <-ctx.Done():
 				return
 			case <-ticker.C:
 				request := m.TelemetryRequest(plan, data)
@@ -201,7 +207,7 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 		}
 	}
 
-	stopFunction := func(r *Runner) {
+	stopFunction := func() {
 		log.Printf("<<<<< Plan ended. %v\n", shortPlanData(plan))
 	}
 

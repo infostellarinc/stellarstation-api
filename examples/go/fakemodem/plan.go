@@ -17,6 +17,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"sync"
@@ -54,10 +55,10 @@ func NewPlanWatcher(client *Client) *PlanWatcher {
 
 // Start begins checking for plans.
 func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStartFunction, planEnd PlanEndFunction) {
-	startFunction := func(r *Runner) {
+	startFunction := func(ctx context.Context) {
 		log.Printf("Starting plan watcher.\n")
 
-		go w.UpdatePlans()
+		go w.UpdatePlans(planStart, planEnd)
 
 		updatePlans := time.NewTicker(planCheckInterval)
 		checkPlans := time.NewTicker(time.Second)
@@ -65,12 +66,12 @@ func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStart
 		go func() {
 			for {
 				select {
-				case <-w.runner.Done():
+				case <-ctx.Done():
 					updatePlans.Stop()
 					checkPlans.Stop()
 					return
 				case <-updatePlans.C:
-					go w.UpdatePlans()
+					go w.UpdatePlans(planStart, planEnd)
 				case <-checkPlans.C:
 					w.CheckPlanState(planStart, planEnd)
 				}
@@ -78,7 +79,7 @@ func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStart
 		}()
 	}
 
-	stopFunction := func(r *Runner) {
+	stopFunction := func() {
 		log.Printf("Shutting down plan watcher\n")
 	}
 
@@ -96,7 +97,7 @@ func (w *PlanWatcher) Wait() {
 }
 
 // UpdatePlans updates the plan list for the current ground station
-func (w *PlanWatcher) UpdatePlans() {
+func (w *PlanWatcher) UpdatePlans(planStart PlanStartFunction, planEnd PlanEndFunction) {
 	w.plansLock.Lock()
 	defer w.plansLock.Unlock()
 
@@ -119,6 +120,19 @@ func (w *PlanWatcher) UpdatePlans() {
 		_, found := existingPlans[plan.PlanId]
 		if !found {
 			log.Printf("===== New Plan. %v\n", shortPlanData(plan))
+			planStartTime, _, _, planEndTime, err := parseTimestamps(plan)
+			if err != nil {
+				log.Printf("Could not parse plan timestamps. Err: %+v\n", err)
+				continue
+			}
+
+			startDelta := now.Sub(planStartTime)
+			endDelta := now.Sub(planEndTime)
+
+			if startDelta > time.Second && endDelta <= -time.Second {
+				log.Printf("----- Resuming Plan. %v\n", shortPlanData(plan))
+				go planStart(plan)
+			}
 		}
 	}
 
