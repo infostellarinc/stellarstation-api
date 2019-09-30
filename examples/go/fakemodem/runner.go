@@ -21,9 +21,9 @@ import (
 	"sync"
 )
 
-/*************
- * Run State *
- *************/
+/**********
+ * Runner *
+ **********/
 
 // Runner keeps track of whether or not something is running
 type Runner struct {
@@ -56,12 +56,13 @@ func (r *Runner) Start(startFunction StartFunction, stopFunction StopFunction) {
 		r.runningLock.Unlock()
 	}()
 
-	r.done = make(chan struct{})
+	done := make(chan struct{})
+	r.done = done
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	go func() {
-		<-r.done
+		<-done
 		cancel()
 		stopFunction()
 	}()

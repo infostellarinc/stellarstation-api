@@ -29,9 +29,9 @@ import (
 	radio "github.com/infostellarinc/go-stellarstation/api/v1/radio"
 )
 
-/***************
- * Data Modem *
- ***************/
+/*********
+ * Modem *
+ *********/
 
 // Modem does all of the actual work.
 type Modem struct {
@@ -173,38 +173,51 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 
 	log.Printf("~~~~~ Loaded %v bytes of data. Plan ID: %v\n", len(data), plan.PlanId)
 
+	_, aos, los, _, err := parseTimestamps(plan)
+	if err != nil {
+		log.Printf("!!!!! Couldn't parse plan timestamps. Plan ID: %v, Error: %v\n", plan.PlanId, err)
+	}
+
 	startFunction := func(ctx context.Context) {
-		defer func() {
-			e := recover()
-			log.Printf("Exiting startFunction. Error: %v\n", e)
-		}()
-
 		log.Printf(">>>>> Plan started. %v\n", shortPlanData(plan))
-		// TODO: Adjust timing to match data rate
-		ticker := time.NewTicker(time.Second)
+		go func() {
+			// Wait for AOS to start streaming
+			time.Sleep(time.Until(aos))
 
-		stream, err := m.client.OpenGroundStationStream(ctx)
-		if err != nil {
-			log.Printf("!!!!! Couldn't open stream. Plan ID: %v, Error: %v\n", plan.PlanId, err)
-			return
-		}
+			log.Printf("***** Plan AOS reached. %v\n", shortPlanData(plan))
 
-		log.Printf("||||| Stream opened.  Plan ID: %v\n", plan.PlanId)
+			losTimer := time.NewTimer(time.Until(los))
+			defer losTimer.Stop()
 
-		for {
-			select {
-			case <-ctx.Done():
+			// TODO: Adjust timing to match data rate
+			ticker := time.NewTicker(time.Second)
+			defer ticker.Stop()
+
+			stream, err := m.client.OpenGroundStationStream(ctx)
+			if err != nil {
+				log.Printf("!!!!! Couldn't open stream. Plan ID: %v, Error: %v\n", plan.PlanId, err)
 				return
-			case <-ticker.C:
-				request := m.TelemetryRequest(plan, data)
-				err = stream.Send(request)
-				if err != nil {
-					log.Printf("!!!!! Couldn't send telemetry request. Plan ID: %v, Error: %v\n", plan.PlanId, err)
-					// TODO: Return?
-				}
-				log.Printf("^^^^^ Sent %v bytes. Plan ID: %v\n", len(data), plan.PlanId)
 			}
-		}
+
+			log.Printf("||||| Stream opened.  Plan ID: %v\n", plan.PlanId)
+
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case <-losTimer.C:
+					// LOS reached, stop streaming
+					return
+				case <-ticker.C:
+					request := m.TelemetryRequest(plan, data)
+					err = stream.Send(request)
+					if err != nil {
+						log.Printf("!!!!! Couldn't send telemetry request. Plan ID: %v, Error: %v\n", plan.PlanId, err)
+					}
+					log.Printf("^^^^^ Sent %v bytes. Plan ID: %v\n", len(data), plan.PlanId)
+				}
+			}
+		}()
 	}
 
 	stopFunction := func() {
