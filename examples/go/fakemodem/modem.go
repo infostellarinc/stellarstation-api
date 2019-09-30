@@ -206,7 +206,7 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 				case <-ctx.Done():
 					return
 				case <-losTimer.C:
-					// LOS reached, stop streaming
+					log.Printf("..... Plan LOS reached. %v\n", shortPlanData(plan))
 					return
 				case <-ticker.C:
 					request := m.TelemetryRequest(plan, data)
