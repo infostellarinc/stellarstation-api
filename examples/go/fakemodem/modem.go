@@ -17,11 +17,16 @@
 package main
 
 import (
+	"context"
+	"io/ioutil"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+	v1 "github.com/infostellarinc/go-stellarstation/api/v1"
 	api "github.com/infostellarinc/go-stellarstation/api/v1/groundstation"
+	radio "github.com/infostellarinc/go-stellarstation/api/v1/radio"
 )
 
 /***************
@@ -158,11 +163,45 @@ func (m *Modem) PlanStart(plan *api.Plan) {
 		return
 	}
 
-	startFunction := func() {
-		log.Printf(">>>>> Plan started. %v\n", shortPlanData(plan))
+	// Load data
+	// TODO: Fix this when the plan has a satellite ID
+	data, err := ioutil.ReadFile("data.bin")
+	if err != nil {
+		log.Printf("!!!!! Couldn't load data file. Plan ID: %v, Error: %v\n", plan.PlanId, err)
+		return
 	}
 
-	stopFunction := func() {
+	startFunction := func(r *Runner) {
+		log.Printf(">>>>> Plan started. %v\n", shortPlanData(plan))
+		// TODO: Adjust timing to match data rate
+		ticker := time.NewTicker(time.Second)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		stream, err := m.client.OpenGroundStationStream(ctx)
+		if err != nil {
+			log.Printf("!!!!! Couldn't open stream. Plan ID: %v, Error: %v\n", plan.PlanId, err)
+			return
+		}
+
+		for {
+			select {
+			case <-r.Done():
+				return
+			case <-ticker.C:
+				request := m.TelemetryRequest(plan, data)
+				err = stream.Send(request)
+				if err != nil {
+					log.Printf("!!!!! Couldn't send telemetry request. Plan ID: %v, Error: %v\n", plan.PlanId, err)
+					// TODO: Return?
+				}
+				log.Printf("^^^^^ Sent %v bytes. Plan ID: %v\n", len(data), plan.PlanId)
+			}
+		}
+	}
+
+	stopFunction := func(r *Runner) {
 		log.Printf("<<<<< Plan ended. %v\n", shortPlanData(plan))
 	}
 
@@ -183,4 +222,30 @@ func (m *Modem) PlanEnd(plan *api.Plan) {
 	}
 	go runner.Stop()
 	delete(m.runners, plan.PlanId)
+}
+
+// TelemetryRequest creates a telemetry request objet for the given plan and data.
+func (m *Modem) TelemetryRequest(plan *api.Plan, data []byte) *api.GroundStationStreamRequest {
+	now := ptypes.TimestampNow()
+	freq := plan.DownlinkRadioDevice.CenterFrequencyHz
+
+	framing := v1.Framing_BITSTREAM
+
+	switch plan.DownlinkRadioDevice.Protocol.Framing.(type) {
+	case *radio.CommunicationProtocol_Ax25:
+		// Set AX.25 framing if the satellite uses AX.25
+		framing = v1.Framing_AX25
+	}
+
+	telemetry := &api.SatelliteTelemetry{
+		PlanId: plan.PlanId,
+		Telemetry: &v1.Telemetry{
+			Data:                  data,
+			Framing:               framing,
+			TimeFirstByteReceived: now,
+			TimeLastByteReceived:  now,
+			DownlinkFrequencyHz:   freq,
+		},
+	}
+	return m.client.TelemetryRequest(telemetry)
 }

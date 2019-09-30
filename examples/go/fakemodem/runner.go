@@ -31,7 +31,7 @@ type Runner struct {
 	runningLock *sync.Mutex
 }
 
-type StateChangeFunction func()
+type StateChangeFunction func(r *Runner)
 
 // NewRunner creates a new Runner instance
 func NewRunner() *Runner {
@@ -58,10 +58,10 @@ func (r *Runner) Start(startFunction StateChangeFunction, stopFunction StateChan
 
 	go func() {
 		<-r.done
-		stopFunction()
+		stopFunction(r)
 	}()
 
-	startFunction()
+	startFunction(r)
 }
 
 // Stop ends execution

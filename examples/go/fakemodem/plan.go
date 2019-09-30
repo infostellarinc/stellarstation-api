@@ -54,7 +54,7 @@ func NewPlanWatcher(client *Client) *PlanWatcher {
 
 // Start begins checking for plans.
 func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStartFunction, planEnd PlanEndFunction) {
-	startFunction := func() {
+	startFunction := func(r *Runner) {
 		log.Printf("Starting plan watcher.\n")
 
 		go w.UpdatePlans()
@@ -78,7 +78,7 @@ func (w *PlanWatcher) Start(planCheckInterval time.Duration, planStart PlanStart
 		}()
 	}
 
-	stopFunction := func() {
+	stopFunction := func(r *Runner) {
 		log.Printf("Shutting down plan watcher\n")
 	}
 

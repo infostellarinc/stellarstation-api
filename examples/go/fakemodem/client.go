@@ -50,7 +50,7 @@ func NewClient() *Client {
 
 // Connect connects to the ground station.
 func (c *Client) Connect(groundstation GroundStationConfig) {
-	startFunction := func() {
+	startFunction := func(r *Runner) {
 		log.Printf("Connecting to ground station %v (%v).\n", groundstation.Name, groundstation.ID)
 		log.Printf("Ground station configuration: %+v\n", groundstation)
 
@@ -59,7 +59,7 @@ func (c *Client) Connect(groundstation GroundStationConfig) {
 		c.connect()
 	}
 
-	stopFunction := func() {
+	stopFunction := func(r *Runner) {
 		log.Printf("Disconnecting from ground station %v (%v).\n", groundstation.Name, groundstation.ID)
 	}
 
@@ -129,4 +129,19 @@ func (c *Client) ListPlans(start time.Time, end time.Time) ([]*api.Plan, error) 
 	//log.Printf("ListPlans Response: %+v\n", listPlansResponse)
 
 	return listPlansResponse.Plan, nil
+}
+
+// OpenGroundStationStream returns a bidirectional streaming client.
+func (c *Client) OpenGroundStationStream(ctx context.Context) (api.GroundStationService_OpenGroundStationStreamClient, error) {
+	return c.client.OpenGroundStationStream(ctx)
+}
+
+// TelemetryRequest wraps a telemetry message in a request object.
+func (c *Client) TelemetryRequest(telemetry *api.SatelliteTelemetry) *api.GroundStationStreamRequest {
+	return &api.GroundStationStreamRequest{
+		GroundStationId: c.groundstation.ID,
+		Request: &api.GroundStationStreamRequest_SatelliteTelemetry{
+			SatelliteTelemetry: telemetry,
+		},
+	}
 }
