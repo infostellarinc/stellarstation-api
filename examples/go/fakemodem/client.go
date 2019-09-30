@@ -20,7 +20,6 @@ import (
 	"context"
 	"crypto/tls"
 	"log"
-	"sync"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -30,99 +29,51 @@ import (
 	"google.golang.org/grpc/credentials/oauth"
 )
 
-/***************
+/**************
  * API Client *
- ***************/
+ **************/
 
 // Client is a StellarStation Ground Station API client.
-// It also periodically checks for new plans.
 type Client struct {
-	groundstation GroundStationConfig // Currently selected ground station config
-	done          chan struct{}
-	running       bool
-	runningLock   *sync.Mutex
+	groundstation GroundStationConfig
 	client        api.GroundStationServiceClient
-	plans         map[string]*api.Plan
-	plansLock     *sync.Mutex
+	runner        *Runner
 }
 
 // NewClient creates a new Client instance
 func NewClient() *Client {
 	client := &Client{
-		running:     false,
-		runningLock: &sync.Mutex{},
-		plans:       make(map[string]*api.Plan),
-		plansLock:   &sync.Mutex{},
+		runner: NewRunner(),
 	}
 	return client
 }
 
-// Connect connects to the ground station and begins checking for plans.
-func (c *Client) Connect(groundstation GroundStationConfig, planCheckInterval time.Duration) {
-	// First disconnect any active connection
-	c.Stop()
-	c.Wait()
+// Connect connects to the ground station.
+func (c *Client) Connect(groundstation GroundStationConfig) {
+	startFunction := func() {
+		log.Printf("Connecting to ground station %v (%v).\n", groundstation.Name, groundstation.ID)
+		log.Printf("Ground station configuration: %+v\n", groundstation)
 
-	// Now start the new connection
-	c.groundstation = groundstation
+		c.groundstation = groundstation
 
-	c.runningLock.Lock()
-	defer func() {
-		c.running = true
-		c.runningLock.Unlock()
-	}()
+		c.connect()
+	}
 
-	c.done = make(chan struct{})
+	stopFunction := func() {
+		log.Printf("Disconnecting from ground station %v (%v).\n", groundstation.Name, groundstation.ID)
+	}
 
-	go func() {
-		<-c.done
-		log.Printf("Shutting down API client for %v...\n", groundstation.Name)
-	}()
-
-	log.Printf("Starting API client for %v...\n", groundstation.Name)
-	log.Printf("Ground station configuration: %+v\n", groundstation)
-
-	c.connect()
-
-	go c.UpdatePlans()
-	updatePlans := time.NewTicker(planCheckInterval)
-
-	go func() {
-		for {
-			select {
-			case <-c.done:
-				return
-			case <-updatePlans.C:
-				go c.UpdatePlans()
-			}
-		}
-	}()
+	c.runner.Start(startFunction, stopFunction)
 }
 
 // Stop shuts down the client
 func (c *Client) Stop() {
-	c.runningLock.Lock()
-	defer func() {
-		c.running = false
-		c.runningLock.Unlock()
-	}()
-
-	if c.running {
-		close(c.done)
-	}
+	c.runner.Stop()
 }
 
-// Wait will wait for the client to stop before returning
+// Wait waits for the client to shut down
 func (c *Client) Wait() {
-	c.runningLock.Lock()
-	running := c.running
-	done := c.done
-	c.runningLock.Unlock()
-
-	if !running {
-		return
-	}
-	<-done
+	c.runner.Wait()
 }
 
 /*************
@@ -131,7 +82,6 @@ func (c *Client) Wait() {
 
 // connect connects to the selected ground station
 func (c *Client) connect() {
-
 	jwtCreds, err := oauth.NewJWTAccessFromFile(
 		c.groundstation.Key)
 	if err != nil {
@@ -151,32 +101,15 @@ func (c *Client) connect() {
 	}
 
 	go func() {
-		<-c.done
+		c.runner.Wait()
 		conn.Close()
 	}()
 
 	c.client = api.NewGroundStationServiceClient(conn)
 }
 
-// UpdatePlans updates the plan list for the current ground station
-func (c *Client) UpdatePlans() {
-	c.plansLock.Lock()
-	defer c.plansLock.Unlock()
-	plans, err := c.ListPlans(c.groundstation.ID)
-	if err != nil {
-		log.Printf("Failed to list plans: %v\n", err)
-		return
-	}
-	for id := range c.plans {
-		delete(c.plans, id)
-	}
-	for _, plan := range plans {
-		c.plans[plan.PlanId] = plan
-	}
-}
-
 // ListPlans gets upcoming plans for the given ground station
-func (c *Client) ListPlans(groundstationId string) ([]*api.Plan, error) {
+func (c *Client) ListPlans() ([]*api.Plan, error) {
 	now := time.Now()
 	end := now.Add(time.Hour)
 
@@ -184,7 +117,7 @@ func (c *Client) ListPlans(groundstationId string) ([]*api.Plan, error) {
 	endTs, _ := ptypes.TimestampProto(end)
 
 	listPlansRequest := &api.ListPlansRequest{
-		GroundStationId: groundstationId,
+		GroundStationId: c.groundstation.ID,
 		AosAfter:        nowTs,
 		AosBefore:       endTs,
 	}

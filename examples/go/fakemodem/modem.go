@@ -32,6 +32,7 @@ type Modem struct {
 	satellites     map[string]SatelliteConfig          // Indexed by ID
 	channels       map[string]map[string]ChannelConfig // Indexed by satellite ID and channel ID
 	client         *Client
+	planWatcher    *PlanWatcher
 }
 
 // NewModem creates a new Modem instance
@@ -43,6 +44,8 @@ func NewModem(config *Config) *Modem {
 		channels:       make(map[string]map[string]ChannelConfig),
 		client:         NewClient(),
 	}
+
+	modem.planWatcher = NewPlanWatcher(modem.client)
 
 	for _, gs := range config.GroundStations {
 		modem.groundstations[gs.Name] = gs
@@ -64,7 +67,6 @@ func NewModem(config *Config) *Modem {
 // or the default ground station if the given name does not match
 // any of the available ground station configurations.
 func (m *Modem) ConnectToGroundStation(name string) {
-
 	if m.config.GroundStations == nil || len(m.config.GroundStations) == 0 {
 		log.Fatalf("No ground stations defined\n")
 	}
@@ -105,26 +107,35 @@ func (m *Modem) ConnectToGroundStation(name string) {
 		log.Fatalf("Ground station config not found.\n")
 	}
 
+	m.client.Connect(gs)
+
 	if gs.PlanUpdateIntervalInMinutes == 0 {
 		gs.PlanUpdateIntervalInMinutes = DefaultPlanUpdateIntervalInMinutes
 	}
 
 	planUpdateInterval := time.Minute * time.Duration(gs.PlanUpdateIntervalInMinutes)
 
-	m.client.Connect(gs, planUpdateInterval)
+	m.planWatcher.Start(planUpdateInterval)
 }
 
 // Stop will stop the modem
 func (m *Modem) Stop() {
+	m.planWatcher.Stop()
 	m.client.Stop()
 }
 
 // Wait will wait for the modem to stop before returning
 func (m *Modem) Wait() {
+	m.planWatcher.Wait()
 	m.client.Wait()
 }
 
 // Client returns the API client used by this modem
 func (m *Modem) Client() *Client {
 	return m.client
+}
+
+// PlanWatcher returns the Plan Watcher used by this modem
+func (m *Modem) PlanWatcher() *PlanWatcher {
+	return m.planWatcher
 }
