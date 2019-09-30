@@ -40,18 +40,18 @@ func main() {
 		log.Fatalf("Error loading config file: %v\n", err)
 	}
 
-	sender := NewSender(config, groundstation)
+	modem := NewModem(config)
 
-	sender.Start()
-	defer sender.Stop()
+	modem.ConnectToGroundStation(groundstation)
+	defer modem.Stop()
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-sigs
-		sender.Stop()
+		modem.Stop()
 	}()
 
-	sender.Wait()
+	modem.Wait()
 }

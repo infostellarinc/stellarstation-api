@@ -26,6 +26,8 @@ import (
  * Configuration *
  *****************/
 
+var DefaultPlanUpdateIntervalInMinutes = 5
+
 // ChannelConfig defines the configuration for a specific
 // communications channel.
 type ChannelConfig struct {
@@ -62,6 +64,8 @@ type GroundStationConfig struct {
 	Address string
 	// Key should be the filename of the API key to use.
 	Key string
+	// PlanUpdateIntervalInMinutes is the number of minutes between plan update checks.
+	PlanUpdateIntervalInMinutes int
 }
 
 // Config contains all of the configuration for the application.
