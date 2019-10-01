@@ -1,6 +1,6 @@
 # fakemodem
 
-This is a golang application that implements a fake ground station modem
+This is a Go application that implements a fake ground station modem
 using the ground station API.
 
 The intention of this application is to allow a ground station to mimic
@@ -25,20 +25,13 @@ Example configuration:
             "ID": "9",
             "Address": "testoffice-01:443",
             "Key": "api-key.json"
-        },
-    ],
-    "Satellites": [
-        {
-            "Name": "test",
-            "ID": "112",
-            "Channels": [
-                {
-                    "Name": "UHF Down",
-                    "ID": "12",
-                    "Telemetry": "test.bin"
-                }
-            ]
         }
     ]
 }
 ```
+
+Notes on the configuration:
+- The `Name` value is used for logging purposes only.
+- The `ID` value should be either the ground station ID as provided by StellarStation.
+- The `Address` field should be the hostname (or IP address) and port number of the StarPass device.
+- The `Key` field should be the file name of your API key.

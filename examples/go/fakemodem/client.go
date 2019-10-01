@@ -19,14 +19,16 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	api "github.com/infostellarinc/go-stellarstation/api/v1/groundstation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/oauth"
+
+	api "github.com/infostellarinc/go-stellarstation/api/v1/groundstation"
 )
 
 /**************
@@ -110,8 +112,15 @@ func (c *Client) connect() {
 
 // ListPlans gets upcoming plans for the given ground station
 func (c *Client) ListPlans(start time.Time, end time.Time) ([]*api.Plan, error) {
-	startTs, _ := ptypes.TimestampProto(start)
-	endTs, _ := ptypes.TimestampProto(end)
+	startTs, err := ptypes.TimestampProto(start)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't format start time: %v", err)
+	}
+
+	endTs, err := ptypes.TimestampProto(end)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't format end time: %v", err)
+	}
 
 	listPlansRequest := &api.ListPlansRequest{
 		GroundStationId: c.groundstation.ID,
@@ -119,14 +128,10 @@ func (c *Client) ListPlans(start time.Time, end time.Time) ([]*api.Plan, error) 
 		AosBefore:       endTs,
 	}
 
-	//log.Printf("ListPlans Request: %+v\n", listPlansRequest)
-
 	listPlansResponse, err := c.client.ListPlans(context.Background(), listPlansRequest)
 	if err != nil {
 		return nil, err
 	}
-
-	//log.Printf("ListPlans Response: %+v\n", listPlansResponse)
 
 	return listPlansResponse.Plan, nil
 }
