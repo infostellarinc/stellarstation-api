@@ -13,15 +13,12 @@ grpcio==1.20.1
 idna==2.8
 packaging==19.0
 pip-upgrader==1.4.12
-pkg-resources==0.0.0
 protobuf==3.7.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
 pyparsing==2.4.0
 pytz==2019.1
-requests==2.21.0
 rsa==4.0
 six==1.12.0
 stellarstation==0.3.0
 terminaltables==3.1.0
-urllib3==1.25.2
