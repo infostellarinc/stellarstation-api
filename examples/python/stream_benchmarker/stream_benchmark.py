@@ -222,7 +222,7 @@ def compile_details(metrics, initial_time):
     if len(metrics) > 0:
         most_recent_time_last_byte_received = metrics[-1].time_last_byte_received.ToDatetime()
     else:
-        most_recent_time_last_byte_received = "N/A"
+        most_recent_time_last_byte_received = ""
 
     outputDetails = OutputDetails(datetime.datetime.utcnow(),
                                 most_recent_time_last_byte_received, 
