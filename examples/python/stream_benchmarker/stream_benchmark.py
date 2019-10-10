@@ -58,6 +58,7 @@ class MetricsData:
         self.initial_time = datetime.datetime.utcnow()
         self.metrics = []
         self.lock = Lock()
+        self.most_recent_time_last_byte_received = datetime.datetime.min
 
     def add_metric(self, metric):
         self.lock.acquire()
@@ -86,8 +87,9 @@ class MetricsData:
         finally:
             self.lock.release()
 
-        output_details = compile_details(metrics, initial_time)
-
+        
+        output_details = compile_details(metrics, initial_time, self.most_recent_time_last_byte_received)
+        self.most_recent_time_last_byte_received = output_details.most_recent_time_last_byte_received
         return output_details
 
 class Printer:
@@ -178,7 +180,7 @@ def run(credentials, environment, satelliteId, interval, print_summary):
 
 
 
-def compile_details(metrics, initial_time):
+def compile_details(metrics, initial_time, most_recent_time_last_byte_received):
     now = datetime.datetime.utcnow()
     
     average_first_byte_latency = timedelta()
@@ -206,6 +208,9 @@ def compile_details(metrics, initial_time):
         total_last_byte_latency += last_byte_latency
         total_data_size += data_size
         metrics_count += 1
+        
+        if metric.time_last_byte_received.ToDatetime() > most_recent_time_last_byte_received:
+            most_recent_time_last_byte_received = metric.time_last_byte_received.ToDatetime()
 
         if previous_first_byte_time > first_byte_time:
             out_of_order_data += 1
@@ -218,11 +223,6 @@ def compile_details(metrics, initial_time):
         average_data_size = total_data_size / metrics_count
 
     mbps = (total_data_size / (now - initial_time).seconds) * 8 / 1024 / 1024
-
-    if len(metrics) > 0:
-        most_recent_time_last_byte_received = metrics[-1].time_last_byte_received.ToDatetime()
-    else:
-        most_recent_time_last_byte_received = ""
 
     outputDetails = OutputDetails(datetime.datetime.utcnow(),
                                 most_recent_time_last_byte_received, 
