@@ -42,7 +42,7 @@ class Metric:
 
 class OutputDetails:
     def __init__(self, time_now, most_recent_time_last_byte_received, average_first_byte_latency, 
-                average_last_byte_latency, total_data_size, metrics_count, average_data_size, mbps):
+                average_last_byte_latency, total_data_size, metrics_count, average_data_size, mbps, out_of_order_data):
         self.time_now = time_now
         self.most_recent_time_last_byte_received = most_recent_time_last_byte_received
         self.average_first_byte_latency = average_first_byte_latency
@@ -51,12 +51,14 @@ class OutputDetails:
         self.metrics_count = metrics_count
         self.average_data_size = average_data_size
         self.mbps = mbps
+        self.out_of_order_data = out_of_order_data
 
 class MetricsData:
     def __init__(self):
         self.initial_time = datetime.datetime.utcnow()
         self.metrics = []
         self.lock = Lock()
+        self.most_recent_time_last_byte_received = datetime.datetime.min
 
     def add_metric(self, metric):
         self.lock.acquire()
@@ -85,8 +87,9 @@ class MetricsData:
         finally:
             self.lock.release()
 
-        output_details = compile_details(metrics, initial_time)
-
+        
+        output_details = compile_details(metrics, initial_time, self.most_recent_time_last_byte_received)
+        self.most_recent_time_last_byte_received = output_details.most_recent_time_last_byte_received
         return output_details
 
 class Printer:
@@ -108,7 +111,7 @@ class Printer:
 
     def print_header(self):
             header = "DATE\tMost recent received\tAvg seconds to last byte\t" + \
-                    "Avg seconds to first byte\tTotal bytes\tNum messages\tAvg bytes\tMbps"
+                    "Avg seconds to first byte\tTotal bytes\tNum messages\tAvg bytes\tMbps\tOut of order count"
             self.print(header)
 
     def print_summary(self, metrics_data):
@@ -121,7 +124,8 @@ class Printer:
                             str(output_details.total_data_size),
                             str(output_details.metrics_count),
                             str(output_details.average_data_size),
-                            str(output_details.mbps)])
+                            str(output_details.mbps),
+                            str(output_details.out_of_order_data)])
         self.print(outLine)
 
     def close(self):
@@ -176,7 +180,7 @@ def run(credentials, environment, satelliteId, interval, print_summary):
 
 
 
-def compile_details(metrics, initial_time):
+def compile_details(metrics, initial_time, most_recent_time_last_byte_received):
     now = datetime.datetime.utcnow()
     
     average_first_byte_latency = timedelta()
@@ -188,6 +192,8 @@ def compile_details(metrics, initial_time):
     total_data_size = 0
 
     metrics_count = 0
+    out_of_order_data = 0
+    previous_first_byte_time = datetime.datetime.min
 
     for metric in metrics:
         first_byte_time = metric.time_first_byte_received.ToDatetime()
@@ -202,6 +208,14 @@ def compile_details(metrics, initial_time):
         total_last_byte_latency += last_byte_latency
         total_data_size += data_size
         metrics_count += 1
+        
+        if metric.time_last_byte_received.ToDatetime() > most_recent_time_last_byte_received:
+            most_recent_time_last_byte_received = metric.time_last_byte_received.ToDatetime()
+
+        if previous_first_byte_time > first_byte_time:
+            out_of_order_data += 1
+
+        previous_first_byte_time = first_byte_time
 
     if metrics_count > 0:
         average_first_byte_latency = total_first_byte_latency / metrics_count
@@ -210,8 +224,6 @@ def compile_details(metrics, initial_time):
 
     mbps = (total_data_size / (now - initial_time).seconds) * 8 / 1024 / 1024
 
-    most_recent_time_last_byte_received = metrics[-1].time_last_byte_received.ToDatetime()
-
     outputDetails = OutputDetails(datetime.datetime.utcnow(),
                                 most_recent_time_last_byte_received, 
                                 average_first_byte_latency, 
@@ -219,7 +231,8 @@ def compile_details(metrics, initial_time):
                                 total_data_size, 
                                 metrics_count, 
                                 average_data_size, 
-                                mbps)
+                                mbps,
+                                out_of_order_data)
 
     return outputDetails
 
