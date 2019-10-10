@@ -191,7 +191,7 @@ def compile_details(metrics, initial_time):
 
     metrics_count = 0
     out_of_order_data = 0
-    previous_first_byte_time = datetime.MINYEAR
+    previous_first_byte_time = datetime.datetime.min
 
     for metric in metrics:
         first_byte_time = metric.time_first_byte_received.ToDatetime()
@@ -219,7 +219,10 @@ def compile_details(metrics, initial_time):
 
     mbps = (total_data_size / (now - initial_time).seconds) * 8 / 1024 / 1024
 
-    most_recent_time_last_byte_received = metrics[-1].time_last_byte_received.ToDatetime()
+    if len(metrics) > 0:
+        most_recent_time_last_byte_received = metrics[-1].time_last_byte_received.ToDatetime()
+    else:
+        most_recent_time_last_byte_received = "N/A"
 
     outputDetails = OutputDetails(datetime.datetime.utcnow(),
                                 most_recent_time_last_byte_received, 
