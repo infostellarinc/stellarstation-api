@@ -438,13 +438,19 @@ message TelemetryMetadata {
 
 // A plan, specifying a time range within which a satellite will be communicated with.
 //
-// Next ID: 17
+// Next ID: 19
 message Plan {
   // The unique ID of the plan.
   string id = 1;
 
   // The id of the satellite to be tracked in the plan.
   string satellite_id = 2;
+
+  // The organization name of the satellite to be tracked in the plan.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string satellite_organization_name = 17;
 
   // A description of the status of a plan.
   enum Status {
@@ -497,6 +503,12 @@ message Plan {
   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
   string ground_station_country_code = 8;
+
+  // The organization name of ground station used for the plan.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string ground_station_organization_name = 18;
 
   // The max elevation during the plan, in degrees.
   double max_elevation_degrees = 9;
