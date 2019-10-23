@@ -365,7 +365,7 @@ message ChannelSet {
 
 // A pass during which a satellite can be communicated with from a given ground station.
 //
-// Next ID: 12
+// Next ID: 13
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
   string reservation_token = 1;
@@ -381,6 +381,12 @@ message Pass {
 
   // The longitude, in degrees, of the ground station's location.
   double ground_station_longitude = 5;
+
+  // The organization name of the ground station.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string ground_station_organization_name = 12;
 
   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
@@ -504,7 +510,7 @@ message Plan {
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
   string ground_station_country_code = 8;
 
-  // The organization name of ground station used for the plan.
+  // The organization name of the ground station.
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
