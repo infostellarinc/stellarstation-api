@@ -152,7 +152,7 @@ message ListPlansResponse {
 // A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
 // during a time range between AOS and LOS, unless explicitly cancelled.
 //
-// Next ID: 10
+// Next ID: 12
 message Plan {
   // The ID of this plan.
   string plan_id = 1;
@@ -198,6 +198,18 @@ message Plan {
   //
   // This field is only populated for future plans.
   repeated SatelliteCoordinates satellite_coordinates = 9;
+
+  // The organization name of the satellite to be tracked in the plan.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string satellite_organization_name = 10;
+
+  // The organization name of the ground station.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string ground_station_organization_name = 11;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
