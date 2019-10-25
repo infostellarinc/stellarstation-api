@@ -368,7 +368,9 @@ message ChannelSet {
 // Next ID: 13
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
-  string reservation_token = 1;
+  //
+  // Deprecated. Use ChannelSetToken.reservation_token.
+  string reservation_token = 1 [deprecated = true];
 
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
