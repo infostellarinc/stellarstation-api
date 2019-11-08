@@ -15,19 +15,21 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
-	"strconv"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+
 	stellarstation "github.com/infostellarinc/go-stellarstation/api/v1"
 	"github.com/infostellarinc/stellarstation-api/examples/go/benchmark"
 )
+
+const dateTimeFormat = "2006-01-02 15:04:05.0000"
 
 type metric struct {
 	timeFirstByteReceived time.Time
@@ -37,18 +39,19 @@ type metric struct {
 }
 
 type outputDetails struct {
-	timenow                        time.Time
+	now                            time.Time
 	mostRecentTimeLastByteReceived time.Time
 	averageFirstByteLatency        time.Duration
 	averageLastByteLatency         time.Duration
 	totalDataSize                  int64
 	metricsCount                   int64
 	averageDataSize                float64
-	mbps                           float64
+	dataRateInMbps                 float64
 	outOfOrderData                 int64
+	planID                         string
 }
 
-type sessionSummary struct {
+type passSummary struct {
 	firstByteTime                time.Time
 	lastByteTime                 time.Time
 	totalAverageFirstByteLatency time.Duration
@@ -57,6 +60,16 @@ type sessionSummary struct {
 	totalMbps                    float64
 	numIntervals                 float64
 	totalOutOfOrderData          int64
+	initialPlanID                string
+}
+
+type sessionSummary struct {
+	startOfSession         time.Time
+	endOfSession           time.Time
+	totalSessionBytes      int64
+	totalSessionMbps       float64
+	totalSessionOutOfOrder int64
+	numberOfPlansProcessed int
 }
 
 type metricsData struct {
@@ -64,9 +77,10 @@ type metricsData struct {
 	metrics                        []metric
 	mostRecentTimeLastByteReceived time.Time
 	timeOfReporting                time.Time
+	planID                         string
 }
 
-func (metricsData *metricsData) compileDetails() *outputDetails {
+func (metricsData *metricsData) compileDetails() outputDetails {
 	now := time.Now().UTC()
 
 	var averageFirstByteLatency time.Duration
@@ -81,14 +95,16 @@ func (metricsData *metricsData) compileDetails() *outputDetails {
 	var outOfOrderData int64 = 0
 	var previousFirstByteTime = time.Time{}
 
-	for _, metric := range metricsData.metrics {
-		var firstByteTime = metric.timeFirstByteReceived
-		var lastByteTime = metric.timeLastByteReceived
-		var dataSize = metric.dataSize
-		var metricTime = metric.metricTime
+	var planID string = ""
 
-		var firstByteLatency = metricTime.Sub(firstByteTime)
-		var lastByteLatency = metricTime.Sub(lastByteTime)
+	for _, metric := range metricsData.metrics {
+		firstByteTime := metric.timeFirstByteReceived
+		lastByteTime := metric.timeLastByteReceived
+		dataSize := metric.dataSize
+		metricTime := metric.metricTime
+
+		firstByteLatency := metricTime.Sub(firstByteTime)
+		lastByteLatency := metricTime.Sub(lastByteTime)
 
 		totalFirstByteLatency += firstByteLatency
 		totalLastByteLatency += lastByteLatency
@@ -112,67 +128,133 @@ func (metricsData *metricsData) compileDetails() *outputDetails {
 		averageDataSize = float64(totalDataSize) / float64(metricsCount)
 	}
 
-	var mbps = (float64(totalDataSize) / float64((now.Sub(metricsData.initialTime).Seconds()))) * 8 / 1024 / 1024
+	dataRateInMbps := (float64(totalDataSize) / (now.Sub(metricsData.initialTime).Seconds())) * 8 / 1024 / 1024
+
+	planID = metricsData.planID
 
 	outputDetails := outputDetails{
-		timenow:                        metricsData.timeOfReporting,
+		now:                            metricsData.timeOfReporting,
 		mostRecentTimeLastByteReceived: metricsData.mostRecentTimeLastByteReceived,
 		averageFirstByteLatency:        averageFirstByteLatency,
 		averageLastByteLatency:         averageLastByteLatency,
 		totalDataSize:                  totalDataSize,
 		metricsCount:                   metricsCount,
 		averageDataSize:                averageDataSize,
-		mbps:                           mbps,
+		dataRateInMbps:                 dataRateInMbps,
 		outOfOrderData:                 outOfOrderData,
+		planID:                         planID,
 	}
 
-	return &outputDetails
+	return outputDetails
 }
 
-func printHeader() {
-	header := "DATE\tMost recent received\tAvg seconds to last byte\tAvg seconds to first byte\tTotal bytes\tNum messages\tAvg bytes\tMbps\tOut of order count"
-	fmt.Println(header)
+func printHeader(output io.Writer) {
+	fmt.Fprintf(output, "PlanID\tDATE\tMost recent received\tAvg seconds to last byte\tAvg seconds to first byte\tTotal bytes\tNum messages\tAvg bytes\tMbps\tOut of order count\n")
 }
 
-func printDetails(outputDetails *outputDetails) {
-	//outputDetails := metricsData.compileDetails()
-	var b bytes.Buffer
-	b.WriteString(outputDetails.timenow.Format("2006-01-02 15:04:05.0000") + "\t")
-	b.WriteString(outputDetails.mostRecentTimeLastByteReceived.Format("2006-01-02 15:04:05.0000") + "\t")
-	b.WriteString(fmt.Sprintf("%f", outputDetails.averageFirstByteLatency.Seconds()) + "\t")
-	b.WriteString(fmt.Sprintf("%f", outputDetails.averageLastByteLatency.Seconds()) + "\t")
-	b.WriteString(strconv.FormatInt(outputDetails.totalDataSize, 10) + "\t")
-	b.WriteString(strconv.FormatInt(outputDetails.metricsCount, 10) + "\t")
-	b.WriteString(fmt.Sprintf("%f", outputDetails.averageDataSize) + "\t")
-	b.WriteString(fmt.Sprintf("%f", outputDetails.mbps) + "\t")
-	b.WriteString(strconv.FormatInt(outputDetails.outOfOrderData, 10) + "\t")
-
-	fmt.Println(b.String())
+func printPassDetails(output io.Writer, outputDetails outputDetails) {
+	fmt.Fprintf(output, "%v\t%v\t%v\t%0.6f\t%0.6f\t%v\t%v\t%0.6f\t%0.6f\t%v\n",
+		outputDetails.planID,
+		outputDetails.now.Format(dateTimeFormat),
+		outputDetails.mostRecentTimeLastByteReceived.Format(dateTimeFormat),
+		outputDetails.averageFirstByteLatency.Seconds(),
+		outputDetails.averageLastByteLatency.Seconds(),
+		outputDetails.totalDataSize,
+		outputDetails.metricsCount,
+		outputDetails.averageDataSize,
+		outputDetails.dataRateInMbps,
+		outputDetails.outOfOrderData)
 }
 
-func printSummary(sessionSummary *sessionSummary) {
-	var b bytes.Buffer
-	b.WriteString("First Byte Time\t" + sessionSummary.firstByteTime.Format("2006-01-02 15:04:05.0000") + "\n")
-	b.WriteString("Last Byte Time\t" + sessionSummary.lastByteTime.Format("2006-01-02 15:04:05.0000") + "\t")
-	b.WriteString("Average First Byte Latency\t" + fmt.Sprintf("%f", sessionSummary.totalAverageFirstByteLatency.Seconds()/sessionSummary.numIntervals) + "\n")
-	b.WriteString("Average Last Byte Latency\t" + fmt.Sprintf("%f", sessionSummary.totalAverageLastByteLatency.Seconds()/sessionSummary.numIntervals) + "\n")
-	b.WriteString("Total Bytes\t" + strconv.FormatInt(sessionSummary.totalBytes, 10) + "\n")
-	b.WriteString("Average Speed\t" + fmt.Sprintf("%f", sessionSummary.totalMbps/sessionSummary.numIntervals) + "\n")
-	b.WriteString("Total Out Of Order Bytes\t" + strconv.FormatInt(sessionSummary.totalOutOfOrderData, 10) + "\n")
+func printPassSummary(output io.Writer, ps passSummary) {
+	fmt.Fprintln(output, "Pass Summary:\nPlanID\tFirst Byte Received At\tLast Byte Received At\tAverage First Byte Latency\tAverage Last Byte Latency\tTotal Bytes Received\tAverage Mbps\tTotal Out of Order Bytes")
 
-	fmt.Println(b.String())
+	averageFirstByteLatency := ps.totalAverageFirstByteLatency.Seconds() / ps.numIntervals
+	averageLastByteLatency := ps.totalAverageLastByteLatency.Seconds() / ps.numIntervals
+
+	fmt.Fprintf(output, "%v\t%v\t%v\t%0.6f\t%0.6f\t%v\t%0.6f\t%v\n",
+		ps.initialPlanID,
+		ps.firstByteTime.Format(dateTimeFormat),
+		ps.lastByteTime.Format(dateTimeFormat),
+		averageFirstByteLatency,
+		averageLastByteLatency,
+		ps.totalBytes,
+		ps.totalMbps/ps.numIntervals,
+		ps.totalOutOfOrderData)
+}
+
+func (sessionSummary *sessionSummary) printSessionSummary(output io.Writer) {
+	fmt.Fprintln(output, "Overall Summary:\nStart of session\tEnd of session\tNumber of Passes\tTotal Bytes Received\tAverage Mbps\tTotal Out Of Order")
+
+	fmt.Fprintf(output, "%v\t%v\t%v\t%v\t%0.6f\t%v\n",
+		sessionSummary.startOfSession.Format(dateTimeFormat),
+		sessionSummary.endOfSession.Format(dateTimeFormat),
+		sessionSummary.numberOfPlansProcessed,
+		sessionSummary.totalSessionBytes,
+		sessionSummary.totalSessionMbps/float64(sessionSummary.numberOfPlansProcessed),
+		sessionSummary.totalSessionOutOfOrder)
+
+}
+
+func calculateSessionSummary(passSummaries []passSummary) sessionSummary {
+	var startOfSession time.Time
+	var endOfSession time.Time
+	var totalSessionBytes int64
+	var totalSessionMbps float64
+	var totalSessionOutOfOrder int64
+	var numberOfPlansProcessed int
+
+	for i := 0; i < len(passSummaries); i++ {
+		if i == 0 {
+			startOfSession = passSummaries[i].firstByteTime
+		}
+		if i == len(passSummaries)-1 {
+			endOfSession = passSummaries[i].lastByteTime
+		}
+		totalSessionBytes += passSummaries[i].totalBytes
+		totalSessionMbps += passSummaries[i].totalMbps / passSummaries[i].numIntervals
+		totalSessionOutOfOrder += passSummaries[i].totalOutOfOrderData
+	}
+
+	numberOfPlansProcessed = len(passSummaries)
+
+	sessionSummary := sessionSummary{
+		startOfSession:         startOfSession,
+		endOfSession:           endOfSession,
+		totalSessionBytes:      totalSessionBytes,
+		totalSessionMbps:       totalSessionMbps,
+		totalSessionOutOfOrder: totalSessionOutOfOrder,
+		numberOfPlansProcessed: numberOfPlansProcessed,
+	}
+
+	return sessionSummary
 }
 
 func main() {
 
-	apiKey := flag.String("key", "colin-alpha-key.json", "api key")
-	endpoint := flag.String("endpoint", "api-alpha.stellarstation.com:443", "api endpoint")
-	satelliteID := flag.String("id", "112", "satellite id")
-	interval := flag.Int("interval", 10, "reporting interval")
-	exitOnNoDataInSeconds := flag.Int("exitOnNoDataIn", -1, "number of seconds of no data received to auto exit program")
-	printSessionSummary := flag.Bool("summary", true, "print a session summary")
+	apiKey := flag.String("privateKeyFile", "stellarstation-private-key.json", "api key")
+	endpoint := flag.String("apiEndpoint", "api.stellarstation.com:443", "api endpoint")
+	satelliteID := flag.String("satelliteID", "5", "satellite id")
+	interval := flag.Duration("reportingInterval", 10*time.Second, "reporting interval")
+	assumeEndAfterSeconds := flag.Duration("assumeEndAfter", 10*time.Second, "assume the pass has ended after X duration of no data")
+	willPrintPassSummary := flag.Bool("passSummary", true, "print a pass summary after every pass")
+	willPrintOverallSummary := flag.Bool("sessionSummary", true, "print an overall summary for all passes")
+	exitAfterPassEnds := flag.Bool("exitAfterPassEnds", false, "exit the program after a pass ends")
+	filename := flag.String("outputFile", "", "specify output file and benchmark will output to it instead of standard out")
+
+	log.SetOutput(os.Stderr)
+	output := os.Stdout
 
 	flag.Parse()
+
+	if *filename != "" {
+		file, err := os.Create(*filename)
+		if err != nil {
+			log.Fatalf("Couldn't open output file. File: %v, Error: %v\n", filename, err)
+		}
+		defer file.Close()
+		output = file
+	}
 
 	satelliteStreamOptions := &benchmark.SatelliteStreamOptions{
 		AcceptedFraming: []stellarstation.Framing{stellarstation.Framing_AX25, stellarstation.Framing_BITSTREAM},
@@ -181,81 +263,115 @@ func main() {
 		Endpoint:        *endpoint,
 	}
 
-	var streamChannel = make(chan *stellarstation.Telemetry)
+	var streamChannel = make(chan *stellarstation.ReceiveTelemetryResponse)
 
 	ss, err := benchmark.OpenSatelliteStream(satelliteStreamOptions, streamChannel)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer ss.Close()
 
+	passEndedChan := make(chan bool)
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
-	ticker := time.NewTicker(time.Second * time.Duration(*interval))
-	defer ticker.Stop()
+	reportingTicker := time.NewTicker(*interval)
+	defer reportingTicker.Stop()
 
-	fmt.Println("Listening for messages")
-	var sessionSummary sessionSummary
+	log.Println("Listening for messages")
+	var ps passSummary
 	var md metricsData
-	var storeMostRecentTimeLastByteReceived time.Time = time.Time{}
-	var gotFirstMessage = false
+	var passSummaries []passSummary
+	var passStarted = false
 	var done = false
 	for !done {
 		select {
-		case message := <-streamChannel:
-			if gotFirstMessage == false {
-				fmt.Println("Receiving messages")
-				printHeader()
-				gotFirstMessage = true
-				firstTime, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
-				md.initialTime = firstTime
-				sessionSummary.firstByteTime = firstTime
-			}
-			timeFirstByteReceived, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
-			timeLastByteReceived, _ := ptypes.Timestamp(message.TimeLastByteReceived)
-			numBytesInMessage := len(message.Data)
+		case streamResponse := <-streamChannel:
+			message := streamResponse.Telemetry
+			if len(message.Data) != 0 {
+				planID := streamResponse.PlanId
+				if passStarted == false {
+					if planID != "" {
+						log.Println("Receiving messages")
+						printHeader(output)
+						passStarted = true
+						firstTime, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
+						md.initialTime = firstTime
+						ps.firstByteTime = firstTime
+						ps.initialPlanID = planID
+					}
 
-			metric := metric{
-				timeFirstByteReceived: timeFirstByteReceived,
-				timeLastByteReceived:  timeLastByteReceived,
-				dataSize:              numBytesInMessage,
-				metricTime:            time.Now().UTC(),
+				}
+				timeFirstByteReceived, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
+				timeLastByteReceived, _ := ptypes.Timestamp(message.TimeLastByteReceived)
+				numBytesInMessage := len(message.Data)
+
+				metric := metric{
+					timeFirstByteReceived: timeFirstByteReceived,
+					timeLastByteReceived:  timeLastByteReceived,
+					dataSize:              numBytesInMessage,
+					metricTime:            time.Now().UTC(),
+				}
+				md.metrics = append(md.metrics, metric)
+				if md.mostRecentTimeLastByteReceived.Before(timeLastByteReceived) {
+					md.mostRecentTimeLastByteReceived = timeLastByteReceived
+				}
+				md.planID = planID
 			}
-			md.metrics = append(md.metrics, metric)
-			storeMostRecentTimeLastByteReceived = timeLastByteReceived
-			md.mostRecentTimeLastByteReceived = storeMostRecentTimeLastByteReceived
-		case timeOfReporting := <-ticker.C:
-			if gotFirstMessage {
+
+		case timeOfReporting := <-reportingTicker.C:
+			if passStarted {
 				md.timeOfReporting = timeOfReporting
 				outputDetails := md.compileDetails()
-				sessionSummary.totalBytes += outputDetails.totalDataSize
-				sessionSummary.totalMbps += outputDetails.mbps
-				sessionSummary.totalAverageFirstByteLatency += outputDetails.averageFirstByteLatency
-				sessionSummary.totalAverageLastByteLatency += outputDetails.averageLastByteLatency
-				sessionSummary.numIntervals++
-				sessionSummary.lastByteTime = md.mostRecentTimeLastByteReceived
-				sessionSummary.totalOutOfOrderData += outputDetails.outOfOrderData
-				if (*exitOnNoDataInSeconds > 0) && (outputDetails.totalDataSize == 0) {
-					secondsSinceFirstByte := time.Now().UTC().Sub(sessionSummary.firstByteTime)
-					if secondsSinceFirstByte > time.Duration(*exitOnNoDataInSeconds) {
-						done = true
+				if (*assumeEndAfterSeconds > 0) && (outputDetails.totalDataSize == 0) {
+					secondsSincePassFirstByte := time.Now().UTC().Sub(ps.firstByteTime)
+					if secondsSincePassFirstByte > *assumeEndAfterSeconds {
+						go func() { passEndedChan <- true }()
 					}
+				} else {
+					ps.totalBytes += outputDetails.totalDataSize
+					ps.totalMbps += outputDetails.dataRateInMbps
+					ps.totalAverageFirstByteLatency += outputDetails.averageFirstByteLatency
+					ps.totalAverageLastByteLatency += outputDetails.averageLastByteLatency
+					ps.numIntervals++
+					ps.lastByteTime = md.mostRecentTimeLastByteReceived
+					ps.totalOutOfOrderData += outputDetails.outOfOrderData
 				}
-				if !done {
-					printDetails(outputDetails)
-					md = metricsData{}
-					md.initialTime = timeOfReporting
-					md.mostRecentTimeLastByteReceived = storeMostRecentTimeLastByteReceived
+
+				if !done && outputDetails.planID != "" {
+					printPassDetails(output, outputDetails)
+					md = metricsData{
+						mostRecentTimeLastByteReceived: md.mostRecentTimeLastByteReceived,
+						initialTime:                    timeOfReporting,
+					}
 				}
 			}
 		case <-signalChan:
-			fmt.Println("\nReceived interrupt, stopping benchmark")
+			log.Println("Received interrupt, stopping benchmark")
+			if ps.initialPlanID != "" {
+				passSummaries = append(passSummaries, ps)
+				printPassSummary(output, ps)
+			}
+
 			done = true
+		case <-passEndedChan:
+			log.Printf("Plan with ID %v ended after not receiving data for %v", ps.initialPlanID, *assumeEndAfterSeconds)
+			if *willPrintPassSummary {
+				printPassSummary(output, ps)
+			}
+			if *exitAfterPassEnds {
+				done = true
+			}
+			passSummaries = append(passSummaries, ps)
+			ps = passSummary{}
+			passStarted = false
 		}
 	}
-	if *printSessionSummary {
-		if sessionSummary.numIntervals > 0 {
-			printSummary(&sessionSummary)
+
+	if *willPrintOverallSummary {
+		if len(passSummaries) > 0 {
+			sessionSummary := calculateSessionSummary(passSummaries)
+			sessionSummary.printSessionSummary(output)
 		}
 	}
-	ss.Close()
+	log.Println("Session ended")
 }
