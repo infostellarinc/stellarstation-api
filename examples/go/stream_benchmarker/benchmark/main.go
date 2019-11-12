@@ -148,9 +148,9 @@ func (metricsData *metricsData) compileDetails() outputDetails {
 	return outputDetails
 }
 
-func printHeader(output io.Writer, planID string) {
+func (outputDetails *outputDetails) printHeader(output io.Writer) {
 	fmt.Fprintf(output, "Pass %v:\n%10v%25v%25v%20v%18v%18v%15v%16v%11v%20v",
-		planID,
+		outputDetails.planID,
 		"PlanID",
 		"DATE",
 		"Most recent",
@@ -163,7 +163,7 @@ func printHeader(output io.Writer, planID string) {
 		"Out of order\n")
 }
 
-func printPassDetails(output io.Writer, outputDetails outputDetails) {
+func (outputDetails *outputDetails) print(output io.Writer) {
 	fmt.Fprintf(output, "%10v%25v%25v%20.2f%18.2f%18v%15v%16.2f%11.2f%20v\n",
 		outputDetails.planID,
 		outputDetails.now.Format(dateTimeFormat),
@@ -177,7 +177,7 @@ func printPassDetails(output io.Writer, outputDetails outputDetails) {
 		outputDetails.outOfOrderData)
 }
 
-func printPassSummary(output io.Writer, ps passSummary) {
+func (ps *passSummary) print(output io.Writer) {
 	fmt.Fprintf(output, "\nPass Summary:\n%10v%25v%25v%20v%20v%20v%15v%15v\n",
 		"PlanID",
 		"First byte time",
@@ -202,7 +202,7 @@ func printPassSummary(output io.Writer, ps passSummary) {
 		ps.totalOutOfOrderData)
 }
 
-func (sessionSummary *sessionSummary) printSessionSummary(output io.Writer) {
+func (sessionSummary *sessionSummary) print(output io.Writer) {
 	fmt.Fprintf(output, "Overall Summary:\n%22v%25v%15v%20v%15v%15v\n",
 		"Start session",
 		"End session",
@@ -303,6 +303,7 @@ func main() {
 	ss, err := benchmark.OpenSatelliteStream(satelliteStreamOptions, streamChannel)
 	if err != nil {
 		log.Fatal(err)
+
 	}
 	defer ss.Close()
 
@@ -318,6 +319,7 @@ func main() {
 	var passSummaries []passSummary
 	var passStarted = false
 	var done = false
+	var printedHeader = false
 	for !done {
 		select {
 		case streamResponse := <-streamChannel:
@@ -327,7 +329,6 @@ func main() {
 				if passStarted == false {
 					if planID != "" {
 						log.Printf("Receiving messages for Plan ID %v", planID)
-						printHeader(output, planID)
 						passStarted = true
 						firstTime, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
 						md.initialTime = firstTime
@@ -357,6 +358,10 @@ func main() {
 			if passStarted {
 				md.timeOfReporting = timeOfReporting
 				outputDetails := md.compileDetails()
+				if !printedHeader {
+					outputDetails.printHeader(output)
+					printedHeader = true
+				}
 				if (assumeEndAfterDuration > 0) && (outputDetails.totalDataSize == 0) {
 					timeSincePassFirstByte := time.Now().UTC().Sub(ps.firstByteTime)
 					if timeSincePassFirstByte > assumeEndAfterDuration {
@@ -373,7 +378,7 @@ func main() {
 				}
 
 				if !done && outputDetails.planID != "" {
-					printPassDetails(output, outputDetails)
+					outputDetails.print(output)
 					md = metricsData{
 						mostRecentTimeLastByteReceived: md.mostRecentTimeLastByteReceived,
 						initialTime:                    timeOfReporting,
@@ -384,14 +389,14 @@ func main() {
 			log.Println("Received interrupt, stopping benchmark")
 			if !willNotPrintPassSummary && ps.initialPlanID != "" {
 				passSummaries = append(passSummaries, ps)
-				printPassSummary(output, ps)
+				ps.print(output)
 			}
 
 			done = true
 		case <-passEndedChan:
 			log.Printf("Plan with ID %v ended after not receiving messages for %v", ps.initialPlanID, assumeEndAfterDuration)
 			if !willNotPrintPassSummary {
-				printPassSummary(output, ps)
+				ps.print(output)
 			}
 			if exitAfterPassEnds {
 				done = true
@@ -405,7 +410,7 @@ func main() {
 	if !willNotPrintOverallSummary {
 		if len(passSummaries) > 0 {
 			sessionSummary := calculateSessionSummary(passSummaries)
-			sessionSummary.printSessionSummary(output)
+			sessionSummary.print(output)
 		}
 	}
 	log.Println("Session ended")
