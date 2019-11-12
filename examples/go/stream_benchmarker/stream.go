@@ -1,4 +1,4 @@
-// Copyright © 2018 Infostellar, Inc.
+// Copyright © 2019 Infostellar, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ type satelliteStream struct {
 	conn     *grpc.ClientConn
 	streamId string
 
-	recvChan           chan<- *stellarstation.Telemetry
+	recvChan           chan<- *stellarstation.ReceiveTelemetryResponse
 	recvLoopClosedChan chan struct{}
 
 	state uint32
@@ -71,7 +71,7 @@ type streamResponses struct {
 }
 
 // OpenSatelliteStream opens a stream to a satellite over the StellarStation API.
-func OpenSatelliteStream(o *SatelliteStreamOptions, recvChan chan<- *stellarstation.Telemetry) (SatelliteStream, error) {
+func OpenSatelliteStream(o *SatelliteStreamOptions, recvChan chan<- *stellarstation.ReceiveTelemetryResponse) (SatelliteStream, error) {
 	s := &satelliteStream{
 		acceptedFraming: o.AcceptedFraming,
 		satelliteId:     o.SatelliteID,
@@ -159,7 +159,7 @@ func (ss *satelliteStream) recvLoop() {
 		switch res.Response.(type) {
 		case *stellarstation.SatelliteStreamResponse_ReceiveTelemetryResponse:
 
-			telemetry := res.GetReceiveTelemetryResponse().Telemetry
+			telemetry := res.GetReceiveTelemetryResponse()
 			payload := telemetry
 			ss.recvChan <- payload
 		}

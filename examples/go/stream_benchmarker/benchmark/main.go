@@ -29,7 +29,7 @@ import (
 	"github.com/infostellarinc/stellarstation-api/examples/go/benchmark"
 )
 
-const dateTimeFormat = "2006-01-02 15:04:05.0000"
+const dateTimeFormat = "2006-01-02 15:04:05"
 
 type metric struct {
 	timeFirstByteReceived time.Time
@@ -148,12 +148,23 @@ func (metricsData *metricsData) compileDetails() outputDetails {
 	return outputDetails
 }
 
-func printHeader(output io.Writer) {
-	fmt.Fprintf(output, "PlanID\tDATE\tMost recent received\tAvg seconds to last byte\tAvg seconds to first byte\tTotal bytes\tNum messages\tAvg bytes\tMbps\tOut of order count\n")
+func printHeader(output io.Writer, planID string) {
+	fmt.Fprintf(output, "Pass %v:\n%10v%25v%25v%20v%18v%18v%15v%16v%11v%20v",
+		planID,
+		"PlanID",
+		"DATE",
+		"Most recent",
+		"First byte latency",
+		"Last byte latency",
+		"Total bytes",
+		"Num messages",
+		"Avg bytes",
+		"Mbps",
+		"Out of order\n")
 }
 
 func printPassDetails(output io.Writer, outputDetails outputDetails) {
-	fmt.Fprintf(output, "%v\t%v\t%v\t%0.6f\t%0.6f\t%v\t%v\t%0.6f\t%0.6f\t%v\n",
+	fmt.Fprintf(output, "%10v%25v%25v%20.2f%18.2f%18v%15v%16.2f%11.2f%20v\n",
 		outputDetails.planID,
 		outputDetails.now.Format(dateTimeFormat),
 		outputDetails.mostRecentTimeLastByteReceived.Format(dateTimeFormat),
@@ -167,12 +178,20 @@ func printPassDetails(output io.Writer, outputDetails outputDetails) {
 }
 
 func printPassSummary(output io.Writer, ps passSummary) {
-	fmt.Fprintln(output, "Pass Summary:\nPlanID\tFirst Byte Received At\tLast Byte Received At\tAverage First Byte Latency\tAverage Last Byte Latency\tTotal Bytes Received\tAverage Mbps\tTotal Out of Order Bytes")
+	fmt.Fprintf(output, "\nPass Summary:\n%10v%25v%25v%20v%20v%20v%15v%15v\n",
+		"PlanID",
+		"First byte time",
+		"Last byte time",
+		"First byte batency",
+		"Last byte latency",
+		"Total bytes",
+		"Average Mbps",
+		"Out of order")
 
 	averageFirstByteLatency := ps.totalAverageFirstByteLatency.Seconds() / ps.numIntervals
 	averageLastByteLatency := ps.totalAverageLastByteLatency.Seconds() / ps.numIntervals
 
-	fmt.Fprintf(output, "%v\t%v\t%v\t%0.6f\t%0.6f\t%v\t%0.6f\t%v\n",
+	fmt.Fprintf(output, "%10v%25v%25v%20.2f%20.2f%20v%15.2f%15v\n\n",
 		ps.initialPlanID,
 		ps.firstByteTime.Format(dateTimeFormat),
 		ps.lastByteTime.Format(dateTimeFormat),
@@ -184,9 +203,15 @@ func printPassSummary(output io.Writer, ps passSummary) {
 }
 
 func (sessionSummary *sessionSummary) printSessionSummary(output io.Writer) {
-	fmt.Fprintln(output, "Overall Summary:\nStart of session\tEnd of session\tNumber of Passes\tTotal Bytes Received\tAverage Mbps\tTotal Out Of Order")
+	fmt.Fprintf(output, "Overall Summary:\n%22v%25v%15v%20v%15v%15v\n",
+		"Start session",
+		"End session",
+		"Num passes",
+		"Total bytes",
+		"Average Mbps",
+		"Out of order")
 
-	fmt.Fprintf(output, "%v\t%v\t%v\t%v\t%0.6f\t%v\n",
+	fmt.Fprintf(output, "%22v%25v%15v%20v%15.2f%15v\n",
 		sessionSummary.startOfSession.Format(dateTimeFormat),
 		sessionSummary.endOfSession.Format(dateTimeFormat),
 		sessionSummary.numberOfPlansProcessed,
@@ -232,23 +257,33 @@ func calculateSessionSummary(passSummaries []passSummary) sessionSummary {
 
 func main() {
 
-	apiKey := flag.String("privateKeyFile", "stellarstation-private-key.json", "api key")
-	endpoint := flag.String("apiEndpoint", "api.stellarstation.com:443", "api endpoint")
-	satelliteID := flag.String("satelliteID", "5", "satellite id")
-	interval := flag.Duration("reportingInterval", 10*time.Second, "reporting interval")
-	assumeEndAfterSeconds := flag.Duration("assumeEndAfter", 10*time.Second, "assume the pass has ended after X duration of no data")
-	willPrintPassSummary := flag.Bool("passSummary", true, "print a pass summary after every pass")
-	willPrintOverallSummary := flag.Bool("sessionSummary", true, "print an overall summary for all passes")
-	exitAfterPassEnds := flag.Bool("exitAfterPassEnds", false, "exit the program after a pass ends")
-	filename := flag.String("outputFile", "", "specify output file and benchmark will output to it instead of standard out")
+	apiKey := "stellarstation-private-key.json"
+	endpoint := "api.stellarstation.com:443"
+	satelliteID := "5"
+	interval := 10 * time.Second
+	assumeEndAfterDuration := 10 * time.Second
+	exitAfterPassEnds := false
+	willNotPrintPassSummary := false
+	willNotPrintOverallSummary := false
+	filename := ""
+
+	flag.StringVar(&apiKey, "k", apiKey, "StellarStation API Key file")
+	flag.StringVar(&endpoint, "E", endpoint, "API endpoint")
+	flag.StringVar(&satelliteID, "s", satelliteID, "Satellite ID as provided by StellarStation")
+	flag.DurationVar(&interval, "i", interval, "Reporting interval.  (10s, 1m, etc.)  During a pass, an output line will be generated for each reporting interval.")
+	flag.DurationVar(&assumeEndAfterDuration, "e", assumeEndAfterDuration, "Assume a pass has ended after this much time has passed without receiving any additional data")
+	flag.BoolVar(&exitAfterPassEnds, "x", exitAfterPassEnds, "Exit the program after a pass ends")
+	flag.BoolVar(&willNotPrintPassSummary, "P", willNotPrintPassSummary, "Do not print a pass summary after each pass")
+	flag.BoolVar(&willNotPrintOverallSummary, "S", willNotPrintOverallSummary, "Do not print an overall summary when the program exits")
+	flag.StringVar(&filename, "o", filename, "Write report output to a file instead of standard out")
+
+	flag.Parse()
 
 	log.SetOutput(os.Stderr)
 	output := os.Stdout
 
-	flag.Parse()
-
-	if *filename != "" {
-		file, err := os.Create(*filename)
+	if filename != "" {
+		file, err := os.Create(filename)
 		if err != nil {
 			log.Fatalf("Couldn't open output file. File: %v, Error: %v\n", filename, err)
 		}
@@ -258,9 +293,9 @@ func main() {
 
 	satelliteStreamOptions := &benchmark.SatelliteStreamOptions{
 		AcceptedFraming: []stellarstation.Framing{stellarstation.Framing_AX25, stellarstation.Framing_BITSTREAM},
-		SatelliteID:     *satelliteID,
-		APIKey:          *apiKey,
-		Endpoint:        *endpoint,
+		SatelliteID:     satelliteID,
+		APIKey:          apiKey,
+		Endpoint:        endpoint,
 	}
 
 	var streamChannel = make(chan *stellarstation.ReceiveTelemetryResponse)
@@ -274,7 +309,7 @@ func main() {
 	passEndedChan := make(chan bool)
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
-	reportingTicker := time.NewTicker(*interval)
+	reportingTicker := time.NewTicker(interval)
 	defer reportingTicker.Stop()
 
 	log.Println("Listening for messages")
@@ -291,8 +326,8 @@ func main() {
 				planID := streamResponse.PlanId
 				if passStarted == false {
 					if planID != "" {
-						log.Println("Receiving messages")
-						printHeader(output)
+						log.Printf("Receiving messages for Plan ID %v", planID)
+						printHeader(output, planID)
 						passStarted = true
 						firstTime, _ := ptypes.Timestamp(message.TimeFirstByteReceived)
 						md.initialTime = firstTime
@@ -322,9 +357,9 @@ func main() {
 			if passStarted {
 				md.timeOfReporting = timeOfReporting
 				outputDetails := md.compileDetails()
-				if (*assumeEndAfterSeconds > 0) && (outputDetails.totalDataSize == 0) {
-					secondsSincePassFirstByte := time.Now().UTC().Sub(ps.firstByteTime)
-					if secondsSincePassFirstByte > *assumeEndAfterSeconds {
+				if (assumeEndAfterDuration > 0) && (outputDetails.totalDataSize == 0) {
+					timeSincePassFirstByte := time.Now().UTC().Sub(ps.firstByteTime)
+					if timeSincePassFirstByte > assumeEndAfterDuration {
 						go func() { passEndedChan <- true }()
 					}
 				} else {
@@ -347,18 +382,18 @@ func main() {
 			}
 		case <-signalChan:
 			log.Println("Received interrupt, stopping benchmark")
-			if ps.initialPlanID != "" {
+			if !willNotPrintPassSummary && ps.initialPlanID != "" {
 				passSummaries = append(passSummaries, ps)
 				printPassSummary(output, ps)
 			}
 
 			done = true
 		case <-passEndedChan:
-			log.Printf("Plan with ID %v ended after not receiving data for %v", ps.initialPlanID, *assumeEndAfterSeconds)
-			if *willPrintPassSummary {
+			log.Printf("Plan with ID %v ended after not receiving messages for %v", ps.initialPlanID, assumeEndAfterDuration)
+			if !willNotPrintPassSummary {
 				printPassSummary(output, ps)
 			}
-			if *exitAfterPassEnds {
+			if exitAfterPassEnds {
 				done = true
 			}
 			passSummaries = append(passSummaries, ps)
@@ -367,7 +402,7 @@ func main() {
 		}
 	}
 
-	if *willPrintOverallSummary {
+	if !willNotPrintOverallSummary {
 		if len(passSummaries) > 0 {
 			sessionSummary := calculateSessionSummary(passSummaries)
 			sessionSummary.printSessionSummary(output)
