@@ -28,12 +28,9 @@ import (
 )
 
 func main() {
-	apiKey := "colin-alpha-key.json"
-	endpoint := "api-alpha.stellarstation.com:443"
-	satelliteID := "112"
-	// apiKey := "stellarstation-private-key.json"
-	// endpoint := "api.stellarstation.com:443"
-	// satelliteID := "5"
+	apiKey := "stellarstation-private-key.json"
+	endpoint := "api.stellarstation.com:443"
+	satelliteID := "5"
 	interval := 10 * time.Second
 	assumeEndAfterDuration := 10 * time.Second
 	exitAfterPassEnds := false
