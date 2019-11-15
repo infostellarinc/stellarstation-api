@@ -28,12 +28,13 @@ import (
 )
 
 const (
-	OPEN   uint32 = 0
-	CLOSED uint32 = 1
+	open   uint32 = 0
+	closed uint32 = 1
 )
 
-const MaxElapsedTime = 60 * time.Second
+const maxElapsedTime = 60 * time.Second
 
+// SatelliteStreamOptions contains options for opening a satellite stream
 type SatelliteStreamOptions struct {
 	AcceptedFraming []stellarstation.Framing
 
@@ -42,6 +43,7 @@ type SatelliteStreamOptions struct {
 	Endpoint    string
 }
 
+// SatelliteStream is the interface for the stream
 type SatelliteStream interface {
 	Send(payload []byte) error
 
@@ -49,7 +51,7 @@ type SatelliteStream interface {
 }
 
 type satelliteStream struct {
-	satelliteId string
+	satelliteID string
 	apiKey      string
 	endpoint    string
 
@@ -57,7 +59,7 @@ type satelliteStream struct {
 
 	stream   stellarstation.StellarStationService_OpenSatelliteStreamClient
 	conn     *grpc.ClientConn
-	streamId string
+	streamID string
 
 	recvChan           chan<- *stellarstation.ReceiveTelemetryResponse
 	recvLoopClosedChan chan struct{}
@@ -74,13 +76,13 @@ type streamResponses struct {
 func OpenSatelliteStream(o *SatelliteStreamOptions, recvChan chan<- *stellarstation.ReceiveTelemetryResponse) (SatelliteStream, error) {
 	s := &satelliteStream{
 		acceptedFraming: o.AcceptedFraming,
-		satelliteId:     o.SatelliteID,
+		satelliteID:     o.SatelliteID,
 		apiKey:          o.APIKey,
 		endpoint:        o.Endpoint,
 
-		streamId:           "",
+		streamID:           "",
 		recvChan:           recvChan,
-		state:              OPEN,
+		state:              open,
 		recvLoopClosedChan: make(chan struct{}),
 	}
 
@@ -92,7 +94,7 @@ func OpenSatelliteStream(o *SatelliteStreamOptions, recvChan chan<- *stellarstat
 // Send sends a packet to the satellite.
 func (ss *satelliteStream) Send(payload []byte) error {
 	req := stellarstation.SatelliteStreamRequest{
-		SatelliteId: ss.satelliteId,
+		SatelliteId: ss.satelliteID,
 		Request: &stellarstation.SatelliteStreamRequest_SendSatelliteCommandsRequest{
 			SendSatelliteCommandsRequest: &stellarstation.SendSatelliteCommandsRequest{
 				Command: [][]byte{payload},
@@ -105,7 +107,7 @@ func (ss *satelliteStream) Send(payload []byte) error {
 
 // Close closes the stream.
 func (ss *satelliteStream) Close() error {
-	atomic.StoreUint32(&ss.state, CLOSED)
+	atomic.StoreUint32(&ss.state, closed)
 
 	ss.stream.CloseSend()
 	ss.conn.Close()
@@ -118,11 +120,11 @@ func (ss *satelliteStream) Close() error {
 func (ss *satelliteStream) recvLoop() {
 	// Initialize exponential back off settings.
 	b := backoff.NewExponentialBackOff()
-	b.MaxElapsedTime = MaxElapsedTime
+	b.MaxElapsedTime = maxElapsedTime
 
 	for {
 		res, err := ss.stream.Recv()
-		if atomic.LoadUint32(&ss.state) == CLOSED {
+		if atomic.LoadUint32(&ss.state) == closed {
 			// Closed, so just shutdown the loop.
 			close(ss.recvLoopClosedChan)
 			return
@@ -154,7 +156,7 @@ func (ss *satelliteStream) recvLoop() {
 			}
 			log.Println("connected to the API stream.")
 		}
-		ss.streamId = res.StreamId
+		ss.streamID = res.StreamId
 
 		switch res.Response.(type) {
 		case *stellarstation.SatelliteStreamResponse_ReceiveTelemetryResponse:
@@ -182,8 +184,8 @@ func (ss *satelliteStream) openStream() error {
 
 	req := stellarstation.SatelliteStreamRequest{
 		AcceptedFraming: ss.acceptedFraming,
-		SatelliteId:     ss.satelliteId,
-		StreamId:        ss.streamId,
+		SatelliteId:     ss.satelliteID,
+		StreamId:        ss.streamID,
 	}
 
 	err = stream.Send(&req)
