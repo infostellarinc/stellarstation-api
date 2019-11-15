@@ -1,6 +1,6 @@
 # Streaming API Benchmarking Tool
 
-Requires Go version 1.3
+Requires Go version 1.13
 
 To build from source:
 ```
