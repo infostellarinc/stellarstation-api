@@ -238,3 +238,7 @@ venv.bak/
 
 #VS Code
 .vscode/
+
+#Benchmark tool binary
+benchmark/benchmark
+
