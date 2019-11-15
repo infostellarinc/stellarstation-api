@@ -9,7 +9,7 @@ go build -o benchmark benchmark/*.go
 
 To build binaries for all operating systems:
 ```
-build.sh
+./build.sh
 ```
 
 Usage:
