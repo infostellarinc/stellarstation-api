@@ -1,0 +1,4 @@
+bin
+*.zip
+*.gz
+stream-benchmarker
