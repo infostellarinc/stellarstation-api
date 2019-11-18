@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'org.curioswitch.gradle-golang-plugin'
 
 golang {
-    executableName = 'stream_benchmarker'
+    executableName = 'stream-benchmarker'
     goOses = ['linux', 'darwin', 'windows']
     goArchs = ['amd64']
 }
