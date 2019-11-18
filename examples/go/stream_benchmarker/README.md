@@ -4,12 +4,7 @@ Requires Go version 1.13
 
 To build from source:
 ```
-go build -o benchmark benchmark/*.go
-```
-
-To build binaries for all operating systems:
-```
-./build.sh
+go build
 ```
 
 Usage:

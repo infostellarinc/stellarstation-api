@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+        maven {
+            url 'http://dl.bintray.com/curioswitch/curiostack'
+        }
+        mavenLocal()
+    }
+    dependencies {
+        classpath "org.curioswitch.curiostack:gradle-golang-plugin:0.0.18"
+    }
+}
+
+apply plugin: 'org.curioswitch.gradle-golang-plugin'
+
+golang {
+    executableName = 'stream_benchmarker'
+    goOses = ['linux', 'darwin', 'windows']
+    goArchs = ['amd64']
+}

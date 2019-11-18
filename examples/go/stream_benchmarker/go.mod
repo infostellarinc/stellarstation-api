@@ -1,4 +1,4 @@
-module github.com/infostellarinc/stellarstation-api/examples/go/benchmark
+module github.com/infostellarinc/stellarstation-api/examples/go/stream_benchmarker
 
 go 1.13
 
