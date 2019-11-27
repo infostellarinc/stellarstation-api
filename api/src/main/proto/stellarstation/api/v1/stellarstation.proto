@@ -538,13 +538,13 @@ message Plan {
   // this plan.
   //
   // Deprecated. Use channel_set.downlink.center_frequency_hz.
-  uint64 downlink_center_frequency_hz = 11;
+  uint64 downlink_center_frequency_hz = 11 [deprecated = true];
 
   // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
   // this plan.
   //
   // Deprecated. Use channel_set.uplink.center_frequency_hz.
-  uint64 uplink_center_frequency_hz = 12;
+  uint64 uplink_center_frequency_hz = 12 [deprecated = true];
 
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.
