@@ -119,8 +119,8 @@ service StellarStationService {
   // Adds TLE for a satellite.
   //
   // The TLE will be used for satellite orbit calculation until it is superseded by a newly
-  // added TLE. This happens automatically if StellarStation pulls new TLE data from external
-  // sources, or manually through this API etc.
+  // added TLE. Adding TLE using this API will automatically change the satellite's TLE source to
+  // `MANUAL` if it was previously set to `NORAD` to allow for immediate use.
   //
   // An 'INVALID_ARGUMENT' error will be returned in the following conditions:
   // - the TLE cannot be parsed
@@ -132,12 +132,27 @@ service StellarStationService {
 
   // Gets the TLE for a satellite.
   //
-  // The returned TLE will be the one that has most recently been added to StellarStation, and is
-  // used when calculating satellite orbits.
+  // The returned TLE will be the one that has most recently been added to StellarStation and matches
+  // the satellite's TLE source. This TLE is used when calculating satellite orbits.
   //
   // If the satellite is not found or the client is not authorized for it, the request will return
   // a `NOT_FOUND` error.
   rpc GetTle (GetTleRequest) returns (GetTleResponse);
+
+  // Sets the TLE source for a satellite.
+  //
+  // The selected source will be used for all upcoming pass calculations for the satellite. If TLE
+  // does not exist for a specific source, no passes will be generated.
+
+  // An 'INVALID_ARGUMENT' error will be returned in the following condition:
+  // - the source provided is invalid.
+  //
+  // If the satellite is not found or the client is not authorized for it, the request will return
+  // a `PERMISSION_DENIED` error.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  rpc SetTleSource(SetTleSourceRequest) returns (SetTleSourceResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -586,4 +601,34 @@ message GetTleRequest {
 message GetTleResponse {
   // The TLE for the given satellite.
   orbit.Tle tle = 1;
+}
+
+// Request for the `SetTleSource` method.
+message SetTleSourceRequest {
+  // The ID of the satellite to set the TLE for.
+  //
+  // Required.
+  string satellite_id = 1;
+
+  // The source of the TLE.
+  enum Source {
+    // This is not allowed and will cause an error.
+    UNKNOWN = 0;
+
+    // Provided by NORAD.
+    NORAD = 1;
+
+    // Manually provided by the owner of the satellite.
+    MANUAL = 2;
+  }
+
+  // The source of the TLE the satellite will use for pass calculations.
+  //
+  // Required.
+  Source source = 2;
+}
+
+// Response for the `SetTleSource` method.
+message SetTleSourceResponse {
+  // Currently no payload in the response.
 }
