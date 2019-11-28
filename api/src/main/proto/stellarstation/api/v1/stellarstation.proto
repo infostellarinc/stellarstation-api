@@ -145,10 +145,11 @@ service StellarStationService {
   // does not exist for a specific source, no passes will be generated.
 
   // An 'INVALID_ARGUMENT' error will be returned in the following condition:
+  // - no satellite_id is provided.
   // - the source provided is invalid.
   //
   // If the satellite is not found or the client is not authorized for it, the request will return
-  // a `PERMISSION_DENIED` error.
+  // a `NOT_FOUND` error.
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
