@@ -22,7 +22,7 @@ plugins {
 conda {
     'miniconda2-build' {
         packages.addAll('cmake', 'pandoc')
-        pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'protoc-docs-plugin', 'twine')
+        pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'twine')
     }
 }
 
