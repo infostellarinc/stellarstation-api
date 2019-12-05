@@ -47,10 +47,6 @@ protobuf {
         register("grpc_python") {
             outputDir.set(file(packageDir))
         }
-
-        register("pydocstring") {
-            outputDir.set(file(packageDir))
-        }
     }
 }
 
@@ -120,14 +116,6 @@ tasks {
             file("$packageDir/stellarstation/api").walk()
                     .filter { it.isDirectory }
                     .forEach { file("$it/__init__.py").writeText("") }
-
-            // pydocstring puts non-ASCII characters into the files, breaking Python 2 compatibility.
-            file("$packageDir/stellarstation").walk()
-                    .filter { it.name.endsWith(".py") }
-                    .forEach {
-                        val fileContent = "# -*- coding: utf-8 -*-\n" + it.readText()
-                        it.writeText(fileContent)
-                    }
         }
     }
 
