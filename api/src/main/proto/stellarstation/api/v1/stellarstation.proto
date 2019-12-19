@@ -230,20 +230,23 @@ message SendSatelliteCommandsRequest {
 
 // A request to modify configuration of ground station hardware.
 //
-// Next ID: 2
+// Next ID: 3
 // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
 //         incompatible ways in the future.
 message GroundStationConfigurationRequest {
   // A request to modify transmitter configuration at a ground station.
   TransmitterConfigurationRequest transmitter_configuration_request = 1;
+
+  // A request to modify receiver configuration at a ground station.
+  ReceiverConfigurationRequest receiver_configuration_request = 2;
 }
 
 // A request to configure a transmitter at a ground station. Default state of these parameters
 // depends on hardware configuration at each ground station. Please check TransmitterConfiguration
-// in monitoring message.
+// and TransmitterState in monitoring message.
 // It isn't always supported to control them. If field isn't set, it's ignored.
 //
-// Next ID: 5
+// Next ID: 6
 message TransmitterConfigurationRequest {
   // Enable carrier transmission.
   google.protobuf.BoolValue enable_carrier = 1;
@@ -256,6 +259,20 @@ message TransmitterConfigurationRequest {
 
   // Enable IF sweep.
   google.protobuf.BoolValue enable_if_sweep = 4;
+
+  // Bitrate of the transmitter
+  google.protobuf.UInt64Value bitrate = 5;
+}
+
+// A request to configure a receiver at a ground station. Default state of these parameters
+// depends on hardware configuration at each ground station. Please check ReceiverConfiguration
+// and ReceiverState in monitoring message.
+// It isn't always supported to control them. If field isn't set, it's ignored.
+//
+// Next ID: 2
+message ReceiverConfigurationRequest {
+  // Bitrate of the receiver.
+  google.protobuf.UInt64Value bitrate = 1;
 }
 
 // A response from the `OpenSatelliteStream` method.
