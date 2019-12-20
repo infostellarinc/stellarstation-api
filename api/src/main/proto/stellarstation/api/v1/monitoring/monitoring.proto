@@ -158,7 +158,7 @@ message TransmitterState {
   google.protobuf.BoolValue is_idle_pattern_enabled = 6;
 
   // The current bitrate of the transmitter
-  google.protobuf.UInt64Value bitrate = 7;
+  google.protobuf.FloatValue bitrate = 7;
 }
 
 // A current status of convolutional coding.
@@ -227,7 +227,7 @@ message ReceiverState {
   ReedSolomonStatus reed_solomon_status = 9;
 
   // The current bitrate of the receiver
-  google.protobuf.UInt64Value bitrate = 10;
+  google.protobuf.FloatValue bitrate = 10;
 }
 
 // The current state of the ground station's antenna during the operation of a pass.
