@@ -137,7 +137,7 @@ message GroundStationConfiguration {
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
-// Next ID: 7
+// Next ID: 8
 message TransmitterState {
   // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -156,6 +156,9 @@ message TransmitterState {
 
   // Whether transmitting idle pattern is enabled.
   google.protobuf.BoolValue is_idle_pattern_enabled = 6;
+
+  // The current bitrate of the transmitter
+  uint64 bitrate = 7;
 }
 
 // A current status of convolutional coding.
@@ -193,6 +196,7 @@ message ReedSolomonStatus {
 }
 
 // The current state of the ground station's receiver during the operation of a pass.
+// Next ID: 11
 message ReceiverState {
   // The current center frequency of the receiver, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -221,6 +225,9 @@ message ReceiverState {
 
   // The status of Reed-Solomon coding.
   ReedSolomonStatus reed_solomon_status = 9;
+
+  // The current bitrate of the receiver
+  uint64 bitrate = 10;
 }
 
 // The current state of the ground station's antenna during the operation of a pass.
