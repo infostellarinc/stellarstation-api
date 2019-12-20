@@ -261,7 +261,7 @@ message TransmitterConfigurationRequest {
   google.protobuf.BoolValue enable_if_sweep = 4;
 
   // Bitrate of the transmitter
-  google.protobuf.UInt64Value bitrate = 5;
+  google.protobuf.FloatValue bitrate = 5;
 }
 
 // A request to configure a receiver at a ground station. Default state of these parameters
@@ -272,7 +272,7 @@ message TransmitterConfigurationRequest {
 // Next ID: 2
 message ReceiverConfigurationRequest {
   // Bitrate of the receiver.
-  google.protobuf.UInt64Value bitrate = 1;
+  google.protobuf.FloatValue bitrate = 1;
 }
 
 // A response from the `OpenSatelliteStream` method.
