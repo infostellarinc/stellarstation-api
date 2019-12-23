@@ -317,8 +317,9 @@ enum LineCoding {
   // https://en.wikipedia.org/wiki/Non-return-to-zero
   NRZ_S = 2;
 
-  // Return-to-zero. https://en.wikipedia.org/wiki/Return-to-zero
-  RZ = 3;
+  // Differential non-return-to-zero.
+  // https://en.wikipedia.org/wiki/Return-to-zero
+  DNRZ = 3;
 
   // Bipolar return-to-zero level.
   // https://en.wikipedia.org/wiki/Bipolar_encoding
