@@ -16,7 +16,7 @@
 
 
 plugins {
-    `java-library`
+    java
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 

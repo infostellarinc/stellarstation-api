@@ -15,7 +15,7 @@
  */
 
 plugins {
-    `java-library`
+    java
     id("org.curioswitch.gradle-protobuf-plugin")
     id("com.moowork.node") version "1.3.1"
 }
