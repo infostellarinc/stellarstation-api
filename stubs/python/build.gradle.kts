@@ -16,7 +16,7 @@
 
 
 plugins {
-    java
+    `java-library`
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 
@@ -56,7 +56,7 @@ tasks {
             val template = file("src/misc/run_protoc.sh.tmpl").readText()
             val filled = template.replaceFirst(
                     "|CONDA_PROFILE_PATH|",
-                    "${org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).getToolDir("miniconda2-build")}/etc/profile.d/conda.sh")
+                    "${org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).getToolDir("miniconda-build")}/etc/profile.d/conda.sh")
             val outDir = "$buildDir/generated/scripts"
             mkdir(outDir)
             val out = file("${outDir}/run_protoc.sh")
@@ -86,7 +86,7 @@ tasks {
 
     val generateProto = named<org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask>("generateProto")
     generateProto.configure {
-        dependsOn(fillRunProtocScript, prepareSetupPy, ":toolsSetupMiniconda2Build")
+        dependsOn(fillRunProtocScript, prepareSetupPy)
 
         execOverride {
             environment("PYTHONPATH", "$buildDir/generated")

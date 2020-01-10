@@ -14,3 +14,5 @@ require (
 )
 
 replace github.com/pseudomuto/protoc-gen-doc => github.com/pseudomuto/protoc-gen-doc v1.1.1-0.20180827150444-c35c0525c468
+
+go 1.13

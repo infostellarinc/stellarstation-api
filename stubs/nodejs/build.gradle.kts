@@ -15,7 +15,7 @@
  */
 
 plugins {
-    java
+    `java-library`
     id("org.curioswitch.gradle-protobuf-plugin")
     id("com.moowork.node") version "1.3.1"
 }
@@ -24,7 +24,7 @@ val GRPC_TOOLS_VERSION = "1.7.3"
 val GRPC_TOOLS_TS_VERSION = "2.5.1"
 
 val GRPC_VERSION = "1.21.1"
-val GOOGLE_PROTOBUF_VERSION = "3.6.1"
+val GOOGLE_PROTOBUF_VERSION = "3.11.1"
 
 repositories {
     jcenter()

@@ -15,11 +15,10 @@
  */
 
 plugins {
-    id 'com.jfrog.artifactory' version '4.7.5'
+    id 'com.jfrog.artifactory' version '4.13.0'
+    id 'org.curioswitch.gradle-grpc-api-plugin'
+    id 'maven-publish'
 }
-
-apply plugin: 'maven-publish'
-apply plugin: 'org.curioswitch.gradle-grpc-api-plugin'
 
 archivesBaseName = 'stellarstation-api'
 
@@ -38,12 +37,18 @@ publishing {
     }
 }
 
-javadoc {
-    source 'build/generated/source/proto/main'
+protobuf {
+    protoc {
+        artifact.set("com.google.protobuf:protoc:3.11.1")
+    }
 }
 
-sourceJar {
-    from 'build/generated/source/proto/main'
+javadoc {
+    source 'build/generated/proto/main'
+}
+
+sourcesJar {
+    from 'build/generated/proto/main'
 }
 
 artifactory {

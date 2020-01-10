@@ -34,7 +34,7 @@ val GOPATH = extra["gopath"]
 
 protobuf {
     protoc {
-        artifact.set("com.google.protobuf:protoc:3.6.1")
+        artifact.set("com.google.protobuf:protoc:3.11.1")
     }
 
     // Don"t use descriptor set.

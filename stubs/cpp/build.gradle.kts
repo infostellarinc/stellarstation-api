@@ -69,7 +69,7 @@ tasks {
     }
 
     val downloadConanDeps by registering() {
-        dependsOn(prepareConanFilePy, ":toolsSetupMiniconda2Build")
+        dependsOn(prepareConanFilePy)
 
         inputs.file("$buildDir/generated/scripts/conanfile.py")
         inputs.dir("package/src")

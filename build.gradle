@@ -15,12 +15,13 @@
  */
 
 plugins {
-    id 'org.ajoberstar.git-publish' version '2.0.0-rc.2' apply false
-    id 'org.curioswitch.gradle-curiostack-plugin'
+    id 'org.ajoberstar.git-publish' version '3.0.0-rc.1' apply false
+    id 'org.curioswitch.gradle-grpc-api-plugin'
+    id 'org.curioswitch.gradle-conda-plugin'
 }
 
 conda {
-    'miniconda2-build' {
+    'miniconda-build' {
         packages.addAll('cmake', 'pandoc')
         pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'twine')
     }
@@ -40,7 +41,7 @@ allprojects {
         }
     }
 
-    plugins.withType(org.gradle.api.publish.maven.plugins.MavenPublishPlugin) {
+    plugins.withType(MavenPublishPlugin) {
         project.apply plugin: 'com.jfrog.bintray'
         // This should happen automatically, not clear why not.
         tasks.bintrayUpload.dependsOn tasks.publishToMavenLocal
@@ -78,7 +79,7 @@ allprojects {
                         artifactId = project.archivesBaseName
 
                         artifact project.tasks.javadocJar
-                        artifact project.tasks.sourceJar
+                        artifact project.tasks.sourcesJar
 
                         pom {
                             licenses {
