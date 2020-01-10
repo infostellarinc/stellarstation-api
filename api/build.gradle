@@ -37,12 +37,6 @@ publishing {
     }
 }
 
-protobuf {
-    protoc {
-        artifact.set("com.google.protobuf:protoc:3.11.1")
-    }
-}
-
 javadoc {
     source 'build/generated/proto/main'
 }
