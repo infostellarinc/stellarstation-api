@@ -17,5 +17,3 @@
 plugins {
     id("org.curioswitch.gradle-curiostack-plugin") version "0.3.0"
 }
-
-apply("project.settings.gradle.kts")

@@ -16,15 +16,6 @@
 
 plugins {
     id 'org.ajoberstar.git-publish' version '3.0.0-rc.1' apply false
-    id 'org.curioswitch.gradle-grpc-api-plugin'
-    id 'org.curioswitch.gradle-conda-plugin'
-}
-
-conda {
-    'miniconda-build' {
-        packages.addAll('cmake', 'pandoc')
-        pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'twine')
-    }
 }
 
 gcloud {

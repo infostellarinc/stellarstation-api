@@ -85,7 +85,7 @@ tasks {
 
     val generateProto = named<org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask>("generateProto")
     generateProto.configure {
-        dependsOn(fillRunProtocScript, prepareSetupPy)
+        dependsOn(fillRunProtocScript, prepareSetupPy, ":toolsSetupMinicondaBuild")
 
         execOverride {
             environment("PYTHONPATH", "$buildDir/generated")
