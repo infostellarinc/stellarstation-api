@@ -29,10 +29,9 @@ dependencies {
 }
 
 protobuf {
-//    protoc {
-//        path.set(file("build/conan/bin/protoc"))
-//    }
-
+    protoc {
+        path.set(file("build/conan/bin/protoc"))
+    }
 
     // Don't use descriptor set.
     descriptorSetOptions.path.set(file("build/descriptor"))
@@ -70,7 +69,7 @@ tasks {
     }
 
     val downloadConanDeps by registering() {
-        dependsOn(prepareConanFilePy)
+        dependsOn(prepareConanFilePy, ":toolsSetupMinicondaBuild")
 
         inputs.file("$buildDir/generated/scripts/conanfile.py")
         inputs.dir("package/src")
