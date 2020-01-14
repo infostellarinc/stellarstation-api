@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,9 +29,10 @@ dependencies {
 }
 
 protobuf {
-    protoc {
-        path.set(file("build/conan/bin/protoc"))
-    }
+//    protoc {
+//        path.set(file("build/conan/bin/protoc"))
+//    }
+
 
     // Don't use descriptor set.
     descriptorSetOptions.path.set(file("build/descriptor"))
