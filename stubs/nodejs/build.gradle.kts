@@ -15,7 +15,6 @@
  */
 
 plugins {
-    java
     id("org.curioswitch.gradle-protobuf-plugin")
     id("com.moowork.node") version "1.3.1"
 }
@@ -134,14 +133,6 @@ tasks {
 
     named("clean").configure {
         delete(file("node_modules"))
-    }
-
-    named("compileJava") {
-        enabled = false
-    }
-
-    named("compileTestJava") {
-        enabled = false
     }
 }
 

@@ -15,7 +15,6 @@
  */
 
 plugins {
-    java
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 
@@ -146,13 +145,5 @@ tasks {
                 org.curioswitch.gradle.conda.exec.CondaExecUtil.condaExec(this, project)
             }
         }
-    }
-
-    named("compileJava") {
-        enabled = false
-    }
-
-    named("compileTestJava") {
-        enabled = false
     }
 }

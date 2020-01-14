@@ -16,7 +16,6 @@
 
 
 plugins {
-    java
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 
@@ -172,13 +171,5 @@ tasks {
 
     named("assemble").configure {
         dependsOn(buildPythonPackage)
-    }
-
-    named("compileJava") {
-        enabled = false
-    }
-
-    named("compileTestJava") {
-        enabled = false
     }
 }
