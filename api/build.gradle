@@ -37,14 +37,6 @@ publishing {
     }
 }
 
-javadoc {
-    source 'build/generated/proto/main'
-}
-
-sourcesJar {
-    from 'build/generated/proto/main'
-}
-
 artifactory {
     contextUrl = 'https://oss.jfrog.org'
     publish {

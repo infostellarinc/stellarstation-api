@@ -78,9 +78,6 @@ allprojects {
 
                         artifactId = project.archivesBaseName
 
-                        artifact project.tasks.javadocJar
-                        artifact project.tasks.sourcesJar
-
                         pom {
                             licenses {
                                 license {
