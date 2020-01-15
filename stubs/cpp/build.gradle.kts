@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,6 @@
  */
 
 plugins {
-    java
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 
@@ -69,7 +68,7 @@ tasks {
     }
 
     val downloadConanDeps by registering() {
-        dependsOn(prepareConanFilePy, ":toolsSetupMiniconda2Build")
+        dependsOn(prepareConanFilePy, ":toolsSetupMinicondaBuild")
 
         inputs.file("$buildDir/generated/scripts/conanfile.py")
         inputs.dir("package/src")
@@ -146,13 +145,5 @@ tasks {
                 org.curioswitch.gradle.conda.exec.CondaExecUtil.condaExec(this, project)
             }
         }
-    }
-
-    named("compileJava") {
-        enabled = false
-    }
-
-    named("compileTestJava") {
-        enabled = false
     }
 }

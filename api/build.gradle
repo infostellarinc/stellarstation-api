@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,10 @@
  */
 
 plugins {
-    id 'com.jfrog.artifactory' version '4.7.5'
+    id 'com.jfrog.artifactory' version '4.13.0'
+    id 'org.curioswitch.gradle-grpc-api-plugin'
+    id 'maven-publish'
 }
-
-apply plugin: 'maven-publish'
-apply plugin: 'org.curioswitch.gradle-grpc-api-plugin'
 
 archivesBaseName = 'stellarstation-api'
 
@@ -36,14 +35,6 @@ publishing {
             }
         }
     }
-}
-
-javadoc {
-    source 'build/generated/source/proto/main'
-}
-
-sourceJar {
-    from 'build/generated/source/proto/main'
 }
 
 artifactory {

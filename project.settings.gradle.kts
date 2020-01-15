@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Infostellar, Inc.
+ * Copyright 2020 Infostellar, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-// Marker package for go modules to manage dependencies.
-package docs
+// Run ./gradlew :updateProjectSettings to update
+
+// curio-auto-generated DO NOT MANUALLY EDIT
+include(":api")
+include(":examples:fakeserver")
+include(":examples:java:printing-client")
+include(":integration-tests:java")
+include(":portal")
+include(":stubs:cpp")
+include(":stubs:docs")
+include(":stubs:golang")
+include(":stubs:nodejs")
+include(":stubs:python")
+include(":examples:go:stream-benchmarker")
+// curio-auto-generated DO NOT MANUALLY EDIT

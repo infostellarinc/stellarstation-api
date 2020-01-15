@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 
 plugins {
-    java
     id("org.curioswitch.gradle-protobuf-plugin")
 }
 
@@ -56,7 +55,7 @@ tasks {
             val template = file("src/misc/run_protoc.sh.tmpl").readText()
             val filled = template.replaceFirst(
                     "|CONDA_PROFILE_PATH|",
-                    "${org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).getToolDir("miniconda2-build")}/etc/profile.d/conda.sh")
+                    "${org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).getToolDir("miniconda-build")}/etc/profile.d/conda.sh")
             val outDir = "$buildDir/generated/scripts"
             mkdir(outDir)
             val out = file("${outDir}/run_protoc.sh")
@@ -86,7 +85,7 @@ tasks {
 
     val generateProto = named<org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask>("generateProto")
     generateProto.configure {
-        dependsOn(fillRunProtocScript, prepareSetupPy, ":toolsSetupMiniconda2Build")
+        dependsOn(fillRunProtocScript, prepareSetupPy, ":toolsSetupMinicondaBuild")
 
         execOverride {
             environment("PYTHONPATH", "$buildDir/generated")
@@ -172,13 +171,5 @@ tasks {
 
     named("assemble").configure {
         dependsOn(buildPythonPackage)
-    }
-
-    named("compileJava") {
-        enabled = false
-    }
-
-    named("compileTestJava") {
-        enabled = false
     }
 }

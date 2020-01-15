@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-// Marker package for go modules to manage dependencies.
-package docs
+plugins {
+    id("org.curioswitch.gradle-curiostack-plugin") version "0.3.0"
+}

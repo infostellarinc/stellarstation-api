@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,11 @@
  */
 
 plugins {
-    id 'org.ajoberstar.git-publish' version '2.0.0-rc.2' apply false
-    id 'org.curioswitch.gradle-curiostack-plugin'
+    id 'org.ajoberstar.git-publish' version '3.0.0-rc.1' apply false
 }
 
 conda {
-    'miniconda2-build' {
+    'miniconda-build' {
         packages.addAll('cmake', 'pandoc')
         pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'twine')
     }
@@ -40,7 +39,7 @@ allprojects {
         }
     }
 
-    plugins.withType(org.gradle.api.publish.maven.plugins.MavenPublishPlugin) {
+    plugins.withType(MavenPublishPlugin) {
         project.apply plugin: 'com.jfrog.bintray'
         // This should happen automatically, not clear why not.
         tasks.bintrayUpload.dependsOn tasks.publishToMavenLocal
@@ -76,9 +75,6 @@ allprojects {
                         from components.java
 
                         artifactId = project.archivesBaseName
-
-                        artifact project.tasks.javadocJar
-                        artifact project.tasks.sourceJar
 
                         pom {
                             licenses {
