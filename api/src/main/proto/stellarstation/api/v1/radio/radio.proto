@@ -42,6 +42,8 @@ message RadioDeviceConfiguration {
   // The protocol used by this device when doing RF communication. If unset, the device is only
   // demodulating / modulating without applying any higher-level communication protocol.
   CommunicationProtocol protocol = 4;
+
+  stellarstation.api.v1.antenna.AntennaPolarization polarization = 5;
 }
 
 // A communication protocol used with a radio device. These must contain all the parameters
