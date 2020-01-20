@@ -43,6 +43,7 @@ message RadioDeviceConfiguration {
   // demodulating / modulating without applying any higher-level communication protocol.
   CommunicationProtocol protocol = 4;
 
+  // The polarization of the antenna.
   stellarstation.api.v1.antenna.AntennaPolarization polarization = 5;
 }
 
