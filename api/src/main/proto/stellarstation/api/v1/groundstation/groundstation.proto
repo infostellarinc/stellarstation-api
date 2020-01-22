@@ -18,6 +18,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "stellarstation/api/v1/common/common.proto";
 import "stellarstation/api/v1/radio/radio.proto";
+import "stellarstation/api/v1/stellarstation.proto";
 import "stellarstation/api/v1/transport.proto";
 
 package stellarstation.api.v1.groundstation;
@@ -359,6 +360,9 @@ message GroundStationStreamResponse {
   oneof Response {
     // Commands to send to the satellite.
     SatelliteCommands satellite_commands = 3;
+
+    // Request to configure ground station devices.
+    stellarstation.api.v1.GroundStationConfigurationRequest ground_station_configuration_request = 4;
   }
 }
 
