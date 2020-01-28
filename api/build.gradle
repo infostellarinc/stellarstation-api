@@ -61,3 +61,7 @@ afterEvaluate {
         version = version + '-SNAPSHOT'
     }
 }
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
