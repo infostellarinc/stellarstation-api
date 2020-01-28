@@ -121,4 +121,8 @@ task publishStubs {
     dependsOn ':stubs:python:uploadPythonPackage'
 }
 
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
 tasks.checkNodeResolutions.enabled = false
