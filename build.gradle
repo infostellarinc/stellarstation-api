@@ -121,8 +121,7 @@ task publishStubs {
     dependsOn ':stubs:python:uploadPythonPackage'
 }
 
-tasks.withType(GenerateModuleMetadata) {
+task generateMetadataFileForMavenPublication {
     enabled = false
 }
-
 tasks.checkNodeResolutions.enabled = false
