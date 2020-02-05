@@ -483,7 +483,7 @@ message TelemetryMetadata {
 
 // A plan, specifying a time range within which a satellite will be communicated with.
 //
-// Next ID: 20
+// Next ID: 21
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -576,6 +576,9 @@ message Plan {
 
   // The price per minute (USD) for this plan set by the ground station owner at the time of reservation.
   double unit_price = 19;
+
+  // The ID of the ground station.
+  string ground_station_id = 20;
 }
 
 // Request for the 'AddTle' method.
