@@ -153,7 +153,7 @@ message ListPlansResponse {
 // A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
 // during a time range between AOS and LOS, unless explicitly cancelled.
 //
-// Next ID: 13
+// Next ID: 14
 message Plan {
   // The ID of this plan.
   string plan_id = 1;
@@ -205,6 +205,9 @@ message Plan {
 
   // The organization name of the ground station.
   string ground_station_organization_name = 11;
+
+  // The ID of the ground station.
+  string ground_station_id = 13;
 
   // The price per minute (USD) for this plan set by the ground station owner at the time of reservation.
   double unit_price = 12;
