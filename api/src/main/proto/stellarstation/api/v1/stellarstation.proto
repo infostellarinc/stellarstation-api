@@ -398,7 +398,7 @@ message ChannelSet {
 
 // A pass during which a satellite can be communicated with from a given ground station.
 //
-// Next ID: 13
+// Next ID: 14
 message Pass {
   // A unique token for this pass that can be used for scheduling it.
   //
@@ -419,6 +419,9 @@ message Pass {
 
   // The organization name of the ground station.
   string ground_station_organization_name = 12;
+
+  // The ID of the ground station.
+  string ground_station_id = 13;
 
   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
@@ -483,7 +486,7 @@ message TelemetryMetadata {
 
 // A plan, specifying a time range within which a satellite will be communicated with.
 //
-// Next ID: 20
+// Next ID: 21
 message Plan {
   // The unique ID of the plan.
   string id = 1;
@@ -548,6 +551,9 @@ message Plan {
 
   // The organization name of the ground station.
   string ground_station_organization_name = 18;
+
+  // The ID of the ground station.
+  string ground_station_id = 20;
 
   // The max elevation during the plan, in degrees.
   double max_elevation_degrees = 9;
