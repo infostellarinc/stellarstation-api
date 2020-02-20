@@ -229,6 +229,7 @@ message AX25 {
 
 // Type of modulation. Modulation is the process of converting binary data (0's and 1's) to
 // an analog wave for use in radio communication.
+// Next ID: 26.
 enum Modulation {
   // Indicates modulation is disabled and raw I/Q is being used.
   DISABLED = 0;
@@ -305,6 +306,12 @@ enum Modulation {
 
   // Phase modulation (generic)
   PM = 23;
+
+  // PCM/PSK/PM as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b29.pdf
+  PCM_PSK_PM = 24;
+
+  // PCM/PM/bi-phase-L as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b29.pdf
+  PCM_PM_BI_PHASE_L = 25;
 }
 
 // Line coding applied during modulation. Line coding is the technique for modeling binary 0 and 1
