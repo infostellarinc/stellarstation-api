@@ -421,6 +421,9 @@ message Pass {
   string ground_station_organization_name = 12;
 
   // The ID of the ground station.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
   string ground_station_id = 13;
 
   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's location.
@@ -553,6 +556,9 @@ message Plan {
   string ground_station_organization_name = 18;
 
   // The ID of the ground station.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
   string ground_station_id = 20;
 
   // The max elevation during the plan, in degrees.

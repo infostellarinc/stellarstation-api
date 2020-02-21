@@ -46,6 +46,9 @@ message RadioDeviceConfiguration {
   CommunicationProtocol protocol = 4;
 
   // The polarization of the antenna.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
   stellarstation.api.v1.antenna.AntennaPolarization polarization = 5;
 }
 
