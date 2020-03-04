@@ -15,5 +15,5 @@
  */
 
 plugins {
-    id("org.curioswitch.gradle-curiostack-plugin") version "0.4.1"
+    id("org.curioswitch.gradle-curiostack-plugin") version "0.4.4"
 }
