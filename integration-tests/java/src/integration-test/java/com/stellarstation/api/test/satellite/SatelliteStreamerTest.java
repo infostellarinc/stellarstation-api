@@ -62,7 +62,7 @@ public class SatelliteStreamerTest {
 
     class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
       private boolean isClosing;
-      private final List<Integer> safeModeStates = new ArrayList();
+      private final List<Integer> safeModeStates = new ArrayList<>();
       private int telemetryReceived;
 
       @Override
@@ -72,7 +72,8 @@ public class SatelliteStreamerTest {
         }
 
         if (response.hasReceiveTelemetryResponse()) {
-          ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
+          ByteString data =
+              response.getReceiveTelemetryResponse().getTelemetryList().get(0).getData();
           if (data.size() > 2) {
             // The second last byte of the telemetry indicates the current state of the
             // fake satellite used in the test. The value is either of 0 or 1.
