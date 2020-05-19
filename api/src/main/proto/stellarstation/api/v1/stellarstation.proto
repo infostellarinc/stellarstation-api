@@ -282,8 +282,8 @@ message SatelliteStreamResponse {
   // minutes.
   string stream_id = 1;
 
-  // A response on the stream. Currently the only type of response is telemetry received from the
-  // satellite.
+  // A response on the stream. Currently the only types of response are telemetry received from the
+  // satellite and stream events.
   oneof Response {
     // A response from a satellite containing telemetry.
     ReceiveTelemetryResponse receive_telemetry_response = 2;
@@ -298,7 +298,7 @@ message SatelliteStreamResponse {
 // A response from a satellite containing telemetry.
 message ReceiveTelemetryResponse {
   // The telemetry received.
-  Telemetry telemetry = 1;
+  repeated Telemetry telemetry = 1;
 
   // The ID of the plan the telemetry was received for.
   string plan_id = 2;
