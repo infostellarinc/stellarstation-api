@@ -187,10 +187,14 @@ message Plan {
 
   // Configuration of the radio device used for downlinking from the satellite. Ground stations will
   // need to configure reception during the plan to match this device.
+  //
+  // Deprecated. Use channel_set.downlink.
   radio.RadioDeviceConfiguration downlink_radio_device = 5;
 
   // Configuration of the radio device used for uplinking to the satellite. Ground stations will
   // need to configure transmission during the plan to match this device.
+  //
+  // Deprecated. Use channel_set.uplink.
   radio.RadioDeviceConfiguration uplink_radio_device = 6;
 
   // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
@@ -216,8 +220,6 @@ message Plan {
   string satellite_id = 14;
 
   // The channel set used to reserve this plan.
-  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
-  //         incompatible ways in the future.
   ChannelSet channel_set = 15;
 }
 
