@@ -89,7 +89,7 @@ message Telemetry {
   // 
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  google.protobuf.Int64Value index = 7;
+  uint64 index = 7;
 }
 
 // An event that occurred while processing the stream. A `StreamEvent` will have one of several
