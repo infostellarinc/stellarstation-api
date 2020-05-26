@@ -207,7 +207,7 @@ message SatelliteStreamRequest {
   // (e.g., IQ + AX25). If empty, all framings produced by the satellite will be returned.
   repeated Framing accepted_framing = 4;
 
-  // The telemetry index to resume from an previously opened stream. If the specified value is greater
+  // Optional. The telemetry index to resume from an previously opened stream. If the specified value is greater
   // than zero, server will attempt to resume transfer starting from the specified index. Otherwise, 
   // server will attempt to resume transfer with first avaiable message. First index of a pass
   // always starts at one. This feature may not be available for Out-of-order-allowed-satellites.
