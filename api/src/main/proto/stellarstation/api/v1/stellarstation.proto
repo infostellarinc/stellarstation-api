@@ -217,7 +217,7 @@ message SatelliteStreamRequest {
   //         incompatible ways in the future.
   google.protobuf.Int64Value resume_telemetry_index = 8;
 
-  // Whether flow control is enabled on the client side. If set to true, client must respond each
+  // Whether flow control is enabled on the client side. If set to true, client must respond to each
   // ReceiveTelemetryResponse received with a corresponding ReceiveTelemetryAck message. 
   // 
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
