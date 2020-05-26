@@ -196,7 +196,7 @@ message SatelliteStreamRequest {
     //         incompatible ways in the future.
     GroundStationConfigurationRequest ground_station_configuration_request = 7;
 
-    // A ack message to respond to each ReceiveTelemetryResponse when `enable_flow_control` is true.
+    // An ack message to respond to each ReceiveTelemetryResponse when `enable_flow_control` is true.
     //
     // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
     //         incompatible ways in the future.
