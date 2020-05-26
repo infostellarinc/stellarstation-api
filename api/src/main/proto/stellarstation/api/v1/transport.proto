@@ -82,6 +82,14 @@ message Telemetry {
   // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
   //          returned.
   bytes frame_header = 6;
+
+  // The unique arrival order of this telemetry. This value may not be available for Out-of-order-
+  // allowed-satellites. First telemetry has an index value of 1, and telemetry with equal index
+  // values (that is greater than or equal to 1) can be safely assumed to be duplicates.
+  // 
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  google.protobuf.Int64Value index = 7;
 }
 
 // An event that occurred while processing the stream. A `StreamEvent` will have one of several
