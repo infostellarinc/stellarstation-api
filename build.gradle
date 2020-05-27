@@ -86,9 +86,9 @@ allprojects {
                             }
                             developers {
                                 developer {
-                                    id = 'rag'
-                                    name = 'Anuraag Agrawal'
-                                    email = 'rag@istellar.jp'
+                                    id = 'dan'
+                                    name = 'Daniel De Sousa'
+                                    email = 'dan@istellar.com'
                                     organization = 'Infostellar, Inc.'
                                     organizationUrl = 'https://www.infostellar.net/'
                                 }
