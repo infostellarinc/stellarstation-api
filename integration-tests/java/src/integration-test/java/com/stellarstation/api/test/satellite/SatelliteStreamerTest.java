@@ -27,6 +27,7 @@ import com.stellarstation.api.test.auth.ApiClientModule;
 import com.stellarstation.api.v1.SatelliteStreamRequest;
 import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
+import com.stellarstation.api.v1.Telemetry;
 import com.stellarstation.api.v1.monitoring.AntennaState;
 import dagger.Component;
 import io.grpc.stub.StreamObserver;
@@ -62,7 +63,7 @@ public class SatelliteStreamerTest {
 
     class TelemetryAndCommandTestStreamObserver implements StreamObserver<SatelliteStreamResponse> {
       private boolean isClosing;
-      private final List<Integer> safeModeStates = new ArrayList();
+      private final List<Integer> safeModeStates = new ArrayList<>();
       private int telemetryReceived;
 
       @Override
@@ -72,7 +73,11 @@ public class SatelliteStreamerTest {
         }
 
         if (response.hasReceiveTelemetryResponse()) {
-          ByteString data = response.getReceiveTelemetryResponse().getTelemetry().getData();
+          ByteString data =
+              ByteString.copyFrom(
+                  response.getReceiveTelemetryResponse().getTelemetryList().stream()
+                          .map(Telemetry::getData)
+                      ::iterator);
           if (data.size() > 2) {
             // The second last byte of the telemetry indicates the current state of the
             // fake satellite used in the test. The value is either of 0 or 1.

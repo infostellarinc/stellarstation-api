@@ -24,6 +24,7 @@ import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
 import com.stellarstation.api.v1.StellarStationServiceGrpc;
 import com.stellarstation.api.v1.StellarStationServiceGrpc.StellarStationServiceStub;
+import com.stellarstation.api.v1.Telemetry;
 import io.grpc.ManagedChannel;
 import io.grpc.auth.MoreCallCredentials;
 import io.grpc.netty.GrpcSslContexts;
@@ -67,16 +68,15 @@ public class PrintingClientMain {
             new StreamObserver<>() {
               @Override
               public void onNext(SatelliteStreamResponse value) {
+                var telemetry =
+                    ByteString.copyFrom(
+                        value.getReceiveTelemetryResponse().getTelemetryList().stream()
+                                .map(Telemetry::getData)
+                            ::iterator);
+
                 logger.info(
                     "Got response: {}",
-                    Base64.getEncoder()
-                        .encodeToString(
-                            value
-                                .getReceiveTelemetryResponse()
-                                .getTelemetry()
-                                .getData()
-                                .toByteArray())
-                        .substring(0, 100));
+                    Base64.getEncoder().encodeToString(telemetry.toByteArray()).substring(0, 100));
               }
 
               @Override
