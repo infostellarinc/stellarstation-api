@@ -86,7 +86,7 @@ allprojects {
                             }
                             developers {
                                 developer {
-                                    id = 'dan'
+                                    id = 'danada'
                                     name = 'Daniel De Sousa'
                                     email = 'dan@istellar.com'
                                     organization = 'Infostellar, Inc.'
