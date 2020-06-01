@@ -321,8 +321,8 @@ message SatelliteStreamResponse {
   // minutes.
   string stream_id = 1;
 
-  // A response on the stream. Currently the only type of response is telemetry received from the
-  // satellite.
+  // A response on the stream. Currently the only types of response are telemetry received from the
+  // satellite and stream events.
   oneof Response {
     // A response from a satellite containing telemetry.
     ReceiveTelemetryResponse receive_telemetry_response = 2;
@@ -337,7 +337,7 @@ message SatelliteStreamResponse {
 // A response from a satellite containing telemetry.
 message ReceiveTelemetryResponse {
   // The telemetry received.
-  Telemetry telemetry = 1;
+  repeated Telemetry telemetry = 1;
 
   // The ID of the plan the telemetry was received for.
   string plan_id = 2;
@@ -436,11 +436,6 @@ message ChannelSet {
 //
 // Next ID: 14
 message Pass {
-  // A unique token for this pass that can be used for scheduling it.
-  //
-  // Deprecated. Use ChannelSetToken.reservation_token.
-  string reservation_token = 1 [deprecated = true];
-
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
 
@@ -468,18 +463,6 @@ message Pass {
 
   // The time of the max elevation during the pass.
   google.protobuf.Timestamp max_elevation_time = 8;
-
-  // The center frequency, in Hz, for downlinking in this pass. 0 if downlink is not available in
-  // this pass.
-  //
-  // Deprecated. Use channel_set.downlink.center_frequency_hz.
-  uint64 downlink_center_frequency_hz = 9 [deprecated = true];
-
-  // The center frequency, in Hz, for uplinking in this pass. 0 if uplink is not available in
-  // this pass.
-  //
-  // Deprecated. Use channel_set.uplink.center_frequency_hz.
-  uint64 uplink_center_frequency_hz = 10 [deprecated = true];
 
   // A mapping of channel set to its unique reservation token.
   message ChannelSetToken {
@@ -596,18 +579,6 @@ message Plan {
 
   // The time of the max elevation during the plan.
   google.protobuf.Timestamp max_elevation_time = 10;
-
-  // The center frequency, in Hz, for downlinking in this plan. 0 if downlink is not available in
-  // this plan.
-  //
-  // Deprecated. Use channel_set.downlink.center_frequency_hz.
-  uint64 downlink_center_frequency_hz = 11 [deprecated = true];
-
-  // The center frequency, in Hz, for uplinking in this plan. 0 if uplink is not available in
-  // this plan.
-  //
-  // Deprecated. Use channel_set.uplink.center_frequency_hz.
-  uint64 uplink_center_frequency_hz = 12 [deprecated = true];
 
   // Metadata for telemetry received during the pass. Only populated when the pass has completed
   // successfully and data processing is complete.

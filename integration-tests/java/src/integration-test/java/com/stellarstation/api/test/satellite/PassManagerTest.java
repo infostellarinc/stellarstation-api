@@ -61,7 +61,7 @@ public class PassManagerTest {
     assertThat(los).isAfter(aos);
 
     // Check other properties.
-    assertThat(pass.getReservationToken()).isNotNull();
+    assertThat(pass.getChannelSetTokenCount()).isNotZero();
     assertThat(pass.getMaxElevationDegrees()).isGreaterThan(0);
   }
 }

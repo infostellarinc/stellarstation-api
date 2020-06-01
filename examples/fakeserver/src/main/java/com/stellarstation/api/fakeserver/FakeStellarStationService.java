@@ -30,7 +30,6 @@ import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import java.time.Clock;
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +59,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
   public StreamObserver<SatelliteStreamRequest> openSatelliteStream(
       StreamObserver<SatelliteStreamResponse> responseObserver) {
     ServiceRequestContext ctx = RequestContext.current();
-    ctx.setRequestTimeout(Duration.ZERO);
+    ctx.clearRequestTimeout();
     ctx.setMaxRequestLength(0);
     ScheduledFuture<?> future =
         ctx.eventLoop()
@@ -116,7 +115,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
         SatelliteStreamResponse.newBuilder()
             .setReceiveTelemetryResponse(
                 ReceiveTelemetryResponse.newBuilder()
-                    .setTelemetry(
+                    .addTelemetry(
                         Telemetry.newBuilder()
                             .setTimeFirstByteReceived(
                                 Timestamps.fromMillis(Clock.systemUTC().millis()))
