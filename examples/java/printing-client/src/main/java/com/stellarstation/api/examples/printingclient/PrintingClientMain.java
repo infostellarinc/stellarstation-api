@@ -82,8 +82,7 @@ public class PrintingClientMain {
 
                 // acknowledge message received (only needed if
                 // `SatelliteStreamRequest.enable_flow_control` is true)
-                String msgAckId =
-                    value.getReceiveTelemetryResponse().getTelemetry().getMessageAckId();
+                String msgAckId = value.getReceiveTelemetryResponse().getMessageAckId();
                 Timestamp timestamp =
                     Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build();
                 var telemetryReceivedAck =
