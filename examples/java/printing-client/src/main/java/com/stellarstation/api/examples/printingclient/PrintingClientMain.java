@@ -19,6 +19,7 @@ import com.google.auth.oauth2.ServiceAccountJwtAccessCredentials;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Timestamp;
 import com.stellarstation.api.v1.SatelliteStreamRequest;
 import com.stellarstation.api.v1.SatelliteStreamResponse;
 import com.stellarstation.api.v1.SendSatelliteCommandsRequest;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 public class PrintingClientMain {
 
   private static final Logger logger = LoggerFactory.getLogger(PrintingClientMain.class);
+  private static StreamObserver<SatelliteStreamRequest> requestStream;
 
   public static void main(String[] args) throws Exception {
     // Load the private key downloaded from the StellarStation Console.
@@ -62,7 +64,7 @@ public class PrintingClientMain {
             .withCallCredentials(MoreCallCredentials.from(credentials));
 
     // Open the stream with an observer to handle telemetry responses.
-    StreamObserver<SatelliteStreamRequest> requestStream =
+    requestStream =
         client.openSatelliteStream(
             new StreamObserver<>() {
               @Override
@@ -77,6 +79,12 @@ public class PrintingClientMain {
                                 .getData()
                                 .toByteArray())
                         .substring(0, 100));
+
+                // acknowledge message received (only needed if `SatelliteStreamRequest.enable_flow_control` is true)
+                String msgAckId = value.getReceiveTelemetryResponse().getTelemetry().getMessageAckId();
+                Timestamp timestamp = Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build();
+                var telemetryReceivedAck =  SatelliteStreamRequest.newBuilder().getTelemetryReceivedAckBuilder().setMessageAckId(msgAckId).setReceivedTimestamp(timestamp).build();
+                requestStream.onNext(SatelliteStreamRequest.newBuilder().setTelemetryReceivedAck(telemetryReceivedAck).build());
               }
 
               @Override
@@ -89,8 +97,8 @@ public class PrintingClientMain {
             });
 
     // Send the first request to activate the stream. Telemetry will start to be received at
-    // this point.
-    requestStream.onNext(SatelliteStreamRequest.newBuilder().setSatelliteId("5").build());
+    // this point. EnableFlowControl=true is optional but recommended for high bitrate connections greater than 50 Mbps
+    requestStream.onNext(SatelliteStreamRequest.newBuilder().setSatelliteId("5").setEnableFlowControl(true).build());
 
     ScheduledExecutorService commandExecutor = Executors.newScheduledThreadPool(1);
 

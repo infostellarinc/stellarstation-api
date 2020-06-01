@@ -83,13 +83,13 @@ message Telemetry {
   //          returned.
   bytes frame_header = 6;
 
-  // The unique arrival order of this telemetry. This value may not be available for Out-of-order-
-  // allowed-satellites. First telemetry has an index value of 1, and telemetry with equal index
-  // values (that is greater than or equal to 1) can be safely assumed to be duplicates.
-  // 
+  // The ID to be used to when creating a `ReceiveTelemetryAck.message_ack_id` response
+  //
+  // This value may not be available for Out-of-order-allowed-satellites
+  //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  uint64 index = 7;
+  string message_ack_id = 7;
 }
 
 // An event that occurred while processing the stream. A `StreamEvent` will have one of several

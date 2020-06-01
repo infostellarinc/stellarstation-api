@@ -207,15 +207,17 @@ message SatelliteStreamRequest {
   // (e.g., IQ + AX25). If empty, all framings produced by the satellite will be returned.
   repeated Framing accepted_framing = 4;
 
-  // Optional. The telemetry index to resume from an previously opened stream. If the specified value is greater
-  // than zero, server will attempt to resume transfer starting from the specified index. Otherwise, 
-  // server will attempt to resume transfer with first avaiable message. First index of a pass
-  // always starts at one. This feature may not be available for Out-of-order-allowed-satellites.
+  // Optional. The `Telemetry.message_ack_id` of the most recently received telemetry. This may be specified
+  // in attempt to resume streaming after a connection or application error. If the specified,
+  // server will attempt to resume transfer assuming the provided value is that of the most recent Telemetry
+  // received & processed by the client.
+  //
   // This feature is only available if enable_flow_control is true.
+  // This feature may not be available for Out-of-order-allowed-satellites.
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  uint64 resume_telemetry_index = 8;
+  string resume_stream_message_ack_id = 8;
 
   // Whether flow control is enabled on the client side. If set to true, client must respond to each
   // ReceiveTelemetryResponse received with a corresponding ReceiveTelemetryAck message. 
@@ -266,14 +268,11 @@ message GroundStationConfigurationRequest {
 // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
 //         incompatible ways in the future.
 message ReceiveTelemetryAck {
-  // The ID of the plan the telemetry was received for.
-  string plan_id = 1;
-
-  // The `Telemetry.index` value of the ReceiveTelemetryResponse to acknowledge
-  uint64 telemetry_index = 2;
+  // The `Telemetry.message_ack_id` value of the telemetry message received
+  string message_ack_id = 1;
 
   // Optional. The local timestamp of message reception, used for statistics collection.
-  google.protobuf.Timestamp received_timestamp = 3;
+  google.protobuf.Timestamp received_timestamp = 2;
 }
 
 // A request to configure a transmitter at a ground station. Default state of these parameters
