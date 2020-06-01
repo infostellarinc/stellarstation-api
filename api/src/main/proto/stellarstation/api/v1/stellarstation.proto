@@ -208,7 +208,7 @@ message SatelliteStreamRequest {
   repeated Framing accepted_framing = 4;
 
   // Optional. The `Telemetry.message_ack_id` of the most recently received telemetry. This may be specified
-  // in attempt to resume streaming after a connection or application error. If the specified,
+  // in attempt to resume streaming after a connection or application error. If specified,
   // server will attempt to resume transfer assuming the provided value is that of the most recent Telemetry
   // received & processed by the client.
   //
