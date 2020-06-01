@@ -80,11 +80,22 @@ public class PrintingClientMain {
                                 .toByteArray())
                         .substring(0, 100));
 
-                // acknowledge message received (only needed if `SatelliteStreamRequest.enable_flow_control` is true)
-                String msgAckId = value.getReceiveTelemetryResponse().getTelemetry().getMessageAckId();
-                Timestamp timestamp = Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build();
-                var telemetryReceivedAck =  SatelliteStreamRequest.newBuilder().getTelemetryReceivedAckBuilder().setMessageAckId(msgAckId).setReceivedTimestamp(timestamp).build();
-                requestStream.onNext(SatelliteStreamRequest.newBuilder().setTelemetryReceivedAck(telemetryReceivedAck).build());
+                // acknowledge message received (only needed if
+                // `SatelliteStreamRequest.enable_flow_control` is true)
+                String msgAckId =
+                    value.getReceiveTelemetryResponse().getTelemetry().getMessageAckId();
+                Timestamp timestamp =
+                    Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build();
+                var telemetryReceivedAck =
+                    SatelliteStreamRequest.newBuilder()
+                        .getTelemetryReceivedAckBuilder()
+                        .setMessageAckId(msgAckId)
+                        .setReceivedTimestamp(timestamp)
+                        .build();
+                requestStream.onNext(
+                    SatelliteStreamRequest.newBuilder()
+                        .setTelemetryReceivedAck(telemetryReceivedAck)
+                        .build());
               }
 
               @Override
@@ -97,8 +108,10 @@ public class PrintingClientMain {
             });
 
     // Send the first request to activate the stream. Telemetry will start to be received at
-    // this point. EnableFlowControl=true is optional but recommended for high bitrate connections greater than 50 Mbps
-    requestStream.onNext(SatelliteStreamRequest.newBuilder().setSatelliteId("5").setEnableFlowControl(true).build());
+    // this point. EnableFlowControl=true is optional but recommended for high bitrate connections
+    // greater than 50 Mbps
+    requestStream.onNext(
+        SatelliteStreamRequest.newBuilder().setSatelliteId("5").setEnableFlowControl(true).build());
 
     ScheduledExecutorService commandExecutor = Executors.newScheduledThreadPool(1);
 
