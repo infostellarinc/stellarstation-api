@@ -209,7 +209,7 @@ message SatelliteStreamRequest {
 
   // Optional. The `Telemetry.message_ack_id` of the most recently received telemetry. This may be specified
   // in attempt to resume streaming after a connection or application error. If specified,
-  // server will attempt to resume transfer assuming the provided value is that of the most recent Telemetry
+  // the server will attempt to resume transfer assuming the provided value is that of the most recent Telemetry
   // received & processed by the client.
   //
   // This feature is only available if enable_flow_control is true.
