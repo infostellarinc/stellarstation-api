@@ -195,11 +195,38 @@ message SatelliteStreamRequest {
     // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
     //         incompatible ways in the future.
     GroundStationConfigurationRequest ground_station_configuration_request = 7;
+
+    // An ack message to respond to each ReceiveTelemetryResponse when `enable_flow_control` is true.
+    //
+    // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+    //         incompatible ways in the future.
+    ReceiveTelemetryAck telemetry_received_ack = 9;
   }
 
   // The `Framing` types to accept, for satellites that have been configured for multiple framings
   // (e.g., IQ + AX25). If empty, all framings produced by the satellite will be returned.
   repeated Framing accepted_framing = 4;
+
+  // Optional. The `ReceiveTelemetryResponse.message_ack_id` of the most recently received telemetry.
+  // This may be specified in attempt to resume streaming after a connection or application error. If
+  // specified, the server will attempt to resume transfer assuming the provided value is that of the
+  // most recent Telemetry received & processed by the client. If not specified (or if provided value
+  // is invalid), server will resume streaming from the most recent telemetry message sent by the server
+  // which may or may not have been received by the client.
+  //
+  // This feature is only available if enable_flow_control is true.
+  // This feature may not be available for Out-of-order-allowed-satellites.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string resume_stream_message_ack_id = 8;
+
+  // Whether flow control is enabled on the client side. If set to true, client must respond to each
+  // ReceiveTelemetryResponse received with a corresponding ReceiveTelemetryAck message. 
+  // 
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  bool enable_flow_control = 10;
 }
 
 // A request to send commands to a satellite.
@@ -236,6 +263,18 @@ message GroundStationConfigurationRequest {
 
   // A request to modify receiver configuration at a ground station.
   ReceiverConfigurationRequest receiver_configuration_request = 2;
+}
+
+// An ack message for client to notify server of sucessful receive of a ReceiveTelemetryResponse message.
+//
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
+message ReceiveTelemetryAck {
+  // The `ReceiveTelemetryResponse.message_ack_id` value of the telemetry message received
+  string message_ack_id = 1;
+
+  // Optional. The local timestamp of message reception, used for statistics collection.
+  google.protobuf.Timestamp received_timestamp = 2;
 }
 
 // A request to configure a transmitter at a ground station. Default state of these parameters
@@ -302,6 +341,14 @@ message ReceiveTelemetryResponse {
 
   // The ID of the plan the telemetry was received for.
   string plan_id = 2;
+
+  // The ID to be used to when creating a `ReceiveTelemetryAck.message_ack_id` response
+  //
+  // This value may not be available for Out-of-order-allowed-satellites
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string message_ack_id = 3;
 }
 
 //----------------------------------------------------------------------------------------------

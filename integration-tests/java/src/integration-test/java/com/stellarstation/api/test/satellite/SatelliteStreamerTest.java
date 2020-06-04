@@ -94,6 +94,7 @@ public class SatelliteStreamerTest {
                     SatelliteStreamRequest.newBuilder()
                         .setSatelliteId(SATELLITE_ID)
                         .setSendSatelliteCommandsRequest(commandsRequest)
+                        .setEnableFlowControl(true)
                         .build());
           }
 
