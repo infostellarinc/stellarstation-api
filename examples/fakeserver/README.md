@@ -7,7 +7,7 @@ integrating with the service.
 
 - Verifies a fake API key
 - Returns 1MB of random telemetry every second
-- Echos back received commands
+- Echos back received commands (except for TelemetryReceivedAck)
 - Cancels the connection after 5 minutes
 - Only allows requests for satellite ID `"5"`, other IDs show behavior for non-existent satellites
 
