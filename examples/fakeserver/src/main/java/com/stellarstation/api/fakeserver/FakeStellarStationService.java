@@ -52,8 +52,8 @@ import org.apache.logging.log4j.Logger;
 class FakeStellarStationService extends StellarStationServiceImplBase {
   private final FakeServerConfig config;
   private static final Logger logger = LogManager.getLogger();
-  final static String SATELLITE_ID = "5";
-  final static String FAKE_PLAN_ID = System.currentTimeMillis() + "";
+  static final String SATELLITE_ID = "5";
+  static final String FAKE_PLAN_ID = System.currentTimeMillis() + "";
   static long sendCounter = 1;
 
   @Inject
@@ -92,8 +92,7 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
         }
         if (value.hasTelemetryReceivedAck()) {
           logger.info("received TelemetryReceivedAck message: \n" + value);
-        }
-        else {
+        } else {
           for (ByteString payload : value.getSendSatelliteCommandsRequest().getCommandList()) {
             sendTelemetry(payload, responseObserver);
           }
@@ -135,8 +134,8 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
                                     Clock.systemUTC().millis() + TimeUnit.SECONDS.toMillis(1)))
                             .setData(payload)
                             .build())
-                        .setPlanId(FAKE_PLAN_ID)
-                        .setMessageAckId(SATELLITE_ID + ":" + FAKE_PLAN_ID + ":" + sendCounter++)
+                    .setPlanId(FAKE_PLAN_ID)
+                    .setMessageAckId(SATELLITE_ID + ":" + FAKE_PLAN_ID + ":" + sendCounter++)
                     .build())
             .build();
     responseObserver.onNext(response);
