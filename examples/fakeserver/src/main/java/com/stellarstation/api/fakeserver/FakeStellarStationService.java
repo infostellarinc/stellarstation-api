@@ -34,6 +34,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A fake implementation of {@link StellarStationServiceImplBase} which:
@@ -49,6 +51,10 @@ import javax.inject.Inject;
  */
 class FakeStellarStationService extends StellarStationServiceImplBase {
   private final FakeServerConfig config;
+  private static final Logger logger = LogManager.getLogger();
+  final static String SATELLITE_ID = "5";
+  final static String FAKE_PLAN_ID = System.currentTimeMillis() + "";
+  static long sendCounter = 1;
 
   @Inject
   FakeStellarStationService(FakeServerConfig config) {
@@ -81,11 +87,16 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
     return new StreamObserver<SatelliteStreamRequest>() {
       @Override
       public void onNext(SatelliteStreamRequest value) {
-        if (!value.getSatelliteId().equals("5")) {
+        if (!value.getSatelliteId().equals(SATELLITE_ID)) {
           throw new StatusRuntimeException(Status.INVALID_ARGUMENT);
         }
-        for (ByteString payload : value.getSendSatelliteCommandsRequest().getCommandList()) {
-          sendTelemetry(payload, responseObserver);
+        if (value.hasTelemetryReceivedAck()) {
+          logger.info("received TelemetryReceivedAck message: \n" + value);
+        }
+        else {
+          for (ByteString payload : value.getSendSatelliteCommandsRequest().getCommandList()) {
+            sendTelemetry(payload, responseObserver);
+          }
         }
       }
 
@@ -124,6 +135,8 @@ class FakeStellarStationService extends StellarStationServiceImplBase {
                                     Clock.systemUTC().millis() + TimeUnit.SECONDS.toMillis(1)))
                             .setData(payload)
                             .build())
+                        .setPlanId(FAKE_PLAN_ID)
+                        .setMessageAckId(SATELLITE_ID + ":" + FAKE_PLAN_ID + ":" + sendCounter++)
                     .build())
             .build();
     responseObserver.onNext(response);
