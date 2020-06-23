@@ -31,7 +31,7 @@ option java_package = "com.stellarstation.api.v1";
 // station sending telemetry and receiving commands, and the API client sending commands and
 // receiving telemetry - the actual payloads are the same on each side but reversed.
 
-// A type of framing of a binary payload used in satellite communicaation.
+// A type of framing of a binary payload used in satellite communication.
 enum Framing {
   // No framing done in the API. All payloads are assumed to be pre-framed and ready for
   // transmission to the satellite or API client with no additional processing.
@@ -60,8 +60,7 @@ enum Framing {
 
 // A chunk or frame of telemetry data that has been received from a satellite.
 message Telemetry {
-  // The framing of this telemetry data. If `RAW`, this telemetry will be an arbitrarily sized
-  // chunk of the bitstream.
+  // The framing of this telemetry data.
   Framing framing = 1;
 
   // The payload of this telemetry.
@@ -77,10 +76,12 @@ message Telemetry {
   // Timestamp when the last byte of `data` was received.
   google.protobuf.Timestamp time_last_byte_received = 5;
 
-  // The binary header of the telemetry frame, if `framing` is not `RAW`.
+  // The binary header of the telemetry frame available for certain framing types.
   //
-  // * AX25 - This is either Address + Control, or Address + Control + PID. The checksum is not
-  //          returned.
+  // * AX25      - This is either Address + Control, or Address + Control + PID. The checksum is not
+  //               returned.
+  // * BITSTREAM - Streams for certain protocols such as CCSDS may contain frame headers according
+  //               to the applicable standards.
   bytes frame_header = 6;
 }
 
