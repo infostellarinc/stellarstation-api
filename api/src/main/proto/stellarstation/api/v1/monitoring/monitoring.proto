@@ -161,7 +161,7 @@ message TransmitterState {
   // The current bitrate of the transmitter
   google.protobuf.FloatValue bitrate = 7;
 
-  // Timestamp when the metrics sampled.
+  // Timestamp when the metrics were sampled.
   google.protobuf.Timestamp sample_time = 8;
 }
 
@@ -243,7 +243,7 @@ message ReceiverState {
   // Offset from the expected carrier frequency.
   google.protobuf.FloatValue carrier_offset = 11;
 
-  // Timestamp when the metrics sampled.
+  // Timestamp when the metrics were sampled.
   google.protobuf.Timestamp sample_time = 12;
 }
 
@@ -271,7 +271,7 @@ message AntennaState {
   // The current polarization of the antenna.
   antenna.AntennaPolarization polarization = 3;
 
-  // Timestamp when the metrics sampled.
+  // Timestamp when the metrics were sampled.
   google.protobuf.Timestamp sample_time = 4;
 }
 
