@@ -138,7 +138,7 @@ message GroundStationConfiguration {
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
-// Next ID: 9
+// Next ID: 8
 message TransmitterState {
   // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -160,9 +160,6 @@ message TransmitterState {
 
   // The current bitrate of the transmitter
   google.protobuf.FloatValue bitrate = 7;
-
-  // Timestamp when the metrics were sampled.
-  google.protobuf.Timestamp sample_time = 8;
 }
 
 // A current status of convolutional coding.
@@ -207,7 +204,7 @@ message ReedSolomonStatus {
 }
 
 // The current state of the ground station's receiver during the operation of a pass.
-// Next ID: 13
+// Next ID: 12
 message ReceiverState {
   // The current center frequency of the receiver, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -242,13 +239,10 @@ message ReceiverState {
 
   // Offset from the expected carrier frequency.
   google.protobuf.FloatValue carrier_offset = 11;
-
-  // Timestamp when the metrics were sampled.
-  google.protobuf.Timestamp sample_time = 12;
 }
 
 // The current state of the ground station's antenna during the operation of a pass.
-// Next ID: 5
+// Next ID: 4
 message AntennaState {
 
   // The state of an antenna angle.
@@ -270,9 +264,6 @@ message AntennaState {
 
   // The current polarization of the antenna.
   antenna.AntennaPolarization polarization = 3;
-
-  // Timestamp when the metrics were sampled.
-  google.protobuf.Timestamp sample_time = 4;
 }
 
 // The current state of a ground station during the operation of a pass.
