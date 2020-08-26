@@ -15,6 +15,7 @@
  */
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/antenna/antenna.proto";
 import "stellarstation/api/v1/common/common.proto";
@@ -137,7 +138,7 @@ message GroundStationConfiguration {
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
-// Next ID: 8
+// Next ID: 9
 message TransmitterState {
   // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -159,6 +160,9 @@ message TransmitterState {
 
   // The current bitrate of the transmitter
   google.protobuf.FloatValue bitrate = 7;
+
+  // Timestamp when the metrics were sampled.
+  google.protobuf.Timestamp sample_time = 8;
 }
 
 // A current status of convolutional coding.
@@ -177,6 +181,7 @@ enum ConvolutionalCodingStatus {
 }
 
 // The status of Reed-Solomon coding.
+// Next ID: 5
 message ReedSolomonStatus {
   enum Status {
     // Indicates Reed-Solomon coding is functioning.
@@ -193,10 +198,16 @@ message ReedSolomonStatus {
 
   // The number of Reed-Solomon corrected signals. Only set is `status` == `OK`.
   uint32 num_corrected_signals = 2;
+
+  // Number of good transfer frames.
+  google.protobuf.Int64Value num_good_frames = 3;
+
+  // Number of bad transfer frames
+  google.protobuf.Int64Value num_bad_frames = 4;
 }
 
 // The current state of the ground station's receiver during the operation of a pass.
-// Next ID: 11
+// Next ID: 13
 message ReceiverState {
   // The current center frequency of the receiver, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -228,9 +239,16 @@ message ReceiverState {
 
   // The current bitrate of the receiver
   google.protobuf.FloatValue bitrate = 10;
+
+  // Offset from the expected carrier frequency.
+  google.protobuf.FloatValue carrier_offset = 11;
+
+  // Timestamp when the metrics were sampled.
+  google.protobuf.Timestamp sample_time = 12;
 }
 
 // The current state of the ground station's antenna during the operation of a pass.
+// Next ID: 5
 message AntennaState {
 
   // The state of an antenna angle.
@@ -252,6 +270,9 @@ message AntennaState {
 
   // The current polarization of the antenna.
   antenna.AntennaPolarization polarization = 3;
+
+  // Timestamp when the metrics were sampled.
+  google.protobuf.Timestamp sample_time = 4;
 }
 
 // The current state of a ground station during the operation of a pass.
