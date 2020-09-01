@@ -143,7 +143,7 @@ service StellarStationService {
   //
   // The selected source will be used for all upcoming pass calculations for the satellite. If TLE
   // does not exist for a specific source, no passes will be generated.
-
+  //
   // An 'INVALID_ARGUMENT' error will be returned in the following condition:
   // - no satellite_id is provided.
   // - the source provided is invalid.
@@ -151,6 +151,18 @@ service StellarStationService {
   // If the satellite is not found or the client is not authorized for it, the request will return
   // a `NOT_FOUND` error.
   rpc SetTleSource(SetTleSourceRequest) returns (SetTleSourceResponse);
+
+  // Sets the metadata for a plan.
+  //
+  // Metadata added to a plan is available via ListPlans RPCs for both satellite and ground station
+  // APIs. Because of this, it is important not to store sensitive information that the plan's
+  // satellite operator and ground station operator should not have access to.
+  //
+  // Any metadata set with this method will overwrite existing metadata. 
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  rpc SetPlanMetadata(SetPlanMetadataRequest) returns (SetPlanMetadataResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -654,5 +666,21 @@ message SetTleSourceRequest {
 
 // Response for the `SetTleSource` method.
 message SetTleSourceResponse {
+  // Currently no payload in the response.
+}
+
+// Request for the `SetPlanMetadata` method.
+message SetPlanMetadataRequest {
+  // The ID of the plan to set the metadata for.
+  //
+  // Required.
+  string plan_id = 1;
+
+  // The metadata to set.
+  map<string, string> metadata = 2;
+}
+
+// Response for the `SetPlanMetadata` method.
+message SetPlanMetadataResponse {
   // Currently no payload in the response.
 }
