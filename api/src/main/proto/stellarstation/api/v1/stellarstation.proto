@@ -676,7 +676,7 @@ message PlanMetadata {
     repeated string data = 1;
   }
 
-  map<string,Metadata> metadata = 2;
+  map<string, Metadata> metadata = 2;
 }
 
 // Request for the `SetPlanMetadata` method.
