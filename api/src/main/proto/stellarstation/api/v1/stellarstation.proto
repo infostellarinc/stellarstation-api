@@ -672,7 +672,11 @@ message SetTleSourceResponse {
 // Message to be nested inside of a SetPlanMetadataRequest message in order to
 // get around the limitation of protobuf maps not allowing repeated values.
 message PlanMetadata {
-  repeated string data = 1;
+  message Metadata {
+    repeated string data = 1;
+  }
+
+  map<string, Metadata> metadata = 2;
 }
 
 // Request for the `SetPlanMetadata` method.
@@ -683,7 +687,7 @@ message SetPlanMetadataRequest {
   string plan_id = 1;
 
   // The metadata to set.
-  map<string, PlanMetadata> metadata = 2;
+  PlanMetadata metadata = 2;
 }
 
 // Response for the `SetPlanMetadata` method.
