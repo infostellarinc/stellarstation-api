@@ -158,7 +158,7 @@ service StellarStationService {
   // APIs. Because of this, it is important not to store sensitive information that the plan's
   // satellite operator and ground station operator should not have access to.
   //
-  // Any metadata set with this method will overwrite existing metadata. 
+  // Any metadata set with this method will overwrite existing metadata.
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
@@ -669,6 +669,12 @@ message SetTleSourceResponse {
   // Currently no payload in the response.
 }
 
+// Message to be nested inside of a SetPlanMetadataRequest message in order to
+// get around the limitation of protobuf maps not allowing repeated values.
+message PlanMetadata {
+  repeated string data = 1;
+}
+
 // Request for the `SetPlanMetadata` method.
 message SetPlanMetadataRequest {
   // The ID of the plan to set the metadata for.
@@ -677,7 +683,7 @@ message SetPlanMetadataRequest {
   string plan_id = 1;
 
   // The metadata to set.
-  map<string, string> metadata = 2;
+  map<string, PlanMetadata> metadata = 2;
 }
 
 // Response for the `SetPlanMetadata` method.
