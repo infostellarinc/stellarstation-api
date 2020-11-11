@@ -292,9 +292,11 @@ message ReceiveTelemetryAck {
 // A request to configure a transmitter at a ground station. Default state of these parameters
 // depends on hardware configuration at each ground station. Please check TransmitterConfiguration
 // and TransmitterState in monitoring message.
-// It isn't always supported to control them. If field isn't set, it's ignored.
 //
-// Next ID: 6
+// Not all configuration requests are supported by some transmitters. If a field isn't set,
+// the configuration will not be changed.
+//
+// Next ID: 7
 message TransmitterConfigurationRequest {
   // Enable carrier transmission.
   google.protobuf.BoolValue enable_carrier = 1;
@@ -310,17 +312,25 @@ message TransmitterConfigurationRequest {
 
   // Bitrate of the transmitter
   google.protobuf.FloatValue bitrate = 5;
+
+  // Modulation of the transmitter.
+  radio.Modulation modulation = 6;
 }
 
 // A request to configure a receiver at a ground station. Default state of these parameters
 // depends on hardware configuration at each ground station. Please check ReceiverConfiguration
 // and ReceiverState in monitoring message.
-// It isn't always supported to control them. If field isn't set, it's ignored.
 //
-// Next ID: 2
+// Not all configuration requests are supported by some receivers. If a field isn't set,
+// the configuration will not be changed.
+//
+// Next ID: 3
 message ReceiverConfigurationRequest {
   // Bitrate of the receiver.
   google.protobuf.FloatValue bitrate = 1;
+
+  // Modulation of the receiver.
+  radio.Modulation modulation = 2;
 }
 
 // A response from the `OpenSatelliteStream` method.
