@@ -331,7 +331,7 @@ message ReceiverConfigurationRequest {
   google.protobuf.FloatValue bitrate = 1;
 
   // Modulation of the receiver. Note that the default modulation is DISABLED and
-  //  // will be ignored. There is no way to disable modulation using this method.
+  // will be ignored. There is no way to disable modulation using this method.
   radio.Modulation modulation = 2;
 }
 
