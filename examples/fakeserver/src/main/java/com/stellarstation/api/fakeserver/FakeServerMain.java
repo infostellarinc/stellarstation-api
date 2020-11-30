@@ -17,7 +17,7 @@ package com.stellarstation.api.fakeserver;
 
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
-import com.linecorp.armeria.server.auth.HttpAuthServiceBuilder;
+import com.linecorp.armeria.server.auth.AuthService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigBeanFactory;
 import dagger.Component;
@@ -40,7 +40,7 @@ public class FakeServerMain {
         FakeStellarStationService service, FakeApiKeyAuthorizer authorizer) {
       return new GrpcServiceDefinition.Builder()
           .addServices(service)
-          .decorator(new HttpAuthServiceBuilder().addOAuth2(authorizer).newDecorator())
+          .decorator(AuthService.builder().addOAuth2(authorizer).newDecorator())
           .path("/")
           .build();
     }
