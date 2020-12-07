@@ -54,6 +54,10 @@ tasks {
         dependsOn(named("goDownloadDeps"))
 
         args("install", "github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc")
+
+        execCustomizer {
+            environment("CGO_ENABLED", "0")
+        }
     }
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
