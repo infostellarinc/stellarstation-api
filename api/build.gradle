@@ -56,6 +56,10 @@ artifactory {
     }
 }
 
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
 afterEvaluate {
     if (version.startsWith('0.0.0')) {
         version = version + '-SNAPSHOT'
