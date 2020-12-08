@@ -19,11 +19,11 @@ plugins {
     id("com.moowork.node") version "1.3.1"
 }
 
-val GRPC_TOOLS_VERSION = "1.7.3"
-val GRPC_TOOLS_TS_VERSION = "2.5.1"
+val GRPC_TOOLS_VERSION = "1.10.0"
+val GRPC_TOOLS_TS_VERSION = "5.0.1"
 
-val GRPC_VERSION = "1.21.1"
-val GOOGLE_PROTOBUF_VERSION = "3.6.1"
+val GRPC_VERSION = "1.24.4"
+val GOOGLE_PROTOBUF_VERSION = "3.14.0"
 
 repositories {
     jcenter()
