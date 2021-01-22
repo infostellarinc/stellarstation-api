@@ -33,7 +33,6 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          - windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v1
