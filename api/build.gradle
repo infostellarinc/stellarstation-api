@@ -65,3 +65,6 @@ afterEvaluate {
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
+
+// Force UTF-8 to fix build on windows (defualts to windows-1252).
+tasks.javadoc.options.encoding = 'UTF-8'
