@@ -15,7 +15,6 @@
  */
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/antenna/antenna.proto";
 import "stellarstation/api/v1/common/common.proto";
