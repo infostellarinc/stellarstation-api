@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'org.ajoberstar.git-publish' version '3.0.0-rc.1' apply false
+    id 'org.ajoberstar.git-publish' version '3.0.0' apply false
 }
 
 conda {
