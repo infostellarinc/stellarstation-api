@@ -178,6 +178,7 @@ tasks {
         execCustomizer({
             environment("GOPATH", file("build/goproto").getAbsolutePath())
             environment("GO111MODULE", "off")
+            environment("CGO_ENABLED", "0")
         })
 
     }
