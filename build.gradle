@@ -15,12 +15,7 @@
  */
 
 plugins {
-    id 'java'
     id 'org.ajoberstar.git-publish' version '3.0.0' apply false
-}
-
-dependencies {
-    compile 'org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:5.9.0.202009080501-r'
 }
 
 conda {
