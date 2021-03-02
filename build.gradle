@@ -37,9 +37,6 @@ allprojects {
       nullaway {
         annotatedPackages.add("com.stellarstation")
       }
-
-      // Force UTF-8 to fix build on windows (defaults to windows-1252).
-      javadoc.options.encoding = 'UTF-8'
     }
 
     // Work around BOM resolution not working for protobuf configuration.
