@@ -82,7 +82,8 @@ service StellarStationService {
   // as it is made available. All telemetry received from the satellite on reserved passes along
   // with associated events from this point on will be returned as soon as this method is called. If
   // `SatelliteStreamRequest.stream_id` is specified, any messages that have been buffered for the
-  // stream will be returned as well.
+  // stream will be returned as well. If `SatelliteStreamRequest.plan_id` is provided, only messages
+  // for the specified plan will be returned.
   //
   // The first `SatelliteStreamRequest` sent on the stream is used for configuring the stream.
   // Unless otherwise specified, all configuration is taken from the first request and configuration
