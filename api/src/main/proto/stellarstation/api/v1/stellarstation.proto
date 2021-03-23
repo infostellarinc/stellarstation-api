@@ -178,7 +178,7 @@ message SatelliteStreamRequest {
   // StellarStation Console page for the satellite.
   string satellite_id = 1;
 
-  // The ID of the plan to open a stream for. If `plan_id` is set only messages for the provided
+  // The ID of the plan to open a stream for. If `plan_id` is set, only messages for the provided
   // plan ID will be returned on this stream. A valid `plan_id` can be found in the response for
   // the `ListPlans` method or on the StellarStation Console page for the satellite.
   //
