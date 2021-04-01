@@ -40,10 +40,10 @@ dependencies {
 
 jib {
     from {
-        image = 'gcr.io/distroless/java:debug'
+        image = 'gcr.io/distroless/java:11-debug'
     }
     to {
-        image = 'quay.io/infostellarinc/fake-apiserver'
+        image = 'infostellarinc/fake-apiserver'
     }
     container {
         mainClass = mainClassName
