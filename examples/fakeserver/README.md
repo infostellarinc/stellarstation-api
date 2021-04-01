@@ -1,6 +1,6 @@
 # StellarStation API Fakeserver
 
-A fake implementation of the StellarStation API to use to check behavior of client code before
+A fake implementation of the StellarStation API used to check the behavior of client code before
 integrating with the service.
 
 ## Features
@@ -36,8 +36,8 @@ You can run the fakeserver even without using this repository via Docker.
 First extract the api-key from the Docker image.
 
 ```bash
-$ docker pull quay.io/infostellarinc/fake-apiserver
-$ docker run -v `pwd`:/out --entrypoint sh -it --rm quay.io/infostellarinc/fake-apiserver /extract-key
+$ docker pull infostellarinc/fake-apiserver
+$ docker run -v `pwd`:/out --entrypoint sh -it --rm infostellarinc/fake-apiserver /extract-key
 ```
 
 A file named `api-key.json` will be present in the current directory which you can use to initialize
@@ -46,7 +46,7 @@ a client.
 Then just run the server with docker.
 
 ```bash
-$ docker run -p 8080:8080 -p 8081:8081 -it --rm quay.io/infostellarinc/fake-apiserver
+$ docker run -p 8080:8080 -p 8081:8081 -it --rm infostellarinc/fake-apiserver
 ```
 
 The server will be listening for plaintext on port 8081 and TLS on port 8080. Connecting on TLS will
@@ -76,8 +76,8 @@ Currently, releasing the docker image is a manual process until https://github.c
 is resolved. In the meantime,
 
 ```bash
-$ docker login quay.io  # Only need to do this once on a machine
+$ docker login # Only need to do this once on a machine
 $ ./gradlew :examples:fakeserver:jibDockerBuild
-$ docker run -it --rm quay.io/infostellarinc/fake-apiserver  # Sanity check the server starts up
-$ docker push quay.io/infostellarinc/fake-apiserver
+$ docker run -it --rm infostellarinc/fake-apiserver # Sanity check the server starts up
+$ docker push infostellarinc/fake-apiserver
 ``` 
