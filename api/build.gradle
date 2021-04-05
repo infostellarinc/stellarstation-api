@@ -15,9 +15,9 @@
  */
 
 plugins {
-    id 'com.jfrog.artifactory' version '4.13.0'
     id 'org.curioswitch.gradle-grpc-api-plugin'
     id 'maven-publish'
+    id 'signing'
 }
 
 archivesBaseName = 'stellarstation-api'
@@ -35,25 +35,28 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            if (version.startsWith('0.0.0')) {
+                // snapshot
+                url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            } else {
+                // release
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            }
+            credentials {
+                username = rootProject.findProperty('maven.user')
+                password = rootProject.findProperty('maven.key')
+            }
+        }
+    }
 }
 
-artifactory {
-    contextUrl = 'https://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = rootProject.findProperty('bintray.user')
-            password = rootProject.findProperty('bintray.key')
-        }
-        defaults {
-            publications 'maven'
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'jcenter'
-    }
+signing {
+    sign publishing.publications.maven
+    keyId = rootProject.findProperty('sign.keyId')
+    password = rootProject.findProperty('sign.password')
+    secretKeyRingFile = rootProject.findProperty('sign.keyFile')
 }
 
 afterEvaluate {
