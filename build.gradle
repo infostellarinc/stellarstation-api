@@ -102,11 +102,14 @@ allprojects {
     }
 }
 
-// To use this task the following properties should be set in your gradle.properties:
+// To use this task, need to set the following gradle properties:
+//   maven.username
+//   maven.password
+//   signing.keyId
+//   signing.password
+//   signing.secretKeyRingFile
 //   pypi.user
 //   pypi.password
-//   bintray.user
-//   bintray.key
 //   npm.key
 task publishStubs {
     description 'Publishes API stubs (only works for non-snapshot versions)'
