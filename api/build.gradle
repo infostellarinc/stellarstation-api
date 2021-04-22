@@ -45,18 +45,20 @@ publishing {
                 url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
             }
             credentials {
-                username = rootProject.findProperty('maven.user')
-                password = rootProject.findProperty('maven.key')
+                username = rootProject.findProperty('maven.username')
+                password = rootProject.findProperty('maven.password')
             }
         }
     }
 }
 
 signing {
+    // Need to set the following project properties
+    //   signing.keyId=24875D73 // last 8 characters of key ID
+    //   signing.password=secret // secret key passphrase
+    //   signing.secretKeyRingFile=/home/user/.gnupg/secring.gpg // path to secret keyring in `gpg` format
+    // https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
     sign publishing.publications.maven
-    keyId = rootProject.findProperty('sign.keyId')
-    password = rootProject.findProperty('sign.password')
-    secretKeyRingFile = rootProject.findProperty('sign.keyFile')
 }
 
 afterEvaluate {

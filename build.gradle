@@ -82,7 +82,7 @@ allprojects {
                             developers {
                                 developer {
                                     id = 'istellar'
-                                    name = ''
+                                    name = 'Infostellar, Inc.'
                                     email = 'sonatype@istellar.com'
                                     organization = 'Infostellar, Inc.'
                                     organizationUrl = 'https://www.infostellar.net/'
@@ -110,7 +110,7 @@ allprojects {
 //   npm.key
 task publishStubs {
     description 'Publishes API stubs (only works for non-snapshot versions)'
-    dependsOn ':api:publish'
+    dependsOn ':api:publishMavenPublicationToMavenRepository'
     dependsOn ':stubs:golang:gitPublishCommit'
     dependsOn ':stubs:nodejs:publish'
     dependsOn ':stubs:python:uploadPythonPackage'
