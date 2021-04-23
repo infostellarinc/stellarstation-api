@@ -15,9 +15,9 @@
  */
 
 plugins {
-    id 'com.jfrog.artifactory' version '4.13.0'
     id 'org.curioswitch.gradle-grpc-api-plugin'
     id 'maven-publish'
+    id 'signing'
 }
 
 archivesBaseName = 'stellarstation-api'
@@ -35,25 +35,30 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            if (version.startsWith('0.0.0')) {
+                // snapshot
+                url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            } else {
+                // release
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            }
+            credentials {
+                username = rootProject.findProperty('maven.username')
+                password = rootProject.findProperty('maven.password')
+            }
+        }
+    }
 }
 
-artifactory {
-    contextUrl = 'https://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = rootProject.findProperty('bintray.user')
-            password = rootProject.findProperty('bintray.key')
-        }
-        defaults {
-            publications 'maven'
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'jcenter'
-    }
+signing {
+    // Need to set the following project properties
+    //   signing.keyId=24875D73 // last 8 characters of key ID
+    //   signing.password=secret // secret key passphrase
+    //   signing.secretKeyRingFile=/home/user/.gnupg/secring.gpg // path to secret keyring in `gpg` format
+    // https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials
+    sign publishing.publications.maven
 }
 
 afterEvaluate {

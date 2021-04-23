@@ -63,35 +63,7 @@ allprojects {
     }
 
     plugins.withType(MavenPublishPlugin) {
-        project.apply plugin: 'com.jfrog.bintray'
-        // This should happen automatically, not clear why not.
-        tasks.bintrayUpload.dependsOn tasks.publishToMavenLocal
-
-        def bintrayUser = findProperty('bintray.user')
-        def bintrayKey = findProperty('bintray.key')
-
         afterEvaluate {
-            bintray {
-                publish = true
-                user = bintrayUser
-                key = bintrayKey
-                pkg {
-                    name = project.archivesBaseName
-                    repo = 'stellarstation'
-                    userOrg = 'infostellarinc'
-                    licenses = ['Apache-2.0']
-                    vcsUrl = 'https://github.com/infostellarinc/stellarstation-api.git'
-                    githubRepo = 'infostellarinc/stellarstation-api'
-                    version {
-                        name = project.version
-                        gpg {
-                            sign = true
-                        }
-                    }
-                }
-                publications = ['maven']
-            }
-
             publishing {
                 publications {
                     maven(MavenPublication) {
@@ -109,9 +81,9 @@ allprojects {
                             }
                             developers {
                                 developer {
-                                    id = 'rag'
-                                    name = 'Anuraag Agrawal'
-                                    email = 'rag@istellar.jp'
+                                    id = 'istellar'
+                                    name = 'Infostellar, Inc.'
+                                    email = 'sonatype@istellar.com'
                                     organization = 'Infostellar, Inc.'
                                     organizationUrl = 'https://www.infostellar.net/'
                                 }
@@ -130,15 +102,18 @@ allprojects {
     }
 }
 
-// To use this task the following properties should be set in your gradle.properties:
+// To use this task, need to set the following gradle properties:
+//   maven.username
+//   maven.password
+//   signing.keyId
+//   signing.password
+//   signing.secretKeyRingFile
 //   pypi.user
 //   pypi.password
-//   bintray.user
-//   bintray.key
 //   npm.key
 task publishStubs {
     description 'Publishes API stubs (only works for non-snapshot versions)'
-    dependsOn ':api:bintrayUpload'
+    dependsOn ':api:publishMavenPublicationToMavenRepository'
     dependsOn ':stubs:golang:gitPublishCommit'
     dependsOn ':stubs:nodejs:publish'
     dependsOn ':stubs:python:uploadPythonPackage'
