@@ -7,7 +7,7 @@ importlib-metadata==0.17
 more-itertools==7.0.0
 pluggy==0.12.0
 protobuf==3.8.0
-py==1.8.0
+py==1.10.0
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
 pytest==4.5.0
