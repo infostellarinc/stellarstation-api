@@ -25,12 +25,10 @@ steps:
     cp cloudbuild/id_rsa /root/.ssh/id_rsa &&
     chmod 400 /root/.ssh/id_rsa &&
     echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
-    ./gradlew :api:artifactoryPublish :stubs:golang:gitPublishPush -Pbintray.user=$$BINTRAY_USER -Pbintray.key=$$BINTRAY_KEY --stacktrace --no-daemon
+    ./gradlew :stubs:golang:gitPublishPush --stacktrace --no-daemon
   env:
-    - BINTRAY_USER=istellar-admin
     - CI=true
     - CI_MASTER=true
-  secretEnv: ['BINTRAY_KEY']
 timeout: 60m
 options:
   machineType: N1_HIGHCPU_32
