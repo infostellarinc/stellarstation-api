@@ -50,10 +50,10 @@ def run():
 
     for response in client.OpenSatelliteStream(request_iterator):
         if response.HasField("receive_telemetry_response"):
-            print(
-                "Got response: ",
-                base64.b64encode(
-                    response.receive_telemetry_response.telemetry.data)[:100])
+            for telemetry in response.receive_telemetry_response.telemetry:
+              print(
+                  "Got response: ",
+                  base64.b64encode(telemetry.data)[:100])
 
             command = [
                 bytes(b'a' * 5000),
