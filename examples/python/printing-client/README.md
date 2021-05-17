@@ -10,17 +10,9 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 ```
 
-## Install Google authentication library for Python
-For authentication, install google-auth by running:
+## Install requirements
 ```bash
-$ pip install --upgrade google-auth
-```
-
-## Install StellarStation API library
-After installation of required modules, you need stubs generated from .proto file. To install precompiled client stubs for Python, run:
-
-```bash
-$  pip install --upgrade stellarstation
+$ pip install -r requirements.txt
 ```
 
 ## Try it out!
