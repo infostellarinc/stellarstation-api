@@ -51,10 +51,11 @@ Maven users would add to their `pom.xml`
 A full example of a Java API client can be found [here](./integration-tests/java).
 You can also find tutorials to start your own Java client [here](./integration-tests/java/README.md#How-to-initiate-a-new-project-from-this-example).
 
-We publish `SNAPSHOT` builds to https://oss.jfrog.org/libs-snapshot/ for access to preview features.
-The same caveats as using non-tagged releases applies - not all functions in `SNAPSHOT` builds may
-be implemented yet and there is no guarantee of backwards compatibility for `SNAPSHOT` builds. It is
-generally not recommended to use `SNAPSHOT` builds without first consulting with your StellarStation rep.
+We publish `SNAPSHOT` builds to https://oss.sonatype.org/content/repositories/snapshots for access
+to preview features. The same caveats as using non-tagged releases applies - not all functions in
+`SNAPSHOT` builds may be implemented yet and there is no guarantee of backwards compatibility for
+`SNAPSHOT` builds. It is generally not recommended to use `SNAPSHOT` builds without first consulting
+with your StellarStation rep.
 
 #### Note for Alpine Linux users
 
