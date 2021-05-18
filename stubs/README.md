@@ -1,7 +1,7 @@
 # API stubs
 
 This directory builds language specific stubs from the proto definition. This documentation is mainly
-intended to be read by infostellar employees.
+intended to be read by Infostellar employees.
 
 ## Versioning
 
@@ -19,55 +19,37 @@ For 'non-release' (i.e. snapshot)  builds, the version is set to the form
 
 ## Java
 
-We support 'release' and 'snapshot' versions of the stubs in Java.
+We only support 'release' versions of the stubs in Java, but 'snapshot' versions are available
+for development and testing between releases. Please use snapshots at your own risk.
 
 ### Release
 
-```
-./gradlew -Pcuriostack.release=true :api:bintrayUpload
-```
-
-Normally this is not invoked directly but is instead run automatically from google cloud build (which
-deals with setting up the environment etc).
-
-Note that bintray.user and bintray.key properties must be set (istellar users can find the
-details in the usual place). Environment variables should probably also be set to ensure
-an appropriate version number is generated.
-
-#### jcenter
-
-The published stubs are hosted by bintray and available through jcenter automatically:
-- https://jcenter.bintray.com/com/stellarstation/api/stellarstation-api/
-
-Gradle users simply need to add the 'jcenter' repo into their build to get access to the stubs.
-
-Infostellar employees can log in to bintray to manage the packages which have already been released etc.
+TODO: Needs update for new publishing pipeline.
 
 #### maven central
 
-The stubs are also hosted on maven central, but a manual step is required here. The infostellar
-sysadmin must log in to bintray (account details listed in the usual place) and manually select
-'maven central' for the most recently updated release (this should cause it to be synced to maven
-central).
+The stubs are hosted on maven central.
 
 ### Snapshot
 
-Snapshot builds are hosted by artifactory since jcenter doesn't support the concept of snapshots:
+Snapshot builds are hosted on Sonatype's OSS repo:
 
-- https://oss.jfrog.org/libs-snapshot/com/stellarstation/api/stellarstation-api/
+- https://oss.sonatype.org/#nexus-search;quick~stellarstation-api
 
 This repository is added to the gradle list of repos by the curiostack plugin. If you don't use that
-plugin you'll need to add a maven repository pointing at 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
-to your gradle build (using oss.jfrog.org/libs-snapshot as the URL may also work).
+plugin you'll need to add a maven repository pointing at 'https://oss.sonatype.org/content/repositories/snapshots'
+to your gradle build.
 
 The following command is used to do the publishing:
 
 ```
- ./gradlew :api:artifactoryPublish
+./gradlew :api:publishMavenPublicationToMavenRepository
+  -Pmaven.username=<sonatype_ossrh_username>
+  -Pmaven.password="<sonatype_ossrh_password>"
+  -Psigning.secretKeyRingFile=<gpg_keyring_absolute_file_path>
+  -Psigning.keyId=C8772BE9
+  -Psigning.password="<gpg_key_password>"
 ```
-
-The above is run automatically by google cloud build whenever a PR is merged to master. As with the
-release build, bintray.user and bintray.key properties must be set.
 
 ## C++
 ## golang
