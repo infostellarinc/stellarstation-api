@@ -20,6 +20,11 @@ plugins {
     id 'signing'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 archivesBaseName = 'stellarstation-api'
 
 publishing {

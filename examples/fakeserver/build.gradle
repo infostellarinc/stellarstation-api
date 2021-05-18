@@ -15,13 +15,17 @@
  */
 
 plugins {
+    id 'application'
     id 'com.google.cloud.tools.jib'
 }
 
-apply plugin: 'application'
-
 archivesBaseName = 'stellarstation-fake-apiserver'
 mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
 dependencies {
     implementation project(':api')
