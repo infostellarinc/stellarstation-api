@@ -55,12 +55,9 @@ allprojects {
         }
     }
 
-
-    plugins.withType(nl.javadude.gradle.plugins.license.LicensePlugin) {
-        license {
-            header rootProject.file('LICENSE.header')
-        }
-    }
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+    javadoc.options.encoding = 'UTF-8'
 
     plugins.withType(MavenPublishPlugin) {
         afterEvaluate {
