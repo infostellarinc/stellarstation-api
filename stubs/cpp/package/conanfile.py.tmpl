@@ -15,7 +15,7 @@ class StellarstationApiConan(ConanFile):
     default_options = ("shared=False", "fPIC=True")
     generators = "cmake"
     exports_sources = "src/*"
-    requires = "grpc/1.17.2@inexorgame/stable", "protobuf/3.6.1@bincrafters/stable"
+    requires = "grpc/1.37.1", "protobuf/3.15.5"
 
     def configure(self):
         if self.settings.compiler == 'Visual Studio':
@@ -30,7 +30,7 @@ class StellarstationApiConan(ConanFile):
 
     def imports(self):
         self.copy("grpc_cpp_plugin", "bin", "bin", 'grpc')
-        self.copy("protoc", "bin", "bin", 'protoc_installer')
+        self.copy("protoc", "bin", "bin", 'protobuf')
 
     def package(self):
         self.copy("*.h", dst="include", src="src")
