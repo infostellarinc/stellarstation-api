@@ -40,10 +40,6 @@ allprojects {
     project.group = 'com.stellarstation.api'
 
     plugins.withId("java") {
-      compileJava.options.encoding = 'UTF-8'
-      compileTestJava.options.encoding = 'UTF-8'
-      javadoc.options.encoding = 'UTF-8'
-
       nullaway {
         annotatedPackages.add("com.stellarstation")
       }
