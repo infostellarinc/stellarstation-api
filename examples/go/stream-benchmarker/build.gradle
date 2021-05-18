@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        maven {
-            url 'http://dl.bintray.com/curioswitch/curiostack'
-        }
-        mavenLocal()
-    }
-}
-
 apply plugin: 'org.curioswitch.gradle-golang-plugin'
 
 golang {
