@@ -23,14 +23,11 @@ apply plugin: 'application'
 archivesBaseName = 'stellarstation-fake-apiserver'
 mainClassName = 'com.stellarstation.api.fakeserver.FakeServerMain'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
 dependencies {
-    compile project(':api')
+    implementation project(':api')
 
-    compile 'org.bouncycastle:bcpkix-jdk15on'
-    compile 'org.curioswitch.curiostack:curio-server-framework'
+    implementation 'org.bouncycastle:bcpkix-jdk15on'
+    implementation 'org.curioswitch.curiostack:curio-server-framework'
 
     annotationProcessor 'com.google.dagger:dagger-compiler'
 
