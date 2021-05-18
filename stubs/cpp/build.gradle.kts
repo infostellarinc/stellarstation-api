@@ -87,7 +87,7 @@ tasks {
             exec {
                 commandLine("conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan && " +
                         "conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&" +
-                        "conan remote add -f inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan && " +
+                        "conan remote add -f inexorgame https://bincrafters.jfrog.io/artifactory/api/conan/conan-legacy-inexorgame && " +
                         "conan install . --build=missing --build=c-ares")
                 workingDir(conanDir)
 
