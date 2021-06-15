@@ -26,8 +26,8 @@ plugins {
 
 conda {
     'miniconda-build' {
-        packages.addAll('cmake', 'pandoc')
-        pythonPackages.addAll('conan', 'grpcio-tools', 'pdoc', 'twine')
+        packages.addAll('cmake==3.14.0', 'pandoc')
+        pythonPackages.addAll('conan==1.37.2', 'grpcio-tools==1.38.0', 'pdoc==7.1.1', 'twine==3.4.1')
     }
 }
 
@@ -52,13 +52,6 @@ allprojects {
             add("protobuf", "io.grpc:grpc-protobuf:1.33.1")
             add("protobuf", "io.grpc:grpc-stub:1.33.1")
             add("protobuf", "jakarta.annotation:jakarta.annotation-api:1.3.5")
-        }
-    }
-
-
-    plugins.withType(nl.javadude.gradle.plugins.license.LicensePlugin) {
-        license {
-            header rootProject.file('LICENSE.header')
         }
     }
 

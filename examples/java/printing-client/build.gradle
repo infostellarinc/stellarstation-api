@@ -19,13 +19,13 @@ apply plugin: 'application'
 mainClassName = 'com.stellarstation.api.examples.printingclient.PrintingClientMain'
 
 dependencies {
-    compile 'com.google.auth:google-auth-library-oauth2-http:0.9.1'
-    compile project(':api')
+    implementation 'com.google.auth:google-auth-library-oauth2-http:0.9.1'
+    implementation project(':api')
     ['auth', 'netty', 'protobuf', 'stub'].each {
-        compile "io.grpc:grpc-$it:1.16.1"
+        implementation "io.grpc:grpc-$it:1.16.1"
     }
-    compile 'io.netty:netty-tcnative-boringssl-static:2.0.17.Final'
-    compile 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'io.netty:netty-tcnative-boringssl-static:2.0.17.Final'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
 }
 
 processResources {

@@ -19,7 +19,6 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -85,9 +84,7 @@ tasks {
             }
 
             exec {
-                commandLine("conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan && " +
-                        "conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&" +
-                        "conan remote add -f inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan && " +
+                commandLine("conan remote add -f stellarstation https://api.bintray.com/conan/infostellarinc/stellarstation-conan &&" +
                         "conan install . --build=missing --build=c-ares")
                 workingDir(conanDir)
 
