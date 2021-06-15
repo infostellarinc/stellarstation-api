@@ -1,9 +1,5 @@
 # CURRENTLY BROKEN, WORK IN PROGRESS TO FIX
 
-secrets:
-- kmsKeyName: projects/infostellar-cluster/locations/us-central1/keyRings/cloudbuild/cryptoKeys/deploy-stubs
-  secretEnv:
-    BINTRAY_KEY: CiQAo3bGoZ8oqTtDBX7G5hReUiSymLSobSDvpa3w9qq7/iTnrf8SUQD6f46OKS7QQjJ0JRTfwcIlgcfWN89NbmlLMtzGP582qvCcDhh57vd1JR/lr/SZ8HolfzEAZP6k/SdfEZ+oF/u7/CiCWOUzRlgLWFg1Mqm8PA==
 steps:
 - name: gcr.io/cloud-builders/gcloud
   args:
