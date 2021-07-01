@@ -16,6 +16,15 @@ steps:
     - --location=us-central1
     - --keyring=cloudbuild
     - --key=deploy-stubs
+- name: gcr.io/cloud-builders/gcloud
+  args:
+    - kms
+    - decrypt
+    - --ciphertext-file=cloudbuild/secring.gpg.enc
+    - --plaintext-file=cloudbuild/secring.gpg
+    - --location=us-central1
+    - --keyring=cloudbuild
+    - --key=deploy-stubs
 - id: publish-release
   name: curiostack/java-cloud-builder
   entrypoint: bash
