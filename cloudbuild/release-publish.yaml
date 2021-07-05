@@ -38,7 +38,7 @@ steps:
       apt-get -y update &&
       apt-get -y install binutils &&
       echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
-      ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pmaven.username=infostellar-admin -Pmaven.password="$$MAVEN_PASSWORD" -Psigning.secretKeyRingFile=cloudbuild/secring.gpg -Psigning.keyId=C8772BE9 -Psigning.password="$$SIGNING_PASSWORD" -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
+      ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pmaven.username=infostellar-admin -Pmaven.password="$$MAVEN_PASSWORD" -Psigning.secretKeyRingFile="$(pwd)/cloudbuild/secring.gpg" -Psigning.keyId=C8772BE9 -Psigning.password="$$SIGNING_PASSWORD" -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
   secretEnv:
   - MAVEN_PASSWORD
   - SIGNING_PASSWORD
