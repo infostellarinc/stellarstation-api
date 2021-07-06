@@ -34,6 +34,9 @@ steps:
     chmod 400 /root/.ssh/id_rsa &&
     echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
     ./gradlew -Pmaven.username=UpVSp/UZ -Pmaven.password=$$MAVEN_PASSWORD -Psigning.secretKeyRingFile="$(pwd)/cloudbuild/secring.gpg" -Psigning.keyId=C8772BE9 -Psigning.password=$$SIGNING_PASSWORD :api:publishMavenPublicationToMavenRepository :stubs:golang:gitPublishPush --stacktrace --no-daemon
+  secretEnv:
+    - MAVEN_PASSWORD
+    - SIGNING_PASSWORD
   env:
     - CI=true
     - CI_MASTER=true
