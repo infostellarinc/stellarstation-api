@@ -260,16 +260,6 @@ message SendSatelliteCommandsRequest {
   // `RESOURCE_EXHAUSTED` error.
   repeated bytes command = 2;
 
-  // The ID of the channel set to be used when sending the command. Required if two uplink-capable
-  // plans are simultaneously executing. If not provided and only one plan is executing, the
-  // channel set will be automatically determined.
-  //
-  // If a channel set without an uplink component is provided or two uplink-capable plans are
-  // simultaneously executing and no ID is provided, the command will be ignored.
-  //
-  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
-  //         incompatible ways in the future.
-  string channel_set_id = 3;
 }
 
 // A request to modify configuration of ground station hardware.
