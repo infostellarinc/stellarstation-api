@@ -15,7 +15,7 @@ sudo apt update && sudo apt install python3 python3-venv
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-- After that of if you already have homebrew installed:
+- After that or if you already have homebrew installed:
 ```sh
 brew install python3
 pip3 install virtualenv
