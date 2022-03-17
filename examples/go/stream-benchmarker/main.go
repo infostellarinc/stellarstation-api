@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	apiKey := "stellarstation-private-key.json"
+	apiKey := "api-key.json"
 	endpoint := "api.stellarstation.com:443"
 	satelliteID := "5"
 	interval := 10 * time.Second
@@ -60,7 +60,7 @@ func main() {
 		}
 		defer file.Close()
 		output = file
-	}
+	}	
 
 	satelliteStreamOptions := &benchmark.SatelliteStreamOptions{
 		AcceptedFraming: []stellarstation.Framing{stellarstation.Framing_AX25, stellarstation.Framing_BITSTREAM},
@@ -92,10 +92,11 @@ func main() {
 	for {
 		select {
 		case streamResponse := <-streamChannel:
-			message := streamResponse.Telemetry
+			telemetry := streamResponse.Telemetry
+			for _, message := range telemetry {
 			if len(message.Data) != 0 {
 				planID := streamResponse.PlanId
-				if passStarted == false {
+				if !passStarted {
 					if planID != "" {
 						log.Printf("Receiving messages for Plan ID %v", planID)
 						passStarted = true
@@ -122,6 +123,7 @@ func main() {
 				}
 				md.planID = planID
 			}
+		}
 		case timeOfReporting := <-reportingTicker.C:
 			if passStarted {
 				md.timeOfReporting = timeOfReporting
