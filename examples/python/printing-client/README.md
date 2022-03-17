@@ -3,16 +3,33 @@
 A simple example client that prints received telemetry and sends commands at a fixed interval. Shows
 the basics of writing code to integrate with the StellarStation API. Only works with [Fakeserver](../../fakeserver).
 
-## Create and activate a venv for printing-client
+## Setting up the environment:
+
+## Install python 3 dependencies and start virtual environment:
+
+- For linux users:
+
+```bash
+$ sudo apt update && sudo apt install python3 python3-venv
+```
+
+- For mac users: you need to install homebrew
+```bash
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+- After that or if you already have homebrew installed:
+```bash
+$ brew install python3
+$ pip3 install virtualenv
+```
+
+- Install dependencies and start virtual environment:
 
 ```bash
 $ python3 -m venv venv
 $ source venv/bin/activate
-```
-
-## Install requirements
-```bash
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 ## Try it out!
