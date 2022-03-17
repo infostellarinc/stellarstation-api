@@ -136,8 +136,18 @@ def run(credentials, environment, satelliteId, interval, print_summary):
     # Setup the gRPC client.
     jwt_creds = google_auth_jwt.OnDemandCredentials.from_signing_credentials(
         credentials)
+            
+    # uncomment the code bellow if you want to use fake server for streaming
+    # Adding TLS verification as trusted certificate
+    channel_credential = grpc.ssl_channel_credentials(
+        open('../../fakeserver/src/main/resources/tls.crt', 'br').read())
     channel = google_auth_transport_grpc.secure_authorized_channel(
-        jwt_creds, None, environment)
+        jwt_creds, None, environment, channel_credential)
+
+    # comment the code below if you want to use fake server for streaming
+    # channel = google_auth_transport_grpc.secure_authorized_channel(
+    #     jwt_creds, None, environment)
+
     client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
 
     # Open satellite stream
