@@ -156,17 +156,18 @@ def run(credentials, environment, satelliteId, interval, print_summary):
         try:
             for response in client.OpenSatelliteStream(request_iterator):
                 if response.HasField("receive_telemetry_response"):
-                    num_bytes_in_message = len(response.receive_telemetry_response.telemetry.data)
-                    if not got_first_time:
-                        print('Receiving messages')
-                        got_first_time = True
-                        metrics_data.set_initial_time(datetime.datetime.utcnow())
-                        timer.start()
-                    metric = Metric(response.receive_telemetry_response.telemetry.time_first_byte_received,
-                         response.receive_telemetry_response.telemetry.time_last_byte_received,
-                         num_bytes_in_message,
-                            datetime.datetime.utcnow())
-                    metrics_data.add_metric(metric)
+                    for message in response.receive_telemetry_response.telemetry:
+                        num_bytes_in_message = len(message.data)
+                        if not got_first_time:
+                            print('Receiving messages')
+                            got_first_time = True
+                            metrics_data.set_initial_time(datetime.datetime.utcnow())
+                            timer.start()
+                        metric = Metric(message.time_first_byte_received,
+                            message.time_last_byte_received,
+                            num_bytes_in_message,
+                                datetime.datetime.utcnow())
+                        metrics_data.add_metric(metric)
 
         # When CTRL-C is pressed the benchmark ends
         except KeyboardInterrupt:
@@ -283,7 +284,7 @@ def main():
     parser.add_argument("-k",
                         "--key",
                         help="API key file",
-                        default="stellarstation-private-key.json")
+                        default="api-key.json")
     parser.add_argument("-e",
                         "--endpoint",
                         help="API endpoint",
