@@ -60,7 +60,7 @@ func main() {
 		}
 		defer file.Close()
 		output = file
-	}	
+	}
 
 	satelliteStreamOptions := &benchmark.SatelliteStreamOptions{
 		AcceptedFraming: []stellarstation.Framing{stellarstation.Framing_AX25, stellarstation.Framing_BITSTREAM},
@@ -92,8 +92,7 @@ func main() {
 	for {
 		select {
 		case streamResponse := <-streamChannel:
-			telemetry := streamResponse.Telemetry
-			for _, message := range telemetry {
+			message := streamResponse.Telemetry
 			if len(message.Data) != 0 {
 				planID := streamResponse.PlanId
 				if !passStarted {
@@ -123,7 +122,6 @@ func main() {
 				}
 				md.planID = planID
 			}
-		}
 		case timeOfReporting := <-reportingTicker.C:
 			if passStarted {
 				md.timeOfReporting = timeOfReporting

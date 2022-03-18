@@ -20,8 +20,8 @@ github.com/google/martian v2.1.0+incompatible/go.mod h1:9I4somxYTbIHy5NJKHRl3wXi
 github.com/google/pprof v0.0.0-20181206194817-3ea8567a2e57/go.mod h1:zfwlbNMJ+OItoe0UupaVj+oy1omPYYDuagoSzA8v9mc=
 github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+vpHVxEJEs9eg=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
-github.com/infostellarinc/go-stellarstation v0.11.0 h1:3UyO6KfybQ7EwcCIYB1gI6nTyYnlPBG6OOB/d9wvNlQ=
-github.com/infostellarinc/go-stellarstation v0.11.0/go.mod h1:++wmnJPPi8D/sdVeqST85CVqEbIquJ1DMOQJFrTqjTI=
+github.com/infostellarinc/go-stellarstation v0.4.4 h1:IS62ywRCNv5v18d+4B5C2/lPG5q49cqmlc0UZB+iEqk=
+github.com/infostellarinc/go-stellarstation v0.4.4/go.mod h1:ZUgU88DoZXjmZ2XrIyYfEWlnCV3sYWMkcsRUMvcwNUg=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/square/goprotowrap v0.0.0-20190116012208-bb93590db2db/go.mod h1:ss+tcSDAsyytwf1fIIsDTBbLS5uMvktdl8DvEZwELx4=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=

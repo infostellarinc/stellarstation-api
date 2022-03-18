@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/golang/protobuf v1.3.2
-	github.com/infostellarinc/go-stellarstation v0.11.0
+	github.com/infostellarinc/go-stellarstation v0.4.4
 	google.golang.org/grpc v1.24.0
 )
 
