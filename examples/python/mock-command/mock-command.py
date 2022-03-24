@@ -1,48 +1,74 @@
 # Copyright 2022 Infostellar, Inc.
-# This example opens stream for the provided satellite ID. It saves any received
-# telemetry (TLM) in ~100MB chunks. It also sends a fixed mock command (CMD)
+# This example opens stream for the provided satellite ID. It also sends a fixed mock command (CMD)
 # to the radio transmitter every time a TLM message is received.
 
+import argparse
 from datetime import datetime
 import time
 from google.auth import jwt as google_auth_jwt
 from google.auth.transport import grpc as google_auth_transport_grpc
 from stellarstation.api.v1 import stellarstation_pb2
 from stellarstation.api.v1 import stellarstation_pb2_grpc
-
 import grpc
-
 from queue import Queue
 
-SATELLITE_ID = '174' # Satellite ID from the StellarStation system
-CH_SET_ID = "S-mission (Calipso)"    # Channel Set name or ID from the StellarStation system
-API_KEY_PATH = './roger-testing-2021-06.json' # Put your API key obtained from StellarStation console.
-SSL_CA_CERT_PATH = "/etc/ssl/certs/ca-certificates.crt"
-TMI_CHUNK_SIZE = 100*1024**2 # 100MB TMI chunks
+def main():
 
-def run():
- 
+    #########    cli flags    #########
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i",
+                        "--id",
+                        help="Satellite ID from the StellarStation system",
+                        default="5")
+    parser.add_argument("-ch",
+                        "--channelset",
+                        help="Channel Set name or ID from the StellarStation system",
+                        default="test")
+    parser.add_argument("-k",
+                        "--key",
+                        help="API key file path",
+                        default="./api-key.json")
+    parser.add_argument("-e",
+                        "--endpoint",
+                        help="API endpoint",
+                        default='api.stellarstation.com:443')
+    parser.add_argument("-c",
+                        "--sslcert",
+                        help="SSL CA Certificate path",
+                        default='./tls.crt')
+    args = parser.parse_args()
+
+    SATELLITE_ID = args.id
+    CH_SET_ID = args.channelset
+    API_KEY_PATH = args.key
+    END_POINT = args.endpoint
+    SSL_CA_CERT_PATH = args.sslcert
+
+    MEGA_BYTE = 1024 ** 2
+
     #########    gRPC client connection    #########
     
     # Load the private key downloaded from the StellarStation Console:
     credentials = google_auth_jwt.Credentials.from_service_account_file(
         API_KEY_PATH,
         audience='https://api.stellarstation.com')
-    
+
     ca = open(SSL_CA_CERT_PATH, 'rb')
     creds = ca.read()
-    
+    ssl_credentials=grpc.ssl_channel_credentials(creds)
+
     # Setup the gRPC client:
     jwt_creds = google_auth_jwt.OnDemandCredentials.from_signing_credentials(credentials)
     # Increase grpc msg size allowance:
-    options = [('grpc.max_send_message_length', 512 * 1024 * 1024),
-               ('grpc.max_receive_message_length', 512 * 1024 * 1024)]
+    options = [('grpc.max_send_message_length', 512 * MEGA_BYTE),
+               ('grpc.max_receive_message_length', 512 * MEGA_BYTE)]
     
     channel = google_auth_transport_grpc.secure_authorized_channel(
             jwt_creds,
             None,
-            'api.stellarstation.com:443',
-            ssl_credentials=grpc.ssl_channel_credentials(creds),
+            END_POINT,
+            ssl_credentials,
             options = options)
     
     client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
@@ -53,7 +79,7 @@ def run():
     # Queues (for sending info to the iterator) and iterator creation:
     ack_queue = Queue()
     cmd_queue = Queue()
-    request_iterator = generate_request(ack_queue, cmd_queue)
+    request_iterator = generate_request(ack_queue, cmd_queue, SATELLITE_ID, CH_SET_ID)
     
     for response in client.OpenSatelliteStream(request_iterator): 
      
@@ -76,15 +102,15 @@ def run():
 
 
 # This generator yields the requests to send on the stream opened by OpenSatelliteStream.
-def generate_request(ack_queue, cmd_queue):
+def generate_request(ack_queue, cmd_queue, sat_id, chan_id):
 
     # Send the first request to activate the stream. Telemetry will start to be received at this point.
     # It is recommended to start this at least 2 minutes before the first telemetry packet is expected.
     print(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + " " +
-          "Opening stream, Satellite ID = ", SATELLITE_ID)
+          "Opening stream, Satellite ID = ", sat_id)
     
     yield stellarstation_pb2.SatelliteStreamRequest(
-            satellite_id = SATELLITE_ID,
+            satellite_id = sat_id,
             enable_events = True,
             enable_flow_control = True)
     
@@ -97,7 +123,7 @@ def generate_request(ack_queue, cmd_queue):
             ack = ack_queue.get()
             
             yield stellarstation_pb2.SatelliteStreamRequest(
-                    satellite_id = SATELLITE_ID,
+                    satellite_id = sat_id,
                     telemetry_received_ack = ack)
             
         # Looks for any CMD to be sent from the cmd_queue:         
@@ -106,17 +132,17 @@ def generate_request(ack_queue, cmd_queue):
             cmd = cmd_queue.get()
             command_request = stellarstation_pb2.SendSatelliteCommandsRequest(
                     command=cmd,
-                    channel_set_id=CH_SET_ID)
+                    channel_set_id=chan_id)
             
             satellite_stream_request = stellarstation_pb2.SatelliteStreamRequest(
-                satellite_id=SATELLITE_ID,
+                satellite_id=sat_id,
                 send_satellite_commands_request=command_request)
             
             print(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], " Sending CMD")
             yield satellite_stream_request
         
         yield stellarstation_pb2.SatelliteStreamRequest(
-                satellite_id = SATELLITE_ID)
+                satellite_id = sat_id)
 
 if __name__ == '__main__':
-    run()
+    main()
