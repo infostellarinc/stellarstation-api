@@ -1,0 +1,11 @@
+cachetools==4.2.2
+google-auth==1.30.0
+setuptools==57.0.0
+protobuf==3.17.0
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+rsa==4.7.2
+six==1.16.0
+wheel==0.37.1
+grpcio==1.44.0
+stellarstation==0.11.0
