@@ -21,22 +21,6 @@ $ cp ../../fakeserver/src/main/jib/var/keys/api-key.json ./
 $ go run . -E=localhost:8080
 ```
 
-## To run the tool with (FAKE-DEMO2-SAT2):
-You need to create your own API key for the test satellite’s organization:
-
-- Go to this [link](https://internal.stellarstation.com/console)
-- Impersonate the org you want the key for (FAKE-DEMO2-SAT2) ID 101 is a common one to use. It’s under the organization StellarStation Demo2
-- Go to Settings -> API -> Generate a new API key
-
-And place it in the same directory of this project and name it "api-key.json".
-if you want to name it any other name you will need to pass it as argument with -k flag.
-
-And then run the following command:
-
-```bash
-$ go run . -s=101
-```
-
 ## To build from source:
 ```bash
 $ go build
