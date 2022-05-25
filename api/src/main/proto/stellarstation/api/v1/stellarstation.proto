@@ -413,16 +413,8 @@ message ListUpcomingAvailablePassesResponse {
 
 // The priority level of a plan.
 enum Priority {
-  // Lowest priority level. Plans set at this level cannot override other plans
-  // and can be overridden by MEDIUM or HIGH priority plans.
   LOW = 0;
-
-  // Intermediate priority level. Plans set at this level can override LOW priority plans
-  // and can be overridden by HIGH priority plans.
   MEDIUM = 1;
-
-  // Highest priority level. Plans set at this level can override LOW and MEDIUM plans
-  // and cannot be overridden by other plans.
   HIGH = 2;
 }
 
