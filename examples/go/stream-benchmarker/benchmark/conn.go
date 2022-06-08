@@ -34,7 +34,12 @@ func Dial(apiKey string, apiURL string) (*grpc.ClientConn, error) {
 		return nil, err
 	}
 
-	tlsConfig := &tls.Config{}
+	tlsConfig := &tls.Config{
+		// we need InsecureSkipVerify only to stream from fake server
+		// please comment InsecureSkipVerify: true, with other servers
+		// disabling security checks is dangerous and should be avoided
+		// InsecureSkipVerify: true,
+	}
 
 	return grpc.Dial(
 		apiURL,

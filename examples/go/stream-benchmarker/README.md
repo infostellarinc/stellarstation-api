@@ -1,10 +1,29 @@
 # Streaming API Benchmarking Tool
 
-Requires Go version 1.13
+Requires Go version 1.17
 
-To build from source:
+## How to set up
+
+```sh
+go mod download
+go mod tidy
 ```
-go build
+
+## To run the tool with [fake server](../../fakeserver):
+- you need to copy this [API key](../../fakeserver/src/main/jib/var/keys/api-key.json) to the current directory.
+```bash
+$ cp ../../fakeserver/src/main/jib/var/keys/api-key.json ./
+```
+- uncomment ```InsecureSkipVerify: true,``` in benchmark/conn.go file inside ```tlsConfig := &tls.Config{}```
+- and then run the following command:
+
+```bash
+$ go run . -E=localhost:8080
+```
+
+## To build from source:
+```bash
+$ go build
 ```
 
 Usage:
@@ -19,7 +38,7 @@ Usage of ./benchmark:
   -i duration
     	Reporting interval.  (10s, 1m, etc.)  During a pass, an output line will be generated for each reporting interval. (default 10s)
   -k string
-    	StellarStation API Key file (default "stellarstation-private-key.json")
+    	StellarStation API Key file (default "api-key.json")
   -o string
     	Write report output to a file instead of standard out
   -s string

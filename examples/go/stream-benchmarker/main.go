@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	apiKey := "stellarstation-private-key.json"
+	apiKey := "api-key.json"
 	endpoint := "api.stellarstation.com:443"
 	satelliteID := "5"
 	interval := 10 * time.Second
@@ -95,7 +95,7 @@ func main() {
 			message := streamResponse.Telemetry
 			if len(message.Data) != 0 {
 				planID := streamResponse.PlanId
-				if passStarted == false {
+				if !passStarted {
 					if planID != "" {
 						log.Printf("Receiving messages for Plan ID %v", planID)
 						passStarted = true
