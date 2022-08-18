@@ -390,11 +390,14 @@ message ReceiveTelemetryResponse {
   // The ID of the plan the telemetry was received for.
   string plan_id = 2;
 
+  // The ID of the sattelite.
+  string satellite_id = 4;
+
   // The ID of the ground station.
-  string ground_station_id = 4;
+  string ground_station_id = 5;
 
   // The ID of the channel set.
-  string channel_set_id = 5;
+  string channel_set_id = 6;
 
   // The ID to be used to when creating a `ReceiveTelemetryAck.message_ack_id` response
   //
