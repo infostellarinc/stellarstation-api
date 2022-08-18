@@ -185,6 +185,22 @@ message SatelliteStreamRequest {
   //         incompatible ways in the future.
   string plan_id = 11;
 
+  // Optional. The ID of the ground station to open a stream with. `satellite_id` must also be set when
+  // specifying `ground_station_id`. Only messages for the provided `ground_station_id` from the provided
+  // `satellite_id` will be returned on this stream.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string ground_station_id = 12;
+
+  // Optional. The ID of the channel set to open a stream with. `satellite_id` must also be set when
+  // specifying `channel_set_id`. Only messages from the provided `satellite_id` with the provided
+  // `channel_set_id` will be returned on this stream.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  string channel_set_id = 13;
+
   // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
   // specified stream has already expired or been closed, the stream is closed with a `ABORTED`
   // error.
@@ -373,6 +389,12 @@ message ReceiveTelemetryResponse {
 
   // The ID of the plan the telemetry was received for.
   string plan_id = 2;
+
+  // The ID of the ground station.
+  string ground_station_id = 4;
+
+  // The ID of the channel set.
+  string channel_set_id = 5;
 
   // The ID to be used to when creating a `ReceiveTelemetryAck.message_ack_id` response
   //
