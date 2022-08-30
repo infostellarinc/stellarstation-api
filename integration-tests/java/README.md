@@ -47,7 +47,7 @@ In order to run these tests in your own copy of the source code, you need to upd
 on stellarstation-api from an internal reference to the external one.
 
 To do that, open `build.gradle` and replace `implementation project(':api')` in dependencies section with
-`implementation 'com.stellarstation.api:stellarstation-api:0.12.0'`.
+`implementation 'com.stellarstation.api:stellarstation-api:0.13.0'`.
 
 
 ### Set your API key
