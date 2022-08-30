@@ -193,13 +193,13 @@ message SatelliteStreamRequest {
   //         incompatible ways in the future.
   string ground_station_id = 12;
 
-  // Optional. The IDs of the channel sets to open a stream with. `satellite_id` must also be set when
-  // specifying `channel_set_ids`. Only messages from the provided `satellite_id` with one of the provided
-  // `channel_set_ids` will be returned on this stream.
+  // Optional. The ID of the channel set to open a stream with. `satellite_id` must also be set when
+  // specifying `channel_set_id`. Only messages from the provided `satellite_id` with the provided
+  // `channel_set_id` will be returned on this stream.
   //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
-  repeated string channel_set_ids = 13;
+  string channel_set_id = 13;
 
   // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
   // specified stream has already expired or been closed, the stream is closed with a `ABORTED`
