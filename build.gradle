@@ -27,7 +27,7 @@ plugins {
 conda {
     'miniconda-build' {
         packages.addAll('cmake==3.14.0', 'pandoc')
-        pythonPackages.addAll('conan==1.48.0', 'grpcio-tools==1.38.0', 'pdoc==7.1.1', 'twine==3.4.1')
+        pythonPackages.addAll('conan==1.52.0', 'grpcio-tools==1.38.0', 'pdoc==7.1.1', 'twine==3.4.1')
     }
 }
 
