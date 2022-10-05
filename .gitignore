@@ -243,4 +243,4 @@ venv.bak/
 benchmark/benchmark
 
 # StellarStation Example Materials
-# MY_CONFIG.py
+examples/python/**/MY_CONFIG.py
