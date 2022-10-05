@@ -242,3 +242,5 @@ venv.bak/
 #Benchmark tool binary
 benchmark/benchmark
 
+# StellarStation Example Materials
+# MY_CONFIG.py
