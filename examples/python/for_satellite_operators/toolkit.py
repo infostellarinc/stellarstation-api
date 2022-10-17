@@ -9,15 +9,6 @@ from google.auth.transport import grpc as google_auth_transport_grpc
 from stellarstation.api.v1 import stellarstation_pb2_grpc
 import grpc
 
-# The ID of your satellite as it exists in StellarStation
-SATELLITE_ID = '300'
-
-# The path to your API key obtained from StellarStation console
-API_KEY_PATH = '/media/sf_stellarstation_vm_shared/api_keys/proffitt-prod-sacatapult-key.json'
-
-# The path to your machine's SSL certificates
-SSL_CA_CERT_PATH = "/etc/ssl/certs/ca-certificates.crt"
-
 # As defined in stellarstation.proto > message 'Plan' > enum Status
 class PlanStatus(Enum):
     RESERVED = 0
