@@ -3,6 +3,9 @@
 # The ID of your satellite as it exists in StellarStation
 SATELLITE_ID = -1
 
+# The Channel Set ID as it exists in StellarStation
+CH_SET_ID = -1
+
 # The path to your API key obtained from StellarStation console
 API_KEY_PATH = ""
 
