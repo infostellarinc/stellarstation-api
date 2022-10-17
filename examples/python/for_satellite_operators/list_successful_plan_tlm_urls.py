@@ -34,7 +34,7 @@ def run():
     plans = get_plans(client)
 
     # Get plans that are COMLETED
-    completed_plans = [plan for plan in plans if toolkit.Status(plan.status).name == "SUCCEEDED"]
+    completed_plans = [plan for plan in plans if toolkit.PlanStatus(plan.status).name == "SUCCEEDED"]
 
     # Print the plans
     for i, plan in enumerate(completed_plans):

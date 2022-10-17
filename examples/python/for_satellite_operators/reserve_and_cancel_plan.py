@@ -80,7 +80,7 @@ def run():
     # Checking cancelation successful
     my_canceled_plan = next((plan for plan in get_plans(client)), None)
     assert my_canceled_plan
-    assert toolkit.Status(my_canceled_plan.status).name == "CANCELED"
+    assert toolkit.PlanStatus(my_canceled_plan.status).name == "CANCELED"
     print("Successfully canceled plan of ID ({})".format(scheduled_plan.id))
 
     print("Example finished. Exiting...")

@@ -19,13 +19,21 @@ API_KEY_PATH = '/media/sf_stellarstation_vm_shared/api_keys/proffitt-prod-sacata
 SSL_CA_CERT_PATH = "/etc/ssl/certs/ca-certificates.crt"
 
 # As defined in stellarstation.proto > message 'Plan' > enum Status
-class Status(Enum):
+class PlanStatus(Enum):
     RESERVED = 0
     EXECUTING = 1
     SUCCEEDED = 2
     FAILED = 3
     CANCELED = 4
     PROCESSING = 5
+
+# As defined in monitoring.proto > message 'PlanLifecycleEvent' > enum Status
+class PlanLifecycleEventStatus(Enum):
+    UNKNOWN = 0
+    PREPARING = 1
+    EXECUTING = 2
+    COMPLETED = 3
+    FAILED = 4
 
 def get_grpc_client(api_key_path, ssl_ca_certificate_path):
     jwt_credentials = google_auth_jwt.Credentials.from_service_account_file(

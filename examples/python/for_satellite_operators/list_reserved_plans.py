@@ -34,7 +34,7 @@ def run():
     plans = get_plans(client)
 
     # Get plans that are RESERVED
-    reserved_plans = [plan for plan in plans if toolkit.Status(plan.status).name == "RESERVED"]
+    reserved_plans = [plan for plan in plans if toolkit.PlanStatus(plan.status).name == "RESERVED"]
 
     if len(reserved_plans) == 0:
         print("No reserved plans found.")
@@ -46,7 +46,7 @@ def run():
 
         print("Plan ID: {}\nStatus: {}\nAoS (UTC): {}\nLoS (UTC): {}\nGround Station Lat: {}\nGround Station Lon: {}\n".format(
                 plan.id,
-                toolkit.Status(plan.status).name,
+                toolkit.PlanStatus(plan.status).name,
                 plan.aos_time.ToDatetime(),
                 plan.los_time.ToDatetime(),
                 plan.ground_station_latitude,
