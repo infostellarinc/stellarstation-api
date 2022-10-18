@@ -9,3 +9,4 @@ six==1.16.0
 wheel==0.37.1
 grpcio==1.37.1
 stellarstation==0.12.0
+console-menu==0.7.1
