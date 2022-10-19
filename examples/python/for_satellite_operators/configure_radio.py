@@ -5,7 +5,6 @@
 from time import sleep
 from queue import Queue
 import threading
-from urllib import request
 
 from google.protobuf.wrappers_pb2 import FloatValue, BoolValue
 
@@ -275,6 +274,8 @@ def run():
     main_menu.append_item(config_transmitter_submenu)
     main_menu.append_item(config_receiver_submenu)
     main_menu.show()
+
+    print("Shutting down CLI and stream...")
 
     request_queue.put(None)
     streamer_thread.join()
