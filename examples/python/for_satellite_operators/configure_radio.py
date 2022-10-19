@@ -189,28 +189,35 @@ class GsConfigRequest():
 
         return gs_config_request
 
-def generate_request(request_queue):
+def generate_request(request_queue, thread_sts_queue):
     while True:
         sleep(0.1)
 
         if not request_queue.empty():
             req = request_queue.get()
             if req == None:
+                thread_sts_queue.put("Received flag to shut down stream thread. Breaking from generate_request...")
                 break
             else:
+                # thread_sts_queue.put("Sent Request: {}".format(str(req)))
                 yield req
 
-def streaming_thread(request_queue):
+def run_streamer(request_queue, thread_sts_queue):
     # A client is necessary to receive services from StellarStation.
     client = toolkit.get_grpc_client(MY_CONFIG.API_KEY_PATH, MY_CONFIG.SSL_CA_CERT_PATH)
 
-    request_generator = generate_request(request_queue)
+    request_generator = generate_request(request_queue, thread_sts_queue)
 
-    for response in client.OpenSatelliteStream(request_generator):
-        pass
+    try:
+        for response in client.OpenSatelliteStream(request_generator):
+            # thread_sts_queue.put("Received response: {}".format(response))
+            pass
+    except:
+        thread_sts_queue.put("Shutting down streamer thread.")
 
 def run():
     request_queue = Queue()
+    thread_sts_queue = Queue()
 
     stream_config_request = stellarstation_pb2.SatelliteStreamRequest(
         satellite_id = str(MY_CONFIG.SATELLITE_ID),
@@ -218,7 +225,7 @@ def run():
         enable_flow_control = True)
     request_queue.put(stream_config_request)
 
-    streamer_thread = threading.Thread(target=generate_request, args=(request_queue,), daemon=True)
+    streamer_thread = threading.Thread(target=run_streamer, args=(request_queue, thread_sts_queue,), daemon=True)
     streamer_thread.start()
 
     main_menu = ConsoleMenu("Main Menu (Radio Configuration)", "This example code exhibits a CLI that allows the user to build and send transceiver configuration commands.")
@@ -271,6 +278,10 @@ def run():
 
     request_queue.put(None)
     streamer_thread.join()
+
+    # while not thread_sts_queue.empty():
+    #     sts = thread_sts_queue.get()
+    #     print(sts)
 
 if __name__ == '__main__':
     run()
