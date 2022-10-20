@@ -32,8 +32,8 @@ def get_grpc_client(api_key_path, ssl_ca_certificate_path):
         audience='https://api.stellarstation.com',
         token_lifetime=60)
     
-    ca = open(ssl_ca_certificate_path, 'rb')
-    ssl_channel_credentials = ca.read()
+    # ca = open(ssl_ca_certificate_path, 'rb')
+    # ssl_channel_credentials = ca.read()
     
     google_jwt_credentials = google_auth_jwt.OnDemandCredentials.from_signing_credentials(jwt_credentials)
 
@@ -45,7 +45,7 @@ def get_grpc_client(api_key_path, ssl_ca_certificate_path):
             google_jwt_credentials,
             None,
             'api.stellarstation.com:443',
-            ssl_credentials=grpc.ssl_channel_credentials(ssl_channel_credentials),
+            # ssl_credentials=grpc.ssl_channel_credentials(ssl_channel_credentials),
             options = options)
 
     client = stellarstation_pb2_grpc.StellarStationServiceStub(channel)
