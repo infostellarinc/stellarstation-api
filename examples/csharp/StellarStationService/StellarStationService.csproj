@@ -17,14 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="stellarstation/api/v1/antenna/antenna.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/common/common.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/monitoring/monitoring.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/orbit/orbit.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/radio/radio.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/stellarstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/transport.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
-    <Protobuf Include="stellarstation/api/v1/groundstation/groundstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/antenna/antenna.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/common/common.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/monitoring/monitoring.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/orbit/orbit.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/radio/radio.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/stellarstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/transport.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
+    <Protobuf Include="stellarstation/api/v1/groundstation/groundstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
