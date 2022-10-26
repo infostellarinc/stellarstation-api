@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.8" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.50.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="stellarstation/api/v1/antenna/antenna.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/common/common.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/monitoring/monitoring.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/orbit/orbit.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/radio/radio.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/stellarstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/transport.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+    <Protobuf Include="stellarstation/api/v1/groundstation/groundstation.proto" AdditionalImportDirs="../../../api/src/main/proto" GrpcServices="Server" />
+  </ItemGroup>
+
+</Project>

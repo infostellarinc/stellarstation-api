@@ -27,6 +27,10 @@ cmake-build-release/
 # Mongo Explorer plugin
 .idea
 
+# C# example build folders
+examples/csharp/StellarStationService/bin/
+examples/csharp/StellarStationService/obj/
+
 # File-based project format
 *.iml
 *.ipr
