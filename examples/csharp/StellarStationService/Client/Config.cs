@@ -5,8 +5,8 @@ namespace Stellarstation {
         public static Config FromFile(string filePath) {
             using (StreamReader r = new StreamReader(filePath)) {
                 string json = r.ReadToEnd();
-                var item = JsonConvert.DeserializeObject<Config>(json) ?? throw new ArgumentException("Error unmarshalling the config file");
-                if (item.apiAddress == null || item.apiKeyPath == null || item.groundStations == null || item.satellites == null) {
+                var item = JsonConvert.DeserializeObject<Config>(json);
+                if (item == null || item.apiAddress == null || item.apiKeyPath == null || item.groundStations == null || item.satellites == null) {
                     throw new ArgumentException("Error unmarshalling the config file");
                 }
 
