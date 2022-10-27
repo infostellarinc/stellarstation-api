@@ -8,7 +8,7 @@ namespace Stellarstation {
             cl = new Stellarstation.Api.V1.StellarStationService.StellarStationServiceClient(chan);
         }
 
-        public Stellarstation.Api.V1.ListUpcomingAvailablePassesResponse ListUpcomingAvailablePasses(string satId, DateTime startTime, DateTime stopTime) {
+        public Stellarstation.Api.V1.ListUpcomingAvailablePassesResponse ListUpcomingAvailablePasses(int satId, DateTime startTime, DateTime stopTime) {
             var start = new Google.Protobuf.WellKnownTypes.Timestamp{ 
                 Seconds = (long)(startTime.ToUniversalTime() - DateTime.MinValue).TotalSeconds 
             };
@@ -17,13 +17,13 @@ namespace Stellarstation {
             };
 
             var req = new Stellarstation.Api.V1.ListPlansRequest {
-                SatelliteId = satId,
+                SatelliteId = satId.ToString(),
                 AosAfter = start,
                 AosBefore = stop,
             };
 
             var req2 = new Stellarstation.Api.V1.ListUpcomingAvailablePassesRequest {
-                SatelliteId = satId,
+                SatelliteId = satId.ToString(),
 
             };
 
