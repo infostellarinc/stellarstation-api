@@ -4,7 +4,10 @@ using Google.Apis.Auth.OAuth2;
 
 namespace Stellarstation {
     public static class Auth {
-        public static GrpcChannel GenerateChannel(string apiAddress, string apiKeyPath) {
+        public static GrpcChannel GenerateChannel(string? apiAddress, string? apiKeyPath) {
+            if (apiAddress == null || apiKeyPath == null) {
+                throw new ArgumentException("apiAddress or apiKeyPath is null");
+            }
             using (var stream = new FileStream(apiKeyPath, FileMode.Open, FileAccess.Read)) {
                 var creds = ServiceAccountCredential.FromServiceAccountData(stream).ToChannelCredentials();
                 return GrpcChannel.ForAddress(apiAddress, new GrpcChannelOptions {
