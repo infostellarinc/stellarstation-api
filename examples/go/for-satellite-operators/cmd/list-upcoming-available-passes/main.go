@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/infostellarinc/stellarstation-api/examples/go/for-satellite-operators/sts"
@@ -33,5 +34,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(res)
+	out, err := json.MarshalIndent(res, "", " ")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(out))
 }
