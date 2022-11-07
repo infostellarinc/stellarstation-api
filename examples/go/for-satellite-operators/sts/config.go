@@ -7,10 +7,8 @@ import (
 )
 
 type Config struct {
-	ApiAddress     string          `json:"api_address"`
-	ApiKeyPath     string          `json:"api_key_path"`
-	Satellites     []Satellite     `json:"satellites"`
-	GroundStations []GroundStation `json:"ground_stations"`
+	ApiAddress string `json:"api_address"`
+	ApiKeyPath string `json:"api_key_path"`
 }
 
 type Satellite struct {
