@@ -11,30 +11,12 @@
 ```
 {
     "api_address": "api.stellarstation.com:443",
-    "api_key_path": "./api-key.json",
-    "ground_stations": [
-        {
-            "id": 45
-        },
-        {
-            "id": 46
-        }
-    ],
-    "satellites": [
-        {
-            "id": 297
-        },
-        {
-            "id": 140
-        }
-    ]
+    "api_key_path": "./api-key.json"
 }
 ```
 
 - `api_address`: should always be `"api.stellarstation.com:443"`
 - `api_key_path`: path to the API key you generated through `https://www.stellarstation.com/console`.
-- `ground_stations`: List of the ground stations your organisation is managing.
-- `satellites`: List of the satellites your organisation is managing.
 
 ## Available commands
 
