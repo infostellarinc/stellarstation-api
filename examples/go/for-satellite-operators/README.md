@@ -38,6 +38,6 @@
 
 ## Available commands
 
-- List available upcoming passes for a given satellite (replace `123` by your satellite ID):
+- List available upcoming passes in JSON format for a given satellite (replace `123` by your satellite ID):
 
 > go run .\cmd\list-upcoming-available-passes\main.go -c .\config.json -id 123
