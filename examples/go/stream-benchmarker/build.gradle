@@ -1,7 +1,0 @@
-apply plugin: 'org.curioswitch.gradle-golang-plugin'
-
-golang {
-    executableName = 'stream-benchmarker'
-    goOses = ['linux', 'darwin', 'windows']
-    goArchs = ['amd64']
-}
