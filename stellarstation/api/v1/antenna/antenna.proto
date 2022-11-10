@@ -1,0 +1,58 @@
+// Copyright 2020 Infostellar, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package stellarstation.api.v1.antenna;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/antenna";
+
+option java_multiple_files = true;
+option java_outer_classname = "AntennaProto";
+option java_package = "com.stellarstation.api.v1.antenna";
+
+// Messages for modeling physical antenna configuration in the API.
+
+// The static configuration of an antenna. These are the physical parameters of the antenna.
+message AntennaConfiguration {
+
+  // The latitude of the antenna, in degrees.
+  double latitude = 1;
+
+  // The longitude of the antenna, in degrees.
+  double longitude = 2;
+
+  // The altitude of the antenna above mean sea level, in meters.
+  double altitude_meters = 3;
+
+  // The beamwidth, in degrees.
+  // https://en.wikipedia.org/wiki/Beamwidth
+  double beamwidth_degrees = 4;
+}
+
+// The polarization of an antenna.
+// https://en.wikipedia.org/wiki/Antenna_(radio)#Polarization
+enum AntennaPolarization {
+  // Horizontal polarization.
+  HORIZONTAL = 0;
+
+  // Vertical polarization.
+  VERTICAL = 1;
+
+  // Left-handed circular polarization.
+  LHCP = 2;
+
+  // Right-handed circular polarization.
+  RHCP = 3;
+}

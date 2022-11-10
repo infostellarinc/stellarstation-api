@@ -1,0 +1,137 @@
+// Copyright 2020 Infostellar, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/monitoring/monitoring.proto";
+
+package stellarstation.api.v1;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1";
+
+option java_multiple_files = true;
+option java_outer_classname = "TransportProto";
+option java_package = "com.stellarstation.api.v1";
+
+// This file contains messages that are transported to and from a satellite via a ground station and
+// an API client. A satellite stream is conceptually a symmetric stream of payloads, with the ground
+// station sending telemetry and receiving commands, and the API client sending commands and
+// receiving telemetry - the actual payloads are the same on each side but reversed.
+
+// A type of framing of a binary payload used in satellite communication.
+enum Framing {
+  // No framing done in the API. All payloads are assumed to be pre-framed and ready for
+  // transmission to the satellite or API client with no additional processing.
+  BITSTREAM = 0;
+
+  // AX.25 (Amateur X.25) framing - https://en.wikipedia.org/wiki/AX.25
+  AX25 = 1;
+
+  // No framing or demodulation done in the API. Raw IQ data is sent to the API client with no
+  // additional processing.
+  IQ = 2;
+
+  // A decoded PNG image frame.
+  IMAGE_PNG = 3;
+
+  // A decoded JPEG image.
+  IMAGE_JPEG = 4;
+
+  // Completely arbitrary, freeform text contained in a frame.
+  FREE_TEXT_UTF8 = 5;
+
+  // A waterfall diagram. This is actually for the whole plan and does not correspond to an
+  // individual frame.
+  WATERFALL = 6;
+}
+
+// A chunk or frame of telemetry data that has been received from a satellite.
+message Telemetry {
+  // The framing of this telemetry data.
+  Framing framing = 1;
+
+  // The payload of this telemetry.
+  bytes data = 2;
+
+  // The actual downlink frequency, in Hz, used when receiving `data`, including adjustments for
+  // doppler shift.
+  uint64 downlink_frequency_hz = 3;
+
+  // Timestamp when the first byte of `data` was received.
+  google.protobuf.Timestamp time_first_byte_received = 4;
+
+  // Timestamp when the last byte of `data` was received.
+  google.protobuf.Timestamp time_last_byte_received = 5;
+
+  // The binary header of the telemetry frame available for certain framing types.
+  //
+  // * AX25      - This is either Address + Control, or Address + Control + PID. The checksum is not
+  //               returned.
+  // * BITSTREAM - Streams for certain protocols such as CCSDS may contain frame headers according
+  //               to the applicable standards.
+  bytes frame_header = 6;
+}
+
+// An event that occurred while processing the stream. A `StreamEvent` will have one of several
+// types of event payloads corresponding to event types. Many of these payloads will be empty,
+// depending on the context of an event, but are still returned as messages to allow future
+// extension.
+message StreamEvent {
+  // The ID of the request this event corresponds to, copied from
+  // `SatelliteStreamRequest.request_id` when present. If the event doesn't correspond to a request,
+  // this is always empty.
+  string request_id = 1;
+
+  // An event indicating the commands in the request were sent by the ground station through its
+  // radio.
+  message CommandSentFromGroundStation {
+    // Empty, may be extended in the future.
+  }
+
+  // A stream event payload.
+  oneof Event {
+    // An event indicating the commands in the request were sent by the ground station through its
+    // radio.
+    CommandSentFromGroundStation command_sent = 2;
+
+    // An event with monitoring information for a particular executed plan.
+    PlanMonitoringEvent plan_monitoring_event = 3;
+  }
+}
+
+// A monitoring event that occurred during the execution of the plan. Information about the current
+// configuration of the ground station and state of components is returned to provide information
+// that can help to troubleshoot issues with the plan.
+message PlanMonitoringEvent {
+  // The ID of the plan being monitored.
+  string plan_id = 1;
+
+  oneof Info {
+    // Information about the current configuration of the ground station when beginning to execute
+    // a plan. This will only be returned once at the beginning of execution. Information that is
+    // provided by the ground station executing the plan will be returned - any fields that are not
+    // supported by the ground station will be left unfilled.
+    monitoring.GroundStationConfiguration ground_station_configuration = 2;
+
+    // Information about the current state of the ground station while executing a plan. This will
+    // be returned periodically during execution of the plan. Information that is provided by the
+    // ground station executing the plan will be returned - any fields that are not supported by
+    // the ground station will be left unfilled.
+    monitoring.GroundStationState ground_station_state = 3;
+
+    // Information about events generated by the ground station while executing a plan.
+    monitoring.GroundStationEvent ground_station_event = 4;
+  }
+}

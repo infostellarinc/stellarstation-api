@@ -1,0 +1,340 @@
+// Copyright 2020 Infostellar, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "stellarstation/api/v1/antenna/antenna.proto";
+import "stellarstation/api/v1/common/common.proto";
+import "stellarstation/api/v1/orbit/orbit.proto";
+import "stellarstation/api/v1/radio/radio.proto";
+
+package stellarstation.api.v1.monitoring;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/monitoring";
+
+option java_multiple_files = true;
+option java_outer_classname = "MonitoringProto";
+option java_package = "com.stellarstation.api.v1.monitoring";
+
+// Messages for reporting information about a ground station for monitoring and debugging.
+
+// The current configuration of a transmitter.
+//
+// A transmitter takes a bitstream and applies signal processing to create the final waveform sent
+// to a satellite.
+message TransmitterConfiguration {
+  // The modulation type of the transmitter.
+  radio.Modulation modulation = 1;
+
+  // Whether the carrier is enabled.
+  bool is_carrier_enabled = 2;
+
+  // The bitrate of the transmitter.
+  uint64 bitrate = 3;
+
+  // The line coding of the transmitter.
+  radio.LineCoding line_coding = 4;
+
+  // The bandwidth of the filter.
+  uint64 filter_bandwidth_hz = 5;
+
+  // The sampling frequency.
+  uint64 sampling_frequency_hz = 6;
+}
+
+// The current configuration of a receiver.
+//
+// A receiver takes a waveform from a satellite and applies signal processing to produce a
+// bitstream.
+message ReceiverConfiguration {
+  // The modulation type of the receiver.
+  radio.Modulation modulation = 1;
+
+  // The bandwidth, in Hz.
+  uint64 bandwidth_hz = 2;
+
+  // The sampling frequency.
+  uint64 sampling_frequency_hz = 3;
+
+  // The bitrate of the receiver.
+  uint64 bitrate = 4;
+
+  // The line coding of the receiver.
+  radio.LineCoding line_coding = 5;
+
+  // The frame synchronization word being used. Unset if frame synchronization is disabled.
+  common.Bits synchronization_word = 6;
+
+  // Whether convolutional code descrambling is enabled.
+  bool is_convolutional_code_descrambling = 7;
+
+  // Whether convolutional code decoding is enabled.
+  bool is_convolutional_code_decoding = 8;
+
+  // Whether convolutional codes are inverted.
+  // No meaning if `is_convolutional_code_decoding` is not enabled.
+  bool is_convolutional_code_inverted = 9;
+
+  // Whether reed solomon coding is being used.
+  bool is_reed_solomon_enabled = 10;
+
+  // The size of a frame, in bits.
+  uint32 frame_size = 11;
+
+  // Whether frame checking is enabled.
+  bool is_frame_checking_enabled = 12;
+}
+
+// The configuration of the currently executing plan.
+message PlanConfiguration {
+  // The TLE for the satellite in this plan.
+  orbit.Tle tle = 1;
+}
+
+// The current configuration of a ground station. This is controlled by the parameters of a pass,
+// based on the configuration of the satellite it will communicate with. When debugging issues with
+// a pass, it is good to first confirm that the actual reported configuration matches the expected
+// settings.
+//
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
+message GroundStationConfiguration {
+
+  // The current configuration of the transmitter in use by the ground station. This configuration
+  // should match the parameters of the executing plan. When debugging issues with data
+  // transmission (e.g., no response from satellite), it can be useful to confirm these values match
+  // the expected configuration of the transmitter.
+  TransmitterConfiguration transmitter = 1;
+
+  // The current configuration of the receiver in use by the ground station. This configuration
+  // should match the parameters of the executing plan. When debugging issues with data
+  // reception (e.g., can't decode signal), it can be useful to confirm these values match
+  // the expected configuration of the receiver.
+  ReceiverConfiguration receiver = 2;
+
+  // The current configuration of the antenna used by the ground station. These are the physical
+  // parameters of an antenna and in practice should never change, even across passes. But natural
+  // events such as earthquakes can cause small changes in these values. When debugging issues with
+  // tracking a satellite (e.g., getting no signal at all), it can be useful to confirm these values
+  // match the expected configuration of the antenna.
+  antenna.AntennaConfiguration antenna = 3;
+
+  // The current configuration of the plan being executed by the ground station.
+  PlanConfiguration plan = 4;
+}
+
+// The current state of the ground station's transmitter during the operation of a pass.
+// Next ID: 8
+message TransmitterState {
+  // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
+  uint64 center_frequency_hz = 1;
+
+  // The current level of the carrier signal, in dBm (decibal-milliwatts).
+  double carrier_level_dbm = 2;
+
+  // Whether modulation is enabled.
+  google.protobuf.BoolValue is_modulation_enabled = 3;
+
+  // Whether the carrier is enabled.
+  google.protobuf.BoolValue is_carrier_enabled = 4;
+
+  // Whether IF sweeping is enabled.
+  google.protobuf.BoolValue is_if_sweep_enabled = 5;
+
+  // Whether transmitting idle pattern is enabled.
+  google.protobuf.BoolValue is_idle_pattern_enabled = 6;
+
+  // The current bitrate of the transmitter
+  google.protobuf.FloatValue bitrate = 7;
+}
+
+// A current status of convolutional coding.
+enum ConvolutionalCodingStatus {
+  // Not locked on.
+  UNLOCKED = 0;
+
+  // Locked onto the in-phase signal.
+  I_LOCKED = 1;
+
+  // Locked onto the quadrature signal.
+  Q_LOCKED = 2;
+
+  // Locked onto both in-phase and quadrature signal.
+  LOCKED = 3;
+}
+
+// The status of Reed-Solomon coding.
+// Next ID: 5
+message ReedSolomonStatus {
+  enum Status {
+    // Indicates Reed-Solomon coding is functioning.
+    OK = 0;
+
+    // Indicates Reed-Solomon coding encountered an interleave error.
+    INTERLEAVE_ERROR = 1;
+
+    // Indicates Reed-Solomon coding exceeded its correction capacity.
+    CORRECTION_CAPACITY_EXCEEDED = 2;
+  }
+  // Current status of Reed-Solomon coding.
+  Status status = 1;
+
+  // The number of Reed-Solomon corrected signals. Only set is `status` == `OK`.
+  uint32 num_corrected_signals = 2;
+
+  // Number of good transfer frames.
+  google.protobuf.Int64Value num_good_frames = 3;
+
+  // Number of bad transfer frames
+  google.protobuf.Int64Value num_bad_frames = 4;
+}
+
+// The current state of the ground station's receiver during the operation of a pass.
+// Next ID: 12
+message ReceiverState {
+  // The current center frequency of the receiver, taking into account e.g., Doppler correction.
+  uint64 center_frequency_hz = 1;
+
+  // The current level of the carrier signal, in dBm (decibal-milliwatts).
+  double carrier_level_dbm = 2;
+
+  // Whether the receiver is phase-locked onto a signal.
+  bool is_phase_locked = 3;
+
+  // Whether the bit synchronizer is locked onto a signal.
+  bool is_bit_synchronizer_locked = 4;
+
+  // The signal-to-noise ratio per bit, e.g., Eb/N0.
+  // https://en.wikipedia.org/wiki/Eb/N0
+  double normalized_snr = 5;
+
+  // Whether the frame synchronizer is locked onto a signal.
+  bool is_frame_synchronizer_locked = 6;
+
+  // The current status of convolutional coding.
+  ConvolutionalCodingStatus convolutional_coding_status = 7;
+
+  // The bit error rate of convolutional coding.
+  double convolutional_coding_bit_error_rate = 8;
+
+  // The status of Reed-Solomon coding.
+  ReedSolomonStatus reed_solomon_status = 9;
+
+  // The current bitrate of the receiver
+  google.protobuf.FloatValue bitrate = 10;
+
+  // Offset from the expected carrier frequency.
+  google.protobuf.FloatValue carrier_offset = 11;
+}
+
+// The current state of the ground station's antenna during the operation of a pass.
+// Next ID: 4
+message AntennaState {
+
+  // The state of an antenna angle.
+  message Angle {
+    // The angle that was specified for the antenna. When the antenna is functioning properly,
+    // there should be nearly no difference between this and `measured`.
+    double command = 1;
+
+    // The actual angle physically measured from the antenna. When the antenna is functioning
+    // properly, there should be nearly no difference between this and `command`.
+    double measured = 2;
+  }
+
+  // The current state of the antenna's azimuth (horizontal angle).
+  Angle azimuth = 1;
+
+  // The current state of the antenna's elevation (vertical angle).
+  Angle elevation = 2;
+
+  // The current polarization of the antenna.
+  antenna.AntennaPolarization polarization = 3;
+}
+
+// The current state of a ground station during the operation of a pass.
+//
+// State that can be monitored will vary by the specifications of the ground station that executes
+// the pass. Any information that cannot be monitored for the current ground station will not be
+// filled.
+message GroundStationState {
+
+  // The current state of the transmitter in use during a pass. When debugging issues with data
+  // transmission (e.g., no response from a satellite), it can be good to verify the metrics for
+  // the transmitter are within expected or acceptable values.
+  TransmitterState transmitter = 1;
+
+  // The current state of the receiver in use during a pass. When debugging issues with data
+  // reception (e.g., can't decode signal), it can be good to verify the metrics for the receiver
+  // are within expected or acceptable values.
+  ReceiverState receiver = 2;
+
+  // The current state of the antenna being used for the pass. When debugging issues with tracking
+  // a satellite (e.g., getting no signal at all), it can be useful to ensure the physically
+  // measured values are within expected or acceptable values.
+  AntennaState antenna = 3;
+}
+
+// An event that describes the status of the plan being executed by the ground station.
+message PlanLifecycleEvent {
+  // A description of the plan status.
+  enum Status {
+    UNKNOWN = 0;
+
+    // Plan preparation has started. This status is sent when the ground station starts preparing
+    // for plan execution.
+    PREPARING = 1;
+
+    // Plan execution has started. This status is sent when passing the AOS time of the plan.
+    EXECUTING = 2;
+
+    // Plan execution is complete. This status is sent when the ground station has finished
+    // executing the plan and uploading all data.
+    COMPLETED = 3;
+
+    // Plan execution failed. This status is sent when the plan cannot be completed for some
+    // reason.
+    FAILED = 4;
+  }
+
+  // The status of the plan.
+  Status status = 1;
+
+  // If a plan fails, this message describes the cause of the failure.
+  message FailureDetails {
+    // A description of the cause of the failure.
+    enum Cause {
+      UNKNOWN = 0;
+    }
+
+    // The cause of the failure.
+    Cause cause = 1;
+  }
+
+  oneof Details {
+    // The details about the cause of a failure if status is FAILED.
+    FailureDetails failure = 2;
+  }
+}
+
+// Events generated by a ground station during the operation of a pass.
+//
+// Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+//         incompatible ways in the future.
+message GroundStationEvent {
+
+  // An event related to the plan being executed.
+  PlanLifecycleEvent plan = 4;
+}

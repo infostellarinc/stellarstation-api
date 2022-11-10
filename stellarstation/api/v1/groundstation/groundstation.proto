@@ -1,0 +1,387 @@
+// Copyright 2020 Infostellar, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "stellarstation/api/v1/common/common.proto";
+import "stellarstation/api/v1/radio/radio.proto";
+import "stellarstation/api/v1/stellarstation.proto";
+import "stellarstation/api/v1/transport.proto";
+
+package stellarstation.api.v1.groundstation;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/groundstation";
+
+option java_multiple_files = true;
+option java_outer_classname = "GroundStationProto";
+option java_package = "com.stellarstation.api.v1.groundstation";
+
+// The public API of StellarStation for use by ground station operators integrating with the
+// StellarStation ground network. It is invalid to specify ground station IDs that the operator
+// does not own. Only using IDs shown on the StellarStation Console or returned in API responses
+// will ensure all inputs are valid.
+//
+// A pass is a time range where an ground station and satellite can communicate with each other, i.e.,
+// the period between Acquisition of Signal (AOS) and Loss of Signal (LOS) of the ground station and
+// satellite pair.
+//
+// A plan is a scheduled pass that will be executed to send and receive data between the ground
+// station and satellite during the time range.
+service GroundStationService {
+  // Adds a new unavailability window to the requested ground station.
+  //
+  // Existing plans that overlap the unavailability window will not be canceled and the request will
+  // be closed with a 'FAILED_PRECONDITION' status. In this case you will need to list any existing
+  // plans with ListPlans and then cancel the plans with CancelPlan.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+  // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
+  rpc AddUnavailabilityWindow (AddUnavailabilityWindowRequest) returns (AddUnavailabilityWindowResponse);
+
+  // Cancel a previously reserved upcoming plan. Cancelling the plan will cause it to not be
+  // executed. This action cannot be undone, but it is still possible for the pass to be reserved
+  // again. The plan cannot be cancelled less than ten minutes before AOS.
+  //
+  // Canceling a plan may incur a charge based on the time left to AOS. See our cancellation policy
+  // for details.
+  //
+  // If the plan is not found, the request will return a `NOT_FOUND` error.
+  //
+  // If the plan has already been canceled or is less than ten minutes away from its AOS, the
+  // request will return a `FAILED_PRECONDITION` error.
+  //
+  // If the plan is ongoing or has already finished executing, the request will return a
+  // `OUT_OF_RANGE` error.
+  rpc CancelPlan (CancelPlanRequest) returns (CancelPlanResponse);
+
+  // Deletes an existing unavailability window of the requested ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `window_id` is missing
+  // or invalid.
+  rpc DeleteUnavailabilityWindow (DeleteUnavailabilityWindowRequest) returns (DeleteUnavailabilityWindowResponse);
+
+  // Lists the plans for a particular ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+  // `aos_after`, or `aos_before` are missing, or the duration between the two times is longer than
+  // 31 days.
+  rpc ListPlans (ListPlansRequest) returns (ListPlansResponse);
+
+  // Returns a list of unavailability windows for the requested ground station.
+  //
+  // The request will be closed with an `INVALID_ARGUMENT` status if `ground_station_id`,
+  // `start_time`, or `end_time` are missing, or 'end_time' is not after 'start_time'.
+  rpc ListUnavailabilityWindows (ListUnavailabilityWindowsRequest) returns (ListUnavailabilityWindowsResponse);
+
+  // Open a stream from a ground station. The returned stream is bi-directional - it is used by
+  // the ground station to send telemetry received from a satellite and receive commands to send to
+  // the satellite. The ground station must keep this stream open while it is connected to the
+  // StellarStation network for use in executing plans - if the stream is cut, it must be
+  // reconnected with exponential backoff.
+  //
+  // The first `GroundStationStreamRequest` sent on the stream is used for configuring the stream.
+  // Unless otherwise specified, all configuration is taken from the first request and configuration
+  // values in subsequent requests will be ignored.
+  //
+  // There is no restriction on the number of active streams from a ground station (i.e., streams
+  // opened with the same `ground_station_id`). Most ground stations will issue a single stream to
+  // receive commands and send telemetry, but in certain cases, such as if uplink and downlink are
+  // handled by different computers, it can be appropriate to have multiple processes with their
+  // own stream. If opening multiple streams for a single ground station, it is the client's
+  // responsibility to handle the streams appropriately, for example by ensuring only one stream
+  // sends commands so they are not duplicated.
+  //
+  // If the ground station is not found or the API client is not authorized for it, the stream will
+  // be closed with a `NOT_FOUND` error.
+  //
+  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
+  //         incompatible ways in the future.
+  rpc OpenGroundStationStream (stream GroundStationStreamRequest) returns (stream GroundStationStreamResponse);
+}
+
+//----------------------------------------------------------------------------------------------
+// Scheduling APIs.
+//----------------------------------------------------------------------------------------------
+
+// Request for the `CancelPlan` method.
+message CancelPlanRequest {
+    // The id of the plan to cancel, i.e., the value of `Plan.id`.
+    string plan_id = 1;
+}
+
+// Response for the `CancelPlan` method.
+message CancelPlanResponse {
+    // Currently no payload in the response.
+}
+
+// Request for the `ListPlans` method.
+message ListPlansRequest {
+  // The ID of the ground station to list plans for. The ID can be found on the StellarStation
+  // Console page for the ground station.
+  string ground_station_id = 1;
+
+  // The start time of the range of plans to list (inclusive). Only plans with an Acquisition of
+  // Signal (AOS) at or after this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_after = 2;
+
+  // The end time of the range of plans to list (exclusive). Only plans with an Acquisition of
+  // Signal (AOS) before this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_before = 3;
+}
+
+// A response from the `ListPlans` method.
+message ListPlansResponse {
+  // The requested list of plans for the ground station.
+  repeated Plan plan = 1;
+}
+
+// A scheduled pass. The plan will be executed on its ground station to communicate with its satellite
+// during a time range between AOS and LOS, unless explicitly cancelled.
+//
+// Next ID: 16
+message Plan {
+  // The ID of this plan.
+  string plan_id = 1;
+
+  // The TLE for the satellite in this plan.
+  Tle tle = 2;
+
+  // The start of the time window reserved for the plan.
+  //
+  // This timestamp does not change over time, and is set to allow sufficient time at the start
+  // of a plan to allow the ground station to prepare for plan execution.
+  google.protobuf.Timestamp start_time = 7;
+
+  // The end of the time window reserved for the plan.
+  //
+  // This timestamp does not change over time, and is set to allow sufficient time at the end
+  // of a plan to allow the ground station to perform cleanup tasks after executing the plan.
+  google.protobuf.Timestamp end_time = 8;
+
+  // The time of AOS between the ground station and satellite in this plan.
+  //
+  // This timestamp will never be before 'start_time'. If may change over time (for example, if
+  // updated TLE becomes available).
+  google.protobuf.Timestamp aos_time = 3;
+
+  // The time of LOS between the ground station and satellite in this plan.
+  //
+  // This timestamp will never be after 'end_time'. If may change over time (for example, if
+  // updated TLE becomes available).
+  google.protobuf.Timestamp los_time = 4;
+
+  // Configuration of the radio device used for downlinking from the satellite. Ground stations will
+  // need to configure reception during the plan to match this device.
+  //
+  // Deprecated. Use channel_set.downlink.
+  radio.RadioDeviceConfiguration downlink_radio_device = 5;
+
+  // Configuration of the radio device used for uplinking to the satellite. Ground stations will
+  // need to configure transmission during the plan to match this device.
+  //
+  // Deprecated. Use channel_set.uplink.
+  radio.RadioDeviceConfiguration uplink_radio_device = 6;
+
+  // Predicted coordinates of the tracked satellite for every second between AOS and LOS. This
+  // information is intended for calculating device states such as rotator angles and radio
+  // frequencies.
+  //
+  // This field is only populated for future plans.
+  repeated SatelliteCoordinates satellite_coordinates = 9;
+
+  // The organization name of the satellite to be tracked in the plan.
+  string satellite_organization_name = 10;
+
+  // The organization name of the ground station.
+  string ground_station_organization_name = 11;
+
+  // The ID of the ground station.
+  string ground_station_id = 13;
+
+  // The price per minute (USD) for this plan set by the ground station owner at the time of reservation.
+  double unit_price = 12;
+
+  // The id of the satellite to be tracked in the plan.
+  string satellite_id = 14;
+
+  // The channel set used to reserve this plan.
+  ChannelSet channel_set = 15;
+}
+
+// Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
+message Tle {
+  // The first line of the TLE. Not a title line.
+  string line_1 = 1;
+
+  // The second line of the TLE.
+  string line_2 = 2;
+}
+
+// Coordinates of a satellite observed from a ground station tracking it.
+message SatelliteCoordinates {
+  // The time which the coordinates are for.
+  google.protobuf.Timestamp time = 1;
+
+  // The angle of the satellite.
+  stellarstation.api.v1.common.Angle angle = 2;
+
+  // The range rate (change rate of distance) of the satellite. You can use this value to calculate
+  // Doppler shifted communication frequencies using the following formulae.
+  //   uplink:
+  //     shifted_freq = original_freq * (1.0 + range_rate / speed_of_light)
+  //   downlink:
+  //     shifted_freq = original_freq * (1.0 - range_rate / speed_of_light)
+  //   where speed_of_light is 299792458.0 m/s.
+  double range_rate = 3;
+}
+
+// A time window during which a ground station is unavailable e.g. for local maintenance.
+message UnavailabilityWindow {
+  // The ID of the unavailability window.
+  string window_id = 1;
+
+  // Start time of the unavailabilty window.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time of the unavailability window.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// A request for a list of unavailability windows for the specified ground station that
+// fall within the given time range.
+message ListUnavailabilityWindowsRequest {
+  // ID of the ground station for which to retrieve unavailability windows.
+  string ground_station_id = 1;
+
+  // Start time.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// A response containing unavailability windows for the requested ground station.
+message ListUnavailabilityWindowsResponse {
+  // A list of unavailability windows, sorted in ascending order of the start time.
+  repeated UnavailabilityWindow window = 1;
+}
+
+// A request for adding a new unavailability window for the specified ground station.
+message AddUnavailabilityWindowRequest {
+  // ID of the ground station to add a new unavailability window.
+  string ground_station_id = 1;
+
+  // Start time of the unavailabilty window.
+  google.protobuf.Timestamp start_time = 2;
+
+  // End time of the unavailability window.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// A response from the 'AddUnavailabilityWindow' method.
+message AddUnavailabilityWindowResponse {
+  // ID of the new window.
+  string window_id = 1;
+}
+
+// A request for deleting an existing unavailability window for the specified ground station.
+message DeleteUnavailabilityWindowRequest {
+  // ID of the unavailability window to delete.
+  string window_id = 1;
+}
+
+// A response to the request for deleting an existing unavailability window.
+message DeleteUnavailabilityWindowResponse {
+  // Currently no payload in the response.
+}
+
+// A request for the `OpenGroundStationStream` method.
+message GroundStationStreamRequest {
+  // The ID of the ground station that is opening a stream. The ID of a ground station can be found
+  // on the StellarStation Console page for the ground station.
+  string ground_station_id = 1;
+
+  // A tag to identify this stream. This tag is not used semantically and is only for logging,
+  // monitoring, and debugging. This does not need to be set if there will only ever be one stream
+  // for a particular `ground_station_id` open at a time. If multiple streams will be open, this
+  // should be set to identify the stream. Some examples include 'uplink', 'downlink', 'uhf',
+  // 's-band'.
+  string stream_tag = 2;
+
+  // A payload to send on the ground station stream. The payload does not need to be filled on the
+  // first request to `OpenGroundStationStream`.
+  oneof Request {
+    SatelliteTelemetry satellite_telemetry = 3;
+
+    // An event that occurred while processing the stream. Satellite operators will often use these
+    // events for debugging and monitoring.
+    //
+    // - `command_sent` must be returned right after completing transmission of
+    //    commands received in a `SendSatelliteCommandsResponse`.
+    // - `plan_monitoring_event.ground_station_configuration` must be returned once at the beginning
+    //   of the execution of a plan and contains information about the actual configuration of the
+    //   ground station at the time.
+    // - `plan_monitoring_event.ground_station_state` must be sent regularly throughout the
+    //   plan and contains real-time monitoring of the hardware of the ground station.
+    // - `plan_monitoring_event.ground_station_event` must be sent once at each of the transitions
+    //   documented in `PlanLifecycleEvent` when executing a plan.
+    StreamEvent stream_event = 4;
+  }
+}
+
+// Telemetry received from a satellite to send to a satellite operator.
+message SatelliteTelemetry {
+  // The ID of the plan the telemetry is being sent for.
+  string plan_id = 1;
+
+  // The telemetry being sent.
+  Telemetry telemetry = 2;
+}
+
+// A response for the `OpenGroundStationStream` method. The ground station must process a response
+// immediately when received on the stream.
+message GroundStationStreamResponse {
+  // The ID of the plan this response corresponds to. Unfilled if this response does not correspond
+  // to a plan.
+  string plan_id = 1;
+
+  // A unique ID identifying this response. If filled, any `StreamEvent` generated when handling
+  // this GroundStationStreamResponse` must have this value copied into
+  // `StreamEvent.request_id`. Currently, this includes
+  //
+  // - Returning `CommandSentFromGroundStation` after completing transmission of the commands in a
+  //   `SendSatelliteCommandsResponse`.
+  string response_id = 2;
+
+  // A payload sent on the stream to be processed by the ground station. Currently only commands to
+  // send to a satellite will be returned to the ground station.
+  oneof Response {
+    // Commands to send to the satellite.
+    SatelliteCommands satellite_commands = 3;
+
+    // Request to configure ground station devices.
+    stellarstation.api.v1.GroundStationConfigurationRequest ground_station_configuration_request = 4;
+  }
+}
+
+// Command to transmit to the satellite.
+message SatelliteCommands {
+  // The command frames to send to the satellite. All commands must be transmitted in sequence
+  // immediately. After all commands have been transmitted, telemetry receive must be immediately
+  // enabled again.
+  repeated bytes command = 1;
+}
