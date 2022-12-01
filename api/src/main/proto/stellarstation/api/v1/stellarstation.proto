@@ -500,7 +500,7 @@ message ChannelSet {
 
 // A pass during which a satellite can be communicated with from a given ground station.
 //
-// Next ID: 16
+// Next ID: 15
 message Pass {
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
@@ -547,19 +547,16 @@ message Pass {
   // compatible with this pass's ground station will be present.
   repeated ChannelSetToken channel_set_token = 11;
 
-  // Whether or not the pass is conflicting with another scheduled entity.
-  bool conflicts_exist = 14;
-
-  // If conflicts exist with this pass, this field will be populated with what it's conflicting with.
+  // If conflicts exist with this pass, this field will be populated.
   // Otherwise, it will be empty.
-  repeated ConflictingWith conflicting_with = 15;
+  repeated Conflicts conflicts = 14;
 
-  enum ConflictingWith {
-    // The pass is conflicting with an unavailability window.
+  enum Conflicts {
+    // The pass conflicts with an unavailability window.
     UNAVAILABILITY_WINDOW = 0;
 
-    // The pass is conflicting with another pass.
-    PASS = 1;
+    // The pass conflicts with another scheduled plan.
+    PLAN = 1;
   }
 }
 
