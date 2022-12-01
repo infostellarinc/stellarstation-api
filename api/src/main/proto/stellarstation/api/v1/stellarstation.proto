@@ -547,17 +547,8 @@ message Pass {
   // compatible with this pass's ground station will be present.
   repeated ChannelSetToken channel_set_token = 11;
 
-  // If conflicts exist with this pass, this field will be populated.
-  // Otherwise, it will be empty.
-  repeated Conflicts conflicts = 14;
-
-  enum Conflicts {
-    // The pass conflicts with an unavailability window.
-    UNAVAILABILITY_WINDOW = 0;
-
-    // The pass conflicts with another scheduled plan.
-    PLAN = 1;
-  }
+  // Whether or not this pass conflicts with another entity.
+  bool conflicts = 14;
 }
 
 // Metadata for telemetry downlinked during a pass.
