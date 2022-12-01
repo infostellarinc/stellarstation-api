@@ -417,6 +417,9 @@ message ListUpcomingAvailablePassesRequest {
   // The ID of the satellite to list passes for. The ID of a satellite can be found on the
   // StellarStation Console page for the satellite.
   string satellite_id = 1;
+
+  // Include conflicting passes in the response.
+  bool include_conflicting = 2;
 }
 
 // Response for the `ListUpcomingAvailablePasses` method.
@@ -497,7 +500,7 @@ message ChannelSet {
 
 // A pass during which a satellite can be communicated with from a given ground station.
 //
-// Next ID: 14
+// Next ID: 16
 message Pass {
   // The time of Acquisition of Signal (AOS) between the ground station and satellite in this pass.
   google.protobuf.Timestamp aos_time = 2;
@@ -543,6 +546,21 @@ message Pass {
   // List of channel set and corresponding reservation token groupings. Only channel sets that are
   // compatible with this pass's ground station will be present.
   repeated ChannelSetToken channel_set_token = 11;
+
+  // Whether or not the pass is conflicting with another scheduled entity.
+  bool conflicts_exist = 14;
+
+  // If conflicts exist with this pass, this field will be populated with what it's conflicting with.
+  // Otherwise, it will be empty.
+  repeated ConflictingWith conflicting_with = 15;
+
+  enum ConflictingWith {
+    // The pass is conflicting with an unavailability window.
+    UNAVAILABILITY_WINDOW = 0;
+
+    // The pass is conflicting with another pass.
+    PASS = 1;
+  }
 }
 
 // Metadata for telemetry downlinked during a pass.
