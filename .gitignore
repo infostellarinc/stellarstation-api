@@ -244,3 +244,4 @@ benchmark/benchmark
 
 # StellarStation Example Materials
 examples/python/**/MY_CONFIG.py
+examples/python/**/*.bin
