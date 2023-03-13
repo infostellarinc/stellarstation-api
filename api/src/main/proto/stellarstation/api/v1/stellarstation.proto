@@ -171,26 +171,20 @@ service StellarStationService {
 
 // Request for the `OpenSatelliteStream` method.
 //
-// Next ID: 12
+// Next ID: 15
 message SatelliteStreamRequest {
   // The ID of the satellite to open a stream with. The ID of a satellite can be found on the
   // StellarStation Console page for the satellite.
   string satellite_id = 1;
 
-  // The ID of the plan to open a stream for. If `plan_id` is set, only messages for the provided
+  // Optional. The ID of the plan to open a stream for. If `plan_id` is set, only messages for the provided
   // plan ID will be returned on this stream. A valid `plan_id` can be found in the response for
   // the `ListPlans` method or on the StellarStation Console page for the satellite.
-  //
-  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
-  //         incompatible ways in the future.
   string plan_id = 11;
 
   // Optional. The ID of the ground station to open a stream with. `satellite_id` must also be set when
   // specifying `ground_station_id`. Only messages for the provided `ground_station_id` from the provided
   // `satellite_id` will be returned on this stream.
-  //
-  // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
-  //         incompatible ways in the future.
   string ground_station_id = 12;
 
   // The `SatelliteStreamResponse.stream_id` from a previously opened stream to resume. If the
@@ -234,6 +228,28 @@ message SatelliteStreamRequest {
   // The `Framing` types to accept, for satellites that have been configured for multiple framings
   // (e.g., IQ + AX25). If empty, all framings produced by the satellite will be returned.
   repeated Framing accepted_framing = 4;
+
+  // Optional. The IDs of channel sets to filter streamed data data. If `accepted_channel_set_ids` is
+  // set, only messages received on the provided channel sets will be returned on this stream. Valid
+  // channel set IDs can be found in the response for the `ListPlans` method or on the StellarStation
+  // Console page for the satellite.
+  repeated string accepted_channel_set_ids = 13;
+
+  enum FrequencyBand {
+    VHF = 0; // 30 MHz to 300 MHz
+    UHF = 1; // 300 MHz to 1 GHz
+    L = 2;   // 1 GHz to 2 GHz
+    S = 3;   // 2 GHz to 4 GHz
+    C = 4;   // 4 GHz to 8 GHz
+    X = 5;   // 8 GHz to 12 GHz
+    KU = 6;  // 12 GHz to 18 GHz
+    K = 7;   // 18 GHz to 27 GHz
+    KA = 8;  // 27 GHz to 40 GHz
+  }
+
+  // Optional. The frequency bands to filter streamed data data. If `accepted_frequency_bands` is
+  // set, only messages received on the provided frequency bands will be returned on this stream.
+  repeated FrequencyBand accepted_frequency_bands = 14;
 
   // Optional. The `ReceiveTelemetryResponse.message_ack_id` of the most recently received telemetry.
   // This may be specified in attempt to resume streaming after a connection or application error. If
@@ -387,6 +403,9 @@ message ReceiveTelemetryResponse {
 
   // The ID of the ground station.
   string ground_station_id = 5;
+
+  // The ID of the channel set on which the telemetry was received.
+  string channel_set_id = 6;
 
   // The ID to be used to when creating a `ReceiveTelemetryAck.message_ack_id` response
   //
