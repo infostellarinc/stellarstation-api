@@ -417,6 +417,21 @@ message ListUpcomingAvailablePassesRequest {
   // The ID of the satellite to list passes for. The ID of a satellite can be found on the
   // StellarStation Console page for the satellite.
   string satellite_id = 1;
+
+  // The start time of the range of plans to list (inclusive). Only passes with an Acquisition of
+  // Signal (AOS) at or after this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_after = 2;
+
+  // The end time of the range of plans to list (exclusive). Only passes with an Acquisition of
+  // Signal (AOS) before this time will be returned. It is an error for the duration between
+  // `aos_after` and `aos_before` to be longer than 31 days.
+  google.protobuf.Timestamp aos_before = 3;
+
+  // Optional list of ground station IDs to list passes for. If provided, only passes for the given
+  // satellite and any of the provided ground station IDs will be returned. The ID of a ground station
+  // can be found on the StellarStation Console page for the ground station.
+  repeated string ground_station_ids = 4;
 }
 
 // Response for the `ListUpcomingAvailablePasses` method.
