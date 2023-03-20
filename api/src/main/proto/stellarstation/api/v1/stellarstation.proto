@@ -428,10 +428,10 @@ message ListUpcomingAvailablePassesRequest {
   // `aos_after` and `aos_before` to be longer than 31 days.
   google.protobuf.Timestamp aos_before = 3;
 
-  // Optional list of ground station IDs to list passes for. If provided, only passes for the given
-  // satellite and any of the provided ground station IDs will be returned. The ID of a ground station
-  // can be found on the StellarStation Console page for the ground station.
-  repeated string ground_station_ids = 4;
+  // Optional list of antenna IDs to list passes for. If provided, only passes for the given
+  // satellite and any of the provided antennas will be returned. The ID of an antenna can be
+  // found on the StellarStation Console page for the antenna.
+  repeated string antenna_ids = 4;
 }
 
 // Response for the `ListUpcomingAvailablePasses` method.
