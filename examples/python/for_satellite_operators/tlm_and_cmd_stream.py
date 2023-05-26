@@ -180,13 +180,14 @@ def run():
                     except:
                         pass
 
-                print("Plan Status = {}: Total Responses = {}, Telemetry Messages = {}, MessagesSent = {}, Acks Sent = {}, StreamEvents = {}".format(
+                print("Plan Status = {}: Total Responses = {}, Telemetry Messages = {}, MessagesSent = {}, Acks Sent = {}, StreamEvents = {}, Total Bytes = {}".format(
                     plan_status.name,
                     total_responses,
                     total_telemetry_messages,
                     total_messages_sent,
                     total_acks_sent,
-                    total_stream_events
+                    total_stream_events,
+                    total_bytes_received
                 ), end="\r")
 
                 if plan_status in stop_streaming_critera or end_message_received:
