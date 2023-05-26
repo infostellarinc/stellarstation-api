@@ -2,6 +2,7 @@
 # Opens a stream to configure the transceiver and/or receiver.
 # Only requests within an active pass (AoS to LoS) will work.
 
+import os
 from time import sleep
 from queue import Queue
 import threading
@@ -16,7 +17,6 @@ from stellarstation.api.v1.radio.radio_pb2 import AM, FM, PM, PCM_PSK_PM, PCM_PM
 from stellarstation.api.v1.radio.radio_pb2 import BPSK, QPSK, OQPSK, PSK8, PSK16, QAM16, APSK16, MFSK, AFSK, FSK
 
 import toolkit
-import MY_CONFIG
 
 class ConfigurationRequest():
     PROTO_TRUE = BoolValue(value = True)
@@ -260,9 +260,9 @@ def generate_request(request_queue, thread_sts_queue):
                 # thread_sts_queue.put("Sent Request: {}".format(str(req)))
                 yield req
 
-def run_streamer(request_queue, thread_sts_queue):
+def run_streamer(api_key_path, request_queue, thread_sts_queue):
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(MY_CONFIG.API_KEY_PATH, MY_CONFIG.SSL_CA_CERT_PATH)
+    client = toolkit.get_grpc_client(api_key_path, "")
 
     request_generator = generate_request(request_queue, thread_sts_queue)
 
@@ -274,16 +274,22 @@ def run_streamer(request_queue, thread_sts_queue):
         thread_sts_queue.put("Shutting down streamer thread.")
 
 def run():
+    STELLARSTATION_API_KEY_PATH = os.getenv('STELLARSTATION_API_KEY_PATH')
+    STELLARSTATION_API_SATELLITE_ID = os.getenv('STELLARSTATION_API_SATELLITE_ID')
+
+    assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
+    assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+
     request_queue = Queue()
     thread_sts_queue = Queue()
 
     stream_config_request = stellarstation_pb2.SatelliteStreamRequest(
-        satellite_id = str(MY_CONFIG.SATELLITE_ID),
+        satellite_id = STELLARSTATION_API_SATELLITE_ID,
         enable_events = True,
         enable_flow_control = True)
     request_queue.put(stream_config_request)
 
-    streamer_thread = threading.Thread(target=run_streamer, args=(request_queue, thread_sts_queue,), daemon=True)
+    streamer_thread = threading.Thread(target=run_streamer, args=(STELLARSTATION_API_KEY_PATH, request_queue, thread_sts_queue,), daemon=True)
     streamer_thread.start()
 
     main_menu = ConsoleMenu("Main Menu (Radio Configuration)", "This example code exhibits a CLI that allows the user to build and send transceiver configuration commands.")

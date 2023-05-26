@@ -1,13 +1,14 @@
 # Copyright 2022 Infostellar, Inc.
 # Requests and prints the next 3 days-worth of reserved plans for your satellite.
 
+import os
+
 from google.protobuf.timestamp_pb2 import Timestamp
 from stellarstation.api.v1 import stellarstation_pb2
 
 import toolkit
-import MY_CONFIG
 
-def get_plans(client, days=3):
+def get_plans(client, sat_id, days=3):
     start = Timestamp()
     start.GetCurrentTime()
 
@@ -16,7 +17,7 @@ def get_plans(client, days=3):
     end.FromSeconds(int(start.ToSeconds()) + (days * 24 * 3600))
 
     request = stellarstation_pb2.ListPlansRequest(
-            satellite_id = str(MY_CONFIG.SATELLITE_ID),
+            satellite_id = sat_id,
             aos_after = start,
             aos_before = end)
     
@@ -27,11 +28,22 @@ def get_plans(client, days=3):
     return plans
 
 def run():
+    STELLARSTATION_API_KEY_PATH = os.getenv('STELLARSTATION_API_KEY_PATH')
+    STELLARSTATION_API_SATELLITE_ID = os.getenv('STELLARSTATION_API_SATELLITE_ID')
+
+    assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
+    assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+
+    if not STELLARSTATION_API_KEY_PATH:
+        raise ValueError("Expected a string for environment variable STELLARSTATION_API_KEY_PATH but got {STELLARSTATION_API_KEY_PATH}.")
+    if not STELLARSTATION_API_SATELLITE_ID:
+        raise ValueError("Expected a string for environment variable STELLARSTATION_API_SATELLITE_ID but got {STELLARSTATION_API_SATELLITE_ID}.")
+
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(MY_CONFIG.API_KEY_PATH, MY_CONFIG.SSL_CA_CERT_PATH)
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
 
     # Get the plans
-    plans = get_plans(client)
+    plans = get_plans(client, STELLARSTATION_API_SATELLITE_ID)
 
     # Get plans that are RESERVED
     reserved_plans = [plan for plan in plans if toolkit.PlanStatus(plan.status).name == "RESERVED"]
