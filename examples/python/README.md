@@ -34,7 +34,7 @@ $ python3 -m venv .venv
 
 3. Activate the virtual environment by executing:
 ```bash
-$ source venv/bin/activate
+$ source .venv/bin/activate
 ```
 This step may differ based on your platform and shell. See how venvs work, [here](https://docs.python.org/3/library/venv.html#how-venvs-work).
 
