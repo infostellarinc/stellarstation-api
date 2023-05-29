@@ -108,7 +108,7 @@ PS C:\> python -m venv .venv
 
 3. Activate the virtual environment by executing:
 ```powershell
-PS C:\> <venv>\Scripts\Activate.ps1
+PS C:\> .venv\Scripts\Activate.ps1
 ```
 If this does not work, you may need to change the Execution Policy settings for your user. See [RemoteSigned](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-5.1#remotesigned) and [Unrestricted](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-5.1#unrestricted) settings.
 
