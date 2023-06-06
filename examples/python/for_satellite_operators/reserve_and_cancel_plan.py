@@ -2,15 +2,15 @@
 # Reserves the first available plan, confirms to the user that it has been reserved by getting upcoming plans and printing it,
 #   then cancels the plan (to clean up after this example runs).
 
+import os
 from time import sleep
 
 from google.protobuf.timestamp_pb2 import Timestamp
 from stellarstation.api.v1 import stellarstation_pb2
 
 import toolkit
-import MY_CONFIG
 
-def get_plans(client, days=1):
+def get_plans(client, sat_id, days=1):
     start = Timestamp()
     start.GetCurrentTime()
 
@@ -19,7 +19,7 @@ def get_plans(client, days=1):
     end.FromSeconds(int(start.ToSeconds()) + (days * 24 * 3600))
 
     request = stellarstation_pb2.ListPlansRequest(
-            satellite_id = str(MY_CONFIG.SATELLITE_ID),
+            satellite_id = sat_id,
             aos_after = start,
             aos_before = end)
     
@@ -32,17 +32,23 @@ def get_plans(client, days=1):
 def run():
     WAIT_TIME_SEC = 5
 
+    STELLARSTATION_API_KEY_PATH = os.getenv('STELLARSTATION_API_KEY_PATH')
+    STELLARSTATION_API_SATELLITE_ID = os.getenv('STELLARSTATION_API_SATELLITE_ID')
+
+    assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
+    assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(MY_CONFIG.API_KEY_PATH, MY_CONFIG.SSL_CA_CERT_PATH)
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
 
     # Get passes that a plan can be scheduled for
     # Each pass in this list of plans is simply a protobuf 'Pass' message (defined in stellarstation.proto)
-    request = stellarstation_pb2.ListUpcomingAvailablePassesRequest(satellite_id = str(MY_CONFIG.SATELLITE_ID))
+    request = stellarstation_pb2.ListUpcomingAvailablePassesRequest(satellite_id = STELLARSTATION_API_SATELLITE_ID)
     response = client.ListUpcomingAvailablePasses(request)
     available_passes = getattr(response, "pass")
 
     # Reserve a plan for the first pass using the first available channel set's reservation token
-    plan_ids_before_resevation = [plan.id for plan in get_plans(client)]
+    plan_ids_before_resevation = [plan.id for plan in get_plans(client, STELLARSTATION_API_SATELLITE_ID)]
     assert available_passes[0], "There are no available passes. Contact Infostellar to check configuration settings."
     assert available_passes[0].channel_set_token[0], "There are no channel sets configured for this satellite. Contact Infostellar to check configuration settings."
     first_pass = available_passes[0]
@@ -61,7 +67,7 @@ def run():
     sleep(WAIT_TIME_SEC)
 
     # Assert that the plan was scheduled and print the ID
-    plan_ids_after_resevation = [plan.id for plan in get_plans(client)]
+    plan_ids_after_resevation = [plan.id for plan in get_plans(client, STELLARSTATION_API_SATELLITE_ID)]
     assert scheduled_plan.id not in plan_ids_before_resevation
     assert scheduled_plan.id in plan_ids_after_resevation
     print("Successfully scheduled plan ID ({})".format(scheduled_plan.id))
@@ -78,7 +84,7 @@ def run():
     sleep(WAIT_TIME_SEC)
 
     # Checking cancelation successful
-    my_canceled_plan = next((plan for plan in get_plans(client)), None)
+    my_canceled_plan = next((plan for plan in get_plans(client, STELLARSTATION_API_SATELLITE_ID)), None)
     assert my_canceled_plan
     assert toolkit.PlanStatus(my_canceled_plan.status).name == "CANCELED"
     print("Successfully canceled plan of ID ({})".format(scheduled_plan.id))

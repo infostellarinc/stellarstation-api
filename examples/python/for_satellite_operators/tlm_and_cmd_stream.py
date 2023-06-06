@@ -1,6 +1,7 @@
 # Copyright 2023 Infostellar, Inc.
 # Opens a stream to both receive telemetry and send commands.
 
+import os
 from datetime import datetime
 from queue import Queue
 from time import sleep
@@ -10,10 +11,8 @@ from stellarstation.api.v1 import stellarstation_pb2
 from google.protobuf.timestamp_pb2 import Timestamp
 
 import toolkit
-import MY_CONFIG
 
 STREAM_DONE = object()
-
 
 def generate_request(request_queue):
     # iter(request_queue.get) will block until a message is sent into the queue
@@ -23,11 +22,17 @@ def generate_request(request_queue):
             break
         yield request
 
-
 def run():
+    STELLARSTATION_API_KEY_PATH = os.getenv('STELLARSTATION_API_KEY_PATH')
+    STELLARSTATION_API_SATELLITE_ID = os.getenv('STELLARSTATION_API_SATELLITE_ID')
+    STELLARSTATION_API_CHANNEL_ID = os.getenv('STELLARSTATION_API_CHANNEL_ID')
+
+    assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
+    assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+    assert STELLARSTATION_API_CHANNEL_ID, "Did you properly define this environment variable on your system?"
+
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(
-        MY_CONFIG.API_KEY_PATH, MY_CONFIG.SSL_CA_CERT_PATH)
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
 
     # Set up for stream
     tlm_file = open("tlm_and_cmd_stream_example_tlm.bin", "wb")
@@ -68,7 +73,7 @@ def run():
         # after the setup message.
         stream_setup_request = stellarstation_pb2.SatelliteStreamRequest(
             # satellite_id is required for every message sent
-            satellite_id=str(MY_CONFIG.SATELLITE_ID),
+            satellite_id=STELLARSTATION_API_SATELLITE_ID,
             # enable events allow stream events to be received
             enable_events=True,
 
@@ -102,17 +107,17 @@ def run():
                 # Using a UUID is recommended.
                 request_id="command_request_id_{}".format(
                     command_request_count),
-                satellite_id=str(MY_CONFIG.SATELLITE_ID),
+                satellite_id=STELLARSTATION_API_SATELLITE_ID,
                 send_satellite_commands_request=stellarstation_pb2.SendSatelliteCommandsRequest(
                     command=[bytes.fromhex("AABBCCDDEEFF")] * 10,
-                    channel_set_id=str(MY_CONFIG.CH_SET_ID)))
+                    channel_set_id=STELLARSTATION_API_SATELLITE_ID))
 
             request_queue.put(command_request)
             command_request_count += 1
             total_messages_sent += 1
 
         print("Starting stream for Satellite ID ({}), Channel ID ({}); {}".format(
-            MY_CONFIG.SATELLITE_ID, MY_CONFIG.CH_SET_ID, datetime.now()))
+            STELLARSTATION_API_SATELLITE_ID, STELLARSTATION_API_CHANNEL_ID, datetime.now()))
 
         try:
             # OpenSatelliteStream will start the stream,
@@ -134,7 +139,7 @@ def run():
                     # First we'll send an ack that we received the message
                     # Acks are required to verify your client has received the data
                     ack_request = stellarstation_pb2.SatelliteStreamRequest(
-                        satellite_id=str(MY_CONFIG.SATELLITE_ID),
+                        satellite_id=STELLARSTATION_API_SATELLITE_ID,
                         telemetry_received_ack=stellarstation_pb2.ReceiveTelemetryAck(
                             message_ack_id=response.receive_telemetry_response.message_ack_id,
                             # received_timestamp is not required,
@@ -175,13 +180,14 @@ def run():
                     except:
                         pass
 
-                print("Plan Status = {}: Total Responses = {}, Telemetry Messages = {}, MessagesSent = {}, Acks Sent = {}, StreamEvents = {}".format(
+                print("Plan Status = {}: Total Responses = {}, Telemetry Messages = {}, MessagesSent = {}, Acks Sent = {}, StreamEvents = {}, Total Bytes = {}".format(
                     plan_status.name,
                     total_responses,
                     total_telemetry_messages,
                     total_messages_sent,
                     total_acks_sent,
-                    total_stream_events
+                    total_stream_events,
+                    total_bytes_received
                 ), end="\r")
 
                 if plan_status in stop_streaming_critera or end_message_received:
