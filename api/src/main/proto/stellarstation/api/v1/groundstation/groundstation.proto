@@ -220,6 +220,17 @@ message Plan {
 
   // The channel set used to reserve this plan.
   ChannelSet channel_set = 15;
+
+  // The metadata of the plan.
+  PlanMetadata metadata = 16;
+}
+
+message PlanMetadata {
+  message Metadata {
+    repeated string data = 1;
+  }
+
+  map<string, Metadata> metadata = 2;
 }
 
 // Unparsed TLE data for a satellite - https://en.wikipedia.org/wiki/Two-line_element_set
