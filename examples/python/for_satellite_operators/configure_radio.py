@@ -262,7 +262,7 @@ def generate_request(request_queue, thread_sts_queue):
 
 def run_streamer(api_key_path, api_url_path, request_queue, thread_sts_queue):
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(api_key_path, api_url_path, "")
+    client = toolkit.get_grpc_client(api_key_path, api_url_path)
 
     request_generator = generate_request(request_queue, thread_sts_queue)
 
@@ -280,7 +280,7 @@ def run():
     assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
     assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
 
-    STELLARSTATION_API_URL = os.getenv('STELLARSTATION_API_URL','api.stellarstation.com:443')
+    STELLARSTATION_API_URL = os.getenv('STELLARSTATION_API_URL','stream.qa.stellarstation.com')
     assert STELLARSTATION_API_URL, "Did you properly define this environment variable on your system?"
     
     request_queue = Queue()
