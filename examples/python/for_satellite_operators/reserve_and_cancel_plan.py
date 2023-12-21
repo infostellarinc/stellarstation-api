@@ -37,9 +37,12 @@ def run():
 
     assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
     assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+    
+    STELLARSTATION_API_URL = os.getenv('STELLARSTATION_API_URL','stream.qa.stellarstation.com')
+    assert STELLARSTATION_API_URL, "Did you properly define this environment variable on your system?"
 
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, STELLARSTATION_API_URL)
 
     # Get passes that a plan can be scheduled for
     # Each pass in this list of plans is simply a protobuf 'Pass' message (defined in stellarstation.proto)

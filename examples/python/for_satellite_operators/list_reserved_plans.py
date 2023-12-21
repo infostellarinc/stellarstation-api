@@ -33,6 +33,9 @@ def run():
 
     assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
     assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
+    
+    STELLARSTATION_API_URL = os.getenv('STELLARSTATION_API_URL','stream.qa.stellarstation.com')
+    assert STELLARSTATION_API_URL, "Did you properly define this environment variable on your system?"
 
     if not STELLARSTATION_API_KEY_PATH:
         raise ValueError("Expected a string for environment variable STELLARSTATION_API_KEY_PATH but got {STELLARSTATION_API_KEY_PATH}.")
@@ -40,7 +43,7 @@ def run():
         raise ValueError("Expected a string for environment variable STELLARSTATION_API_SATELLITE_ID but got {STELLARSTATION_API_SATELLITE_ID}.")
 
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, STELLARSTATION_API_URL)
 
     # Get the plans
     plans = get_plans(client, STELLARSTATION_API_SATELLITE_ID)
