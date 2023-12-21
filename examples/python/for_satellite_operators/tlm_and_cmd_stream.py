@@ -30,9 +30,12 @@ def run():
     assert STELLARSTATION_API_KEY_PATH, "Did you properly define this environment variable on your system?"
     assert STELLARSTATION_API_SATELLITE_ID, "Did you properly define this environment variable on your system?"
     assert STELLARSTATION_API_CHANNEL_ID, "Did you properly define this environment variable on your system?"
+    
+    STELLARSTATION_API_URL = os.getenv('STELLARSTATION_API_URL','api.stellarstation.com:443')
+    assert STELLARSTATION_API_URL, "Did you properly define this environment variable on your system?"
 
     # A client is necessary to receive services from StellarStation.
-    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, "")
+    client = toolkit.get_grpc_client(STELLARSTATION_API_KEY_PATH, STELLARSTATION_API_URL, "")
 
     # Set up for stream
     tlm_file = open("tlm_and_cmd_stream_example_tlm.bin", "wb")

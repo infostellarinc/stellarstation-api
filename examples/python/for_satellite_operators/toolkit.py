@@ -26,10 +26,13 @@ class PlanLifecycleEventStatus(Enum):
     COMPLETED = 3
     FAILED = 4
 
-def get_grpc_client(api_key_path, ssl_ca_certificate_path):
+def get_grpc_client(api_key_path, api_url_path, ssl_ca_certificate_path):
+    print('API Target: ', api_url_path)
     jwt_credentials = google_auth_jwt.Credentials.from_service_account_file(
         api_key_path,
-        audience='https://api.stellarstation.com',
+        # audience='https://api.stellarstation.com',
+        # audience='https://stream.qa.stellarstation.com:443',
+        audience=api_url_path,
         token_lifetime=60)
     
     # ca = open(ssl_ca_certificate_path, 'rb')
@@ -44,7 +47,9 @@ def get_grpc_client(api_key_path, ssl_ca_certificate_path):
     channel = google_auth_transport_grpc.secure_authorized_channel(
             google_jwt_credentials,
             None,
-            'api.stellarstation.com:443',
+            # 'api.stellarstation.com:443',
+            # 'stream.qa.stellarstation.com:443',
+            api_url_path,
             # ssl_credentials=grpc.ssl_channel_credentials(ssl_channel_credentials),
             options = options)
 
