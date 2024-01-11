@@ -1,8 +1,9 @@
-use std::{env, str::FromStr};
+use std::{env, str::FromStr, time::Duration};
 
 use api::SatelliteStreamRequest;
+use google_cloud_auth::project::{create_token_source_from_credentials, Config};
 use tokio_stream::wrappers::ReceiverStream;
-use tonic::metadata::{AsciiMetadataValue, MetadataValue};
+use tonic::metadata::MetadataValue;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Include the rust code generated from the stellarstation-api protos by `prost`.
@@ -48,11 +49,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (tx, rx) = tokio::sync::mpsc::channel(1);
 
+    let key_path = env::var("STELLARSTATION_API_KEY_PATH")?;
+
+    let creds = google_cloud_auth::credentials::CredentialsFile::new_from_file(key_path).await?;
+    let config = Config {
+        audience: Some("https://api.stellarstation.com"),
+        scopes: None,
+        sub: None,
+    };
+    let ts = create_token_source_from_credentials(&creds, &config).await?;
+    let t = ts.token().await?;
+
     let mut request = tonic::Request::new(ReceiverStream::new(rx));
 
-    request
-        .metadata_mut()
-        .insert("authorization", MetadataValue::from_str("Bearer 123")?);
+    request.metadata_mut().insert(
+        "authorization",
+        MetadataValue::from_str(&format!("Bearer {}", t.access_token))?,
+    );
 
     let res = client.open_satellite_stream(request).await?;
 
@@ -60,6 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tokio::spawn(async move {
         let mut res = res.into_inner();
         loop {
+            tokio::time::sleep(Duration::from_secs(3)).await;
             match res.message().await {
                 Ok(Some(res)) => println!("stream received message: {:?}", res),
                 Ok(None) => {
@@ -77,8 +91,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     let req = tx
         .send(SatelliteStreamRequest {
-            satellite_id: "1".into(),
-            plan_id: "1".into(),
+            satellite_id: "333".into(),
+            // plan_id: "1".into(),
             // enable_events: true,
             // stream_id: todo!(),
             // ground_station_id: todo!(),
@@ -93,7 +107,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("send request with result: {:?}", req);
 
-    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+    tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await;
 
     Ok(())
 }
