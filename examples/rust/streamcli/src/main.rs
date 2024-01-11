@@ -1,9 +1,11 @@
-use std::{env, str::FromStr, time::Duration};
+use std::{env, path::PathBuf, str::FromStr, time::Duration};
 
 use api::SatelliteStreamRequest;
+use clap::{Parser, Subcommand};
 use google_cloud_auth::project::{create_token_source_from_credentials, Config};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::metadata::MetadataValue;
+use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Include the rust code generated from the stellarstation-api protos by `prost`.
@@ -30,12 +32,66 @@ pub mod api {
     }
 }
 
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(about, long_about = None)]
+struct Args {
+    /// URL to connect to for streaming
+    #[arg(
+        long,
+        env = "STELLARSTATION_API_URL",
+        default_value = "https://api.stellarstation.com",
+        value_name = "URL"
+    )]
+    url: String,
+
+    /// Path to a StellarStation API key
+    #[arg(long, env = "STELLARSTATION_API_KEY", value_name = "FILE")]
+    key: PathBuf,
+
+    #[command(subcommand)]
+    command: Option<Command>,
+}
+
+#[derive(Subcommand, Clone, Debug)]
+enum Command {
+    /// Opens a single stream
+    Stream {
+        /// Specify a satellite ID with which to Filter telemetry and commands
+        #[arg(short = 's', long)]
+        satellite_id: String,
+
+        /// Specify a plan ID with which to filter telemetry and commands
+        #[arg(short = 'p', long)]
+        plan_id: Option<String>,
+
+        /// Enable trying to automatically reconnect if the stream is dropped
+        #[arg(short = 'r', long)]
+        reconnect: bool,
+
+        /// On the initial connection, use an existing stream ID to reconnect to that stream
+        #[arg(long, value_name = "STREAM_ID")]
+        reconnect_stream_id: Option<String>,
+
+        /// On the initial connection, set the next expected message index to receive
+        #[arg(long, value_name = "MESSAGE_INDEX")]
+        reconnect_message_index: Option<String>,
+
+        /// Create multiple streams
+        #[arg(long, default_value_t = 1)]
+        count: u16,
+    },
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
         .with(tracing_subscriber::EnvFilter::from_default_env())
         .init();
+
+    let args = Args::parse();
+    info!(?args, "got args");
 
     let url = env::var("STELLARSTATION_API_URL")
         .unwrap_or_else(|_| String::from("http://api.stellarstation.com"));
