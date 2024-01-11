@@ -6,8 +6,11 @@ edition = "2021"
 [dependencies]
 prost = "0.12.3"
 prost-types = "0.12.3"
-tokio = "1.35.1"
-tonic = "0.10.2"
+tokio = { version = "1.35.1", features = ["rt-multi-thread", "macros"] }
+tokio-stream = "0.1.14"
+tonic = { version = "0.10.2", features = ["tls", "tls-roots"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [build-dependencies]
 tonic-build = "0.10.2"
