@@ -76,6 +76,8 @@ async fn stream_with_reconnect(
     token: String,
     client: StellarStationServiceClient<Channel>,
     satellite: String,
+    stream_id: Option<String>,
+    stream_resume_id: Option<String>,
 ) -> anyhow::Result<StreamResult> {
     let mut stream_results = StreamResult {
         complete: false,
@@ -86,13 +88,20 @@ async fn stream_with_reconnect(
     };
 
     while !stream_results.complete {
+        // Either use the original stream reconnection details or use the latest ones from the
+        // stream results.
+        let stream_id = stream_results.stream_id.or_else(|| stream_id.clone());
+        let stream_resume_id = stream_results
+            .stream_resume_id
+            .or_else(|| stream_resume_id.clone());
+
         let attempt_results = stream_attempt(
             ctx.clone(),
             token.clone(),
             client.clone(),
             satellite.clone(),
-            stream_results.stream_id.clone(),
-            stream_results.stream_resume_id.clone(),
+            stream_id,
+            stream_resume_id,
         )
         .await?;
 
@@ -117,9 +126,10 @@ async fn stream_attempt(
     let (tx, rx) = mpsc::channel(1);
     let mut request = Request::new(ReceiverStream::new(rx));
 
-    request
-        .metadata_mut()
-        .insert("authorization", MetadataValue::from_str(&token)?);
+    request.metadata_mut().insert(
+        "authorization",
+        MetadataValue::from_str(&format!("Bearer {token}"))?,
+    );
 
     let response = client.open_satellite_stream(request).await?;
 
@@ -256,6 +266,8 @@ pub async fn stream(args: Args) -> anyhow::Result<()> {
                 tokens.token().await?.access_token,
                 client.clone(),
                 args.satellite_id.clone(),
+                args.reconnect_stream_id.clone(),
+                args.reconnect_message_index.clone(),
             )),
             false => tokio::spawn(stream_attempt(
                 ctx.child_token(),
