@@ -5,7 +5,7 @@ use stream::stream;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-/// Simple program to greet a person
+/// Basic example to stream telemetry from StellarStation
 #[derive(Parser, Debug, Clone)]
 #[command(about, long_about = None)]
 struct Args {
