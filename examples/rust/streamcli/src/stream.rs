@@ -85,6 +85,7 @@ pub async fn stream(args: Args) -> anyhow::Result<()> {
                 tokens.token().await?.access_token,
                 client.clone(),
                 args.satellite_id.clone(),
+                args.plan_id.clone(),
                 args.reconnect_stream_id.clone(),
                 args.reconnect_message_index.clone(),
             )),
@@ -93,6 +94,7 @@ pub async fn stream(args: Args) -> anyhow::Result<()> {
                 tokens.token().await?.access_token,
                 client.clone(),
                 args.satellite_id.clone(),
+                args.plan_id.clone(),
                 args.reconnect_stream_id.clone(),
                 args.reconnect_message_index.clone(),
             )),
@@ -131,7 +133,8 @@ async fn stream_with_reconnect(
     ctx: CancellationToken,
     token: String,
     client: StellarStationServiceClient<Channel>,
-    satellite: String,
+    satellite_id: String,
+    plan_id: Option<String>,
     stream_id: Option<String>,
     stream_resume_id: Option<String>,
 ) -> anyhow::Result<StreamResult> {
@@ -155,7 +158,8 @@ async fn stream_with_reconnect(
             ctx.clone(),
             token.clone(),
             client.clone(),
-            satellite.clone(),
+            satellite_id.clone(),
+            plan_id.clone(),
             stream_id,
             stream_resume_id,
         )
@@ -176,7 +180,8 @@ async fn stream_attempt(
     ctx: CancellationToken,
     token: String,
     mut client: StellarStationServiceClient<Channel>,
-    satellite: String,
+    satellite_id: String,
+    plan_id: Option<String>,
     stream_id: Option<String>,
     stream_resume_id: Option<String>,
 ) -> anyhow::Result<StreamResult> {
@@ -190,7 +195,7 @@ async fn stream_attempt(
 
     let response = client.open_satellite_stream(request).await?;
 
-    stream_setup(&tx, satellite, stream_id, stream_resume_id).await;
+    stream_setup(&tx, satellite_id, plan_id, stream_id, stream_resume_id).await;
 
     let results = stream_receiver(ctx.clone(), response.into_inner()).await;
 
@@ -247,11 +252,13 @@ async fn stream_receiver(
 async fn stream_setup(
     tx: &mpsc::Sender<SatelliteStreamRequest>,
     satellite_id: String,
+    plan_id: Option<String>,
     stream_id: Option<String>,
     stream_resume_id: Option<String>,
 ) {
     let initial = SatelliteStreamRequest {
         satellite_id,
+        plan_id: plan_id.unwrap_or_default(),
         stream_id: stream_id.unwrap_or_default(),
         resume_stream_message_ack_id: stream_resume_id.unwrap_or_default(),
         ..Default::default()
