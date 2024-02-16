@@ -54,14 +54,14 @@ STELLARSTATION_API_SATELLITE_ID     -> *an integer, for example: 123*
 
 STELLARSTATION_API_CHANNEL_ID       -> *an integer, for example: 123*
 
-STELLARSTATION_API_URL       -> *a string, for example: stream.qa.stellarstation.com*
+STELLARSTATION_API_URL       -> *a string, for example: api.qa.stellarstation.com*
 
 For example, if you're using Debian, you would either execute the following in your terminal or add the following to your bash script (for permanency):
 ```bash
 $ export STELLARSTATION_API_KEY_PATH=~/keys/your_personal_key.json
 $ export STELLARSTATION_API_SATELLITE_ID=123
 $ export STELLARSTATION_API_CHANNEL_ID=123
-$ export STELLARSTATION_API_URL=stream.qa.stellarstation.com
+$ export STELLARSTATION_API_URL=api.qa.stellarstation.com
 ```
 
 If you added them to your bash script don't forget to re-source.
@@ -138,14 +138,14 @@ STELLARSTATION_API_SATELLITE_ID     -> *an integer, for example: 123*
 
 STELLARSTATION_API_CHANNEL_ID       -> *an integer, for example: 123*
 
-STELLARSTATION_API_URL       -> *a string, for example: stream.qa.stellarstation.com*
+STELLARSTATION_API_URL       -> *a string, for example: api.qa.stellarstation.com*
 
 Here's an example:
 ```powershell
 PS C:\> $Env:STELLARSTATION_API_KEY_PATH="C:\Users\Your Username\keys\your_personal_key.json"
 PS C:\> $Env:STELLARSTATION_API_SATELLITE_ID="123"
 PS C:\> $Env:STELLARSTATION_API_CHANNEL_ID="123"
-PS C:\> $Env:STELLARSTATION_API_URL="stream.qa.stellarstation.com"
+PS C:\> $Env:STELLARSTATION_API_URL="api.qa.stellarstation.com"
 ```
 
 ,or,
