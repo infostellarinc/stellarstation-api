@@ -197,9 +197,7 @@ async fn stream_attempt(
 
     stream_setup(&tx, satellite_id, plan_id, stream_id, stream_resume_id).await;
 
-    let results = stream_receiver(ctx.clone(), response.into_inner()).await;
-
-    results
+    stream_receiver(ctx.clone(), response.into_inner()).await
 }
 
 /// Receive messages from the stream. When the stream is complete or a disconnect occurs the
@@ -274,8 +272,8 @@ async fn stream_setup(
 fn on_message(msg: SatelliteStreamResponse, results: &mut StreamResult) {
     results.stream_id = Some(msg.stream_id);
 
-    match msg.response {
-        Some(msg) => match msg {
+    if let Some(msg) = msg.response {
+        match msg {
             Response::ReceiveTelemetryResponse(msg) => {
                 let frames = msg.telemetry.len();
                 let bytes = msg
@@ -326,7 +324,6 @@ fn on_message(msg: SatelliteStreamResponse, results: &mut StreamResult) {
                     None => warn!("received empty stream event message"),
                 }
             }
-        },
-        None => {}
+        }
     };
 }
