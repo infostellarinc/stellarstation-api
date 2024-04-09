@@ -294,6 +294,21 @@ fn on_message(msg: SatelliteStreamResponse, results: &mut StreamResult) {
                     "received telemetry message"
                 );
 
+                // This indicates an end-of-plan frame and that the client can disconnect as no
+                // more telemetry will be received on the stream. It is similar to a 0 byte read
+                // from a TCP socket indicating EOF.
+                if frames == 1 && bytes == 0 {
+                    info!(
+                        frames,
+                        bytes,
+                        plan = msg.plan_id,
+                        satellite = msg.satellite_id,
+                        groundstation = msg.ground_station_id,
+                        message = msg.message_ack_id,
+                        "received end-of-plan message"
+                    )
+                }
+
                 results.frames += frames;
                 results.bytes += bytes;
                 results.complete = frames == 1 && bytes == 0;
