@@ -149,9 +149,13 @@ async fn stream_with_reconnect(
     while !stream_results.complete {
         // Either use the original stream reconnection details or use the latest ones from the
         // stream results.
-        let stream_id = stream_results.stream_id.or_else(|| stream_id.clone());
+        let stream_id = stream_results
+            .stream_id
+            .clone()
+            .or_else(|| stream_id.clone());
         let stream_resume_id = stream_results
             .stream_resume_id
+            .clone()
             .or_else(|| stream_resume_id.clone());
 
         let attempt_results = stream_attempt(
@@ -166,10 +170,18 @@ async fn stream_with_reconnect(
         .await?;
 
         stream_results.complete = attempt_results.complete;
-        stream_results.stream_id = attempt_results.stream_id;
-        stream_results.stream_resume_id = attempt_results.stream_resume_id;
         stream_results.bytes += attempt_results.bytes;
         stream_results.frames += attempt_results.frames;
+
+        // Check that the reconnection attempt actually got a stream_id and resume_id before
+        // updating the stream's results. Otherwise we would forget the stream's results and
+        // attempt to replay the stream since the stream_id and resume_id are lost.
+        if let Some(stream_id) = attempt_results.stream_id {
+            stream_results.stream_id = Some(stream_id);
+        }
+        if let Some(resume_id) = attempt_results.stream_resume_id {
+            stream_results.stream_resume_id = Some(resume_id);
+        }
     }
 
     Ok(stream_results)
