@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            force("org.ajoberstar.grgit:grgit-core:4.1.1")
+        }
+    }
+}
+
 plugins {
     id("org.curioswitch.gradle-curiostack-plugin") version "0.8.0"
 }
