@@ -71,9 +71,11 @@ pub async fn stream(args: Args) -> anyhow::Result<()> {
         .connect()
         .await?;
 
+    // By default, GRPC sets the max message size to 4MB, but StellarStation can support up to 10MB.
+    // If GRPC message would be received which exceeds this GRPC limit, a RESOURCE_EXHAUSTED error will be returned.
     let client = StellarStationServiceClient::new(channel)
-        .max_decoding_message_size(5 * 1024 * 1024)
-        .max_encoding_message_size(5 * 1024 * 1024);
+        .max_decoding_message_size(10 * 1024 * 1024)
+        .max_encoding_message_size(10 * 1024 * 1024);
 
     let ctx = CancellationToken::new();
 

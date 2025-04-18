@@ -32,13 +32,14 @@ def get_grpc_client(api_key_path, api_url_path):
         api_key_path,
         audience=api_url_path,
         token_lifetime=60)
-    
+
     google_jwt_credentials = google_auth_jwt.OnDemandCredentials.from_signing_credentials(jwt_credentials)
 
-    # Increase grpc msg size allowance:
-    options = [('grpc.max_send_message_length', 512 * 1024 * 1024),
-               ('grpc.max_receive_message_length', 512 * 1024 * 1024)]
-    
+    # By default, GRPC sets the max message size to 4MB, but StellarStation can support up to 10MB.
+    # If GRPC message would be received which exceeds this GRPC limit, a RESOURCE_EXHAUSTED error will be returned.
+    options = [('grpc.max_send_message_length', 10 * 1024 * 1024),
+               ('grpc.max_receive_message_length', 10 * 1024 * 1024)]
+
     channel = google_auth_transport_grpc.secure_authorized_channel(
             google_jwt_credentials,
             None,
