@@ -109,6 +109,9 @@ service GroundStationService {
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
   rpc OpenGroundStationStream (stream GroundStationStreamRequest) returns (stream GroundStationStreamResponse);
+
+  // For internal use only - retrieve current plan
+  rpc GetCurrentPlan (GetCurrentPlanRequest) returns (GetCurrentPlanResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -395,4 +398,12 @@ message SatelliteCommands {
   // immediately. After all commands have been transmitted, telemetry receive must be immediately
   // enabled again.
   repeated bytes command = 1;
+}
+
+message GetCurrentPlanRequest {
+  // Currently no payload in the request.
+}
+
+message GetCurrentPlanResponse {
+  Plan plan = 1;
 }
