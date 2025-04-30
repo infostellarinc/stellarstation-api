@@ -362,6 +362,9 @@ message SatelliteTelemetry {
   // The ID of the plan the telemetry is being sent for.
   string plan_id = 1;
 
+  // Channel set ID
+  string channel_set_id = 3;
+
   // The telemetry being sent.
   Telemetry telemetry = 2;
 }

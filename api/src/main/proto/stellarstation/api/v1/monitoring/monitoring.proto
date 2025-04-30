@@ -136,7 +136,7 @@ message GroundStationConfiguration {
 }
 
 // The current state of the ground station's transmitter during the operation of a pass.
-// Next ID: 8
+// Next ID: 9
 message TransmitterState {
   // The current center frequency of the transmitter, taking into account e.g., Doppler correction.
   uint64 center_frequency_hz = 1;
@@ -158,6 +158,9 @@ message TransmitterState {
 
   // The current bitrate of the transmitter
   google.protobuf.FloatValue bitrate = 7;
+
+  // Offset from the expected carrier frequency.
+  google.protobuf.FloatValue carrier_offset = 8;
 }
 
 // A current status of convolutional coding.

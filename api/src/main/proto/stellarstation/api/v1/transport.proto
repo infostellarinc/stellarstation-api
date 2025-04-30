@@ -94,6 +94,9 @@ message StreamEvent {
   // this is always empty.
   string request_id = 1;
 
+  // Timestamp of the event occurrence
+  google.protobuf.Timestamp timestamp = 4;
+
   // An event indicating the commands in the request were sent by the ground station through its
   // radio.
   message CommandSentFromGroundStation {
