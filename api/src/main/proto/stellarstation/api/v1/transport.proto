@@ -94,6 +94,9 @@ message StreamEvent {
   // this is always empty.
   string request_id = 1;
 
+  // Timestamp of the event occurrence
+  google.protobuf.Timestamp timestamp = 4;
+
   // An event indicating the commands in the request were sent by the ground station through its
   // radio.
   message CommandSentFromGroundStation {
@@ -117,6 +120,9 @@ message StreamEvent {
 message PlanMonitoringEvent {
   // The ID of the plan being monitored.
   string plan_id = 1;
+
+  // Channel set ID
+  string channel_set_id = 5;
 
   oneof Info {
     // Information about the current configuration of the ground station when beginning to execute
