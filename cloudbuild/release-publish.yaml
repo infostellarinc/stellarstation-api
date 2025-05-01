@@ -4,7 +4,7 @@ secrets:
       MAVEN_PASSWORD: CiQAo3bGoYXB3hVouZrQjQ49Na9nyfRP9p2eei0qkWApr6bAziISVQD6f46OpEZCBVyO4jUoPzlmBdv1GGV8r8AxPZVYcqfR8uqUZEzwht2tnmkN9UxGEtAe6RAr5XNh2YTlVCTmQ4oHVklPb6NgqzgOiCg/bB+uYXXqros=
       SIGNING_PASSWORD: CiQAo3bGoVnvC+dNthiI+dAFswbsvn9/j9a3TW8javB0kFQmDyoSSQD6f46O064kepbO3EoGMcB1Zu9iCJSk3tjkHc/Rl3SUjcr18R85/lWiWWi7tVu7J0Vkdbs3wncKaAr93uUWV9WqQH5LKcwNlGk=
       NPM_KEY: CiQAo3bGoRJ721LzjFjReYDlNaQnml+KdXtUFlhNcxjTLu0EI/ISTQD6f46ObEDBR7Sfp2ghkjd2C12bHgjeple0Yt2DctBcumNYT0Ic7s0po4GSFEEX1QVKkFALZZrkCtAv/4prRoZmZlRdm7Ns1Otjvgq4
-      PYPI_KEY: CiQAo3bGoYxDEMHcyJkPIdmcvbfRIbet09HVwIPrxhAGKP3UHGESNQD6f46OLClPEFS8FpMcW+AXpBrxGkJEkY1dGj3iziGQVvGbULd4Mh3/vXQEPU14d2MC/NaC
+      PYPI_KEY: CiQAo3bGoelOfc0fBw0GxDhWK+axRyjnUpQc3YbiReV7Vie5C2gSggIAaj00UDdPIc/I200hCzNfMLeBnz9+4aU/ls12GUXK/aY5kcSvhOOakdYJrKRDx2Xr382wPpPa2rDTS/+bkE2tHaKv+iiQOfgwH5RGFtJkmZdXFZme8NhdwDrLlC4D6stTD5FSkZlFbGtkvIwgZ8Bvebt5+bLUg9GvwxAZ98Zd1xNo8HZarR7BuBVDbE2QGHQNTozVVFEsg5gSw1dmkUJp370EFwEvNTzJflxhbtx71z2mShlglDixnH/Qo+z+nhz+0IFlpIUhD//j0oYh0ScOllqnsjDomGN4uW5s1WYIYVUDjWiOFjHEgtTP5ssWI7+Rjn4sHdEOlZ9Ra1o2gW1Y4T4=
 steps:
 - name: gcr.io/cloud-builders/gcloud
   args:
@@ -38,7 +38,7 @@ steps:
       apt-get -y update &&
       apt-get -y install binutils &&
       echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config &&
-      ./gradlew -Ppypi.user=istellar-sysadmin -Ppypi.password=$$PYPI_KEY -Pmaven.username=UpVSp/UZ -Pmaven.password=$$MAVEN_PASSWORD -Psigning.secretKeyRingFile="$(pwd)/cloudbuild/secring.gpg" -Psigning.keyId=C8772BE9 -Psigning.password=$$SIGNING_PASSWORD -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
+      ./gradlew -Ppypi.user=__token__ -Ppypi.password=$$PYPI_KEY -Pmaven.username=UpVSp/UZ -Pmaven.password=$$MAVEN_PASSWORD -Psigning.secretKeyRingFile="$(pwd)/cloudbuild/secring.gpg" -Psigning.keyId=C8772BE9 -Psigning.password=$$SIGNING_PASSWORD -Pnpm.key=$$NPM_KEY -Pcuriostack.release=true --stacktrace --no-daemon publishStubs
   secretEnv:
   - MAVEN_PASSWORD
   - SIGNING_PASSWORD
