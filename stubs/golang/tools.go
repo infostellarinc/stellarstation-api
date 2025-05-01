@@ -1,3 +1,4 @@
+//go:build tools
 // +build tools
 
 /*
@@ -19,6 +20,5 @@
 package go_stellarstation
 
 import (
-	_ "github.com/golang/protobuf"
-	_ "github.com/square/goprotowrap"
+	_ "google.golang.org/protobuf"
 )
