@@ -33,7 +33,7 @@ val GOPATH = extra["gopath"]
 
 protobuf {
     protoc {
-        artifact.set("com.google.protobuf:protoc:3.6.1")
+        artifact.set("com.google.protobuf:protoc:4.30.2")
     }
 
     // Don"t use descriptor set.
@@ -42,9 +42,6 @@ protobuf {
     languages {
         register("go") {
             option("plugins=grpc")
-            plugin {
-                path.set(file("${GOPATH}/bin/protoc-gen-go"))
-            }
         }
     }
 }
@@ -80,28 +77,19 @@ tasks {
     val installProtocGoPlugin by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         dependsOn(named("goDownloadDeps"))
 
-        args("install", "github.com/golang/protobuf/protoc-gen-go")
+        args("install", "google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6")
     }
 
-    val installMockGen by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+    val installProtocGoGrpcPlugin by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         dependsOn(named("goDownloadDeps"))
 
-        args("install", "github.com/golang/mock/mockgen")
+        args("install", "google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1")
     }
 
     val copyGoMod by registering(Copy::class) {
         into("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
         from("go.mod")
         from("go.sum")
-    }
-
-    val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
-        args("mod", "vendor")
-        dependsOn(copyGoMod)
-
-        execCustomizer {
-            workingDir = file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
-        }
     }
 
     val copyBuildedSource by registering(Copy::class) {
@@ -111,6 +99,29 @@ tasks {
         fileMode = 420 // 644
 
         dependsOn(generateProto)
+    }
+
+    val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
+        dependsOn(installProtocGoPlugin, installProtocGoGrpcPlugin, extractProto)
+        val protoDir = "${project.projectDir}/build/extracted-protos/main"
+        val outputDir = "${project.projectDir}/build/generated/proto/main"
+
+        execOverride {
+            val command = mutableListOf(
+                "${executable}",
+                "--go_out=$outputDir",
+                "--go-grpc_out=$outputDir",
+                "--plugin=protoc-gen-go=${GOPATH}/bin/protoc-gen-go",
+                "--plugin=protoc-gen-go-grpc=${GOPATH}/bin/protoc-gen-go-grpc",
+                "-I=$protoDir"
+            )
+
+            // Add all proto files from fileTree
+            command.addAll(fileTree(protoDir).matching { include("**/*.proto") }.files.map { it.absolutePath })
+
+            setCommandLine(command)
+            org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
+        }
     }
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
