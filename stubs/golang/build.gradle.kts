@@ -33,7 +33,7 @@ val GOPATH = extra["gopath"]
 
 protobuf {
     protoc {
-        artifact.set("com.google.protobuf:protoc:3.6.1")
+        artifact.set("com.google.protobuf:protoc:4.30.2")
     }
 
     // Don"t use descriptor set.
@@ -42,9 +42,6 @@ protobuf {
     languages {
         register("go") {
             option("plugins=grpc")
-            plugin {
-                path.set(file("${GOPATH}/bin/protoc-gen-go"))
-            }
         }
     }
 }
@@ -80,19 +77,13 @@ tasks {
     val installProtocGoPlugin by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         dependsOn(named("goDownloadDeps"))
 
-        args("install", "github.com/golang/protobuf/protoc-gen-go")
+        args("install", "google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6")
     }
 
-    val installProtoWrap by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
+    val installProtocGoGrpcPlugin by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
         dependsOn(named("goDownloadDeps"))
 
-        args("install", "github.com/square/goprotowrap/cmd/protowrap")
-    }
-
-    val installMockGen by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
-        dependsOn(named("goDownloadDeps"))
-
-        args("install", "github.com/golang/mock/mockgen")
+        args("install", "google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1")
     }
 
     val copyGoMod by registering(Copy::class) {
@@ -101,95 +92,41 @@ tasks {
         from("go.sum")
     }
 
-    val runModVendoring by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
-        args("mod", "vendor")
-        dependsOn(copyGoMod)
-
-        execCustomizer {
-            workingDir = file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
-        }
-    }
-
-    val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
-        dependsOn(installProtocGoPlugin, installProtoWrap)
-        finalizedBy(copyGoMod, runModVendoring)
-
-        execOverride {
-            val protowrapPath = project.file("${GOPATH}/bin/protowrap")
-            setCommandLine(listOf(protowrapPath.getAbsolutePath(), "--protoc_command=${executable}") + args)
-
-            org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
-        }
-    }
-
-    // Because mockgen isn't aware of Go modules, we need to prepare a GOPATH for it like this.
-    val copyDepsToMockgenGopath by registering(Copy::class) {
-        into("build/goproto/src/")
-        dirMode = 493 // 755
-        fileMode = 420 // 644
-
-        dependsOn(generateProto, installMockGen, runModVendoring)
-
-        val goModLines = file("go.mod").readLines()
-        var foundRequire = false
-
-        for (line in goModLines) {
-            if (!foundRequire && !line.startsWith("require")) {
-                continue
-            }
-
-            if (line.startsWith("require")) {
-                foundRequire = true
-                continue
-            }
-
-            if (line.startsWith(")")) {
-                break
-            }
-            val parts = line.trim().split(" ")
-            from("$GOPATH/pkg/mod/${parts[0]}@${parts[1]}"){
-                into(parts[0])
-                exclude("**/testdata/**")
-            }
-        }
-    }
-
     val copyBuildedSource by registering(Copy::class) {
         into("build/goproto/src/github.com/infostellarinc/go-stellarstation")
         from("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
         dirMode = 493 // 755
         fileMode = 420 // 644
 
-        dependsOn(generateProto, installMockGen, runModVendoring)
+        dependsOn(generateProto)
     }
 
-    val runMockgenStellarStationServiceClient by registering(org.curioswitch.gradle.golang.tasks.GoTask::class) {
-        val outputDir = project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation/api/mock_v1")
-        val outputFile = project.file("${outputDir}/stellarstation.mock.go")
+    val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
+        dependsOn(installProtocGoPlugin, installProtocGoGrpcPlugin, extractProto)
+        val protoDir = "${project.projectDir}/build/extracted-protos/main"
+        val outputDir = "${project.projectDir}/build/generated/proto/main"
 
-        inputs.dir(project.file("build/generated/proto/main/github.com/infostellarinc/go-stellarstation"))
-        outputs.dir(outputDir)
+        execOverride {
+            val command = mutableListOf(
+                "${executable}",
+                "--go_out=$outputDir",
+                "--go-grpc_out=$outputDir",
+                "--plugin=protoc-gen-go=${GOPATH}/bin/protoc-gen-go",
+                "--plugin=protoc-gen-go-grpc=${GOPATH}/bin/protoc-gen-go-grpc",
+                "-I=$protoDir"
+            )
 
-        dependsOn(copyDepsToMockgenGopath, copyBuildedSource)
+            // Add all proto files from fileTree
+            command.addAll(fileTree(protoDir).matching { include("**/*.proto") }.files.map { it.absolutePath })
 
-        command(project.file("${GOPATH}/bin/mockgen").toString())
-        args("-destination=${outputFile}".toString(), "github.com/infostellarinc/go-stellarstation/api/v1", "StellarStationServiceClient")
-
-        execCustomizer({
-            environment("GOPATH", file("build/goproto").getAbsolutePath())
-            environment("GO111MODULE", "off")
-            environment("CGO_ENABLED", "0")
-        })
-
+            setCommandLine(command)
+            org.curioswitch.gradle.tooldownloader.DownloadedToolManager.get(project).addAllToPath(this)
+        }
     }
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
         if (name.startsWith("goBuild") || name == "goTest") {
             dependsOn(generateProto)
-            dependsOn(runMockgenStellarStationServiceClient)
-            execCustomizer({
-                environment("GOFLAGS", "-mod=vendor")
-            })
         }
     }
 
@@ -203,11 +140,11 @@ tasks {
     }
 
     named("gitPublishCopy").configure({
-        dependsOn(generateProto, runMockgenStellarStationServiceClient)
+        dependsOn(generateProto, copyGoMod)
     })
 
     named("assemble").configure({
-        dependsOn(generateProto)
+        dependsOn(generateProto, copyGoMod)
     })
 
     // Only generated code, no need to check.

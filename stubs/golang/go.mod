@@ -1,4 +1,4 @@
-// Copyright 2018 Infostellar, Inc.
+// Copyright 2025 Infostellar, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,8 @@
 
 module github.com/infostellarinc/go-stellarstation
 
-go 1.12
+go 1.23.0
 
-require (
-	github.com/golang/mock v1.1.1
-	github.com/golang/protobuf v1.3.1
-	github.com/square/goprotowrap v0.0.0-20190116012208-bb93590db2db // indirect
-	golang.org/x/net v0.0.0-20190424112056-4829fb13d2c6
-	google.golang.org/grpc v1.20.1
-)
+toolchain go1.24.1
+
+require google.golang.org/protobuf v1.36.6
