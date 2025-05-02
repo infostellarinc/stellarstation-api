@@ -90,6 +90,7 @@ tasks {
         into("build/generated/proto/main/github.com/infostellarinc/go-stellarstation")
         from("go.mod")
         from("go.sum")
+        dependsOn(generateProto)
     }
 
     val copyBuildedSource by registering(Copy::class) {
@@ -98,7 +99,7 @@ tasks {
         dirMode = 493 // 755
         fileMode = 420 // 644
 
-        dependsOn(generateProto)
+        dependsOn(generateProto, copyGoMod)
     }
 
     val generateProto by getting(org.curioswitch.gradle.protobuf.tasks.GenerateProtoTask::class) {
@@ -126,7 +127,7 @@ tasks {
 
     withType<org.curioswitch.gradle.golang.tasks.GoTask>().configureEach {
         if (name.startsWith("goBuild") || name == "goTest") {
-            dependsOn(generateProto)
+            dependsOn(generateProto, copyBuildedSource)
         }
     }
 
@@ -140,11 +141,11 @@ tasks {
     }
 
     named("gitPublishCopy").configure({
-        dependsOn(generateProto, copyGoMod)
+        dependsOn(generateProto, copyBuildedSource)
     })
 
     named("assemble").configure({
-        dependsOn(generateProto, copyGoMod)
+        dependsOn(generateProto, copyBuildedSource)
     })
 
     // Only generated code, no need to check.
