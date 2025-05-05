@@ -142,7 +142,7 @@ message CCSDSReedSolomonParams {
   BlockLengthType block_length_type = 1;
 }
 
-// https://public.ccsds.org/Pubs/131x0b3e1.pdf
+// https://public.ccsds.org/Pubs/131x0b4.pdf
 //
 // CCSDS transfer frames allow for a few common variations satellites use such as setting a
 // custom synchronization word, inverting the convolutional coding polynomials,
@@ -309,10 +309,10 @@ enum Modulation {
   // Phase modulation (generic)
   PM = 23;
 
-  // PCM/PSK/PM as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b29.pdf
+  // PCM/PSK/PM as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b32.pdf
   PCM_PSK_PM = 24;
 
-  // PCM/PM/bi-phase-L as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b29.pdf
+  // PCM/PM/bi-phase-L as specified by CCSDS. https://public.ccsds.org/Pubs/401x0b32.pdf
   PCM_PM_BI_PHASE_L = 25;
 
   // 16-Amplitude Phase Shift Keying. https://en.wikipedia.org/wiki/Amplitude_and_phase-shift_keying
