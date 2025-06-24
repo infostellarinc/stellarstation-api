@@ -128,6 +128,7 @@ def run():
             # all messages we want to send go through request_queue and request_generator
             for response in client.OpenSatelliteStream(request_generator):
                 total_responses += 1
+                stream_attempts = 0
 
                 # stream_id allows you to attempt a stream recovery, but
                 # also provides a useful identifier for the Stellarstation
