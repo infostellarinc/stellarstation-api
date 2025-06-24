@@ -151,6 +151,7 @@ def run():
                         ))
 
                     request_queue.put(ack_request)
+                    last_ack_id = response.receive_telemetry_response.message_ack_id
                     total_messages_sent += 1
                     total_acks_sent += 1
 
