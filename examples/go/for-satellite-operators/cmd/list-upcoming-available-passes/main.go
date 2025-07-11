@@ -11,20 +11,17 @@ import (
 
 func main() {
 
-	var configPath string
+	var apiAddress string
+	var apiKey string
 	var satelliteId string
 
-	flag.StringVar(&configPath, "c", configPath, "Go example configuration file path")
-	flag.StringVar(&satelliteId, "id", satelliteId, "ID of the satellite to target")
+	flag.StringVar(&apiKey, "key", "", "Go example configuration file path")
+	flag.StringVar(&apiAddress, "addr", "api.stellarstation.com:443", "Go example configuration file path")
+	flag.StringVar(&satelliteId, "id", "", "ID of the satellite to target")
 
 	flag.Parse()
 
-	conf, err := sts.GetConfig(configPath)
-	if err != nil {
-		panic(err)
-	}
-
-	client, err := sts.NewClient(conf.ApiAddress, conf.ApiKeyPath, &tls.Config{})
+	client, err := sts.NewClient(apiAddress, apiKey, &tls.Config{})
 	if err != nil {
 		panic(err)
 	}
