@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package stellarstation.api.v1.reservations;
+
+option go_package = "github.com/infostellarinc/go-stellarstation/api/v1/reservations";
+
+option java_multiple_files = true;
+option java_outer_classname = "ReservationsProto";
+option java_package = "com.stellarstation.api.v1.reservations";
+
+import "google/protobuf/timestamp.proto";
+
+message ListReservationsRequest {
+  string satellite_id = 1;
+
+  // The desired visibility range. Only reservations which are at least
+  // partially inside the desired visibility will be returned.
+  //
+  // For example, the following will be returned:
+  // 1. visibility.Start < reservation.Start < reservation.Stop <
+  // visibility.Stop
+  // 2. visibility.Start < reservation.Start < visibility.Stop <
+  // reservation.Stop
+  // 3. reservation.Start < visibility.Start < reservation.Stop <
+  // visibility.Stop
+  //
+  // This field can be omitted, or even partially specified (only
+  // visibility.Start or visibility.Stop set).
+  TimeRange visibility = 2;
+}
+message ListReservationsResponse { repeated Reservation reservations = 1; }
+
+message GetReservationRequest { string id = 1; }
+message GetReservationResponse { Reservation reservation = 1; }
+
+// TODO: Support plan metadata (SetPlanMetadataRequest)
+// TODO: Support plan telemetry download (repeated TelemetryMetadata)
+message UpdateReservationRequest { Reservation reservation = 1; }
+message UpdateReservationResponse { Reservation reservation = 1; }
+
+// message CreateReservationRequest { }
+// message CreateReservationResponse {}
+//
+// message CancelReservationRequest { string id = 1; }
+// message CancelReservationResponse {}
+
+message Reservation {
+  // A unique identifier to identify the reservation.
+  // For reservations with 'status=Available', this 'id' will always be 0.
+  string id = 1;
+  string satellite_id = 2;
+  string satellite_organization_name = 3;
+  // NOTE(I): This is the antenna_group or location_id
+  string ground_station_id = 4;
+  double ground_station_latitude = 5;
+  double ground_station_longitude = 6;
+  double ground_station_altitude = 7;
+  double ground_station_country_code = 8;
+  string ground_station_organization_name = 9;
+
+  ReservationStatus status = 10;
+  TimeRange visibility = 11;
+  TimeRange operation = 12;
+  double max_elevation = 13;
+
+  repeated ChannelSetGroup channel_sets = 14;
+
+  bool drifted = 15;
+}
+
+message TimeRange {
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp stop = 2;
+}
+
+// Defines a list of channel-sets that are available as well as the currently
+// selected option (if one exists).
+message ChannelSetGroup {
+  ChannelSetOption selected = 1;
+  repeated ChannelSetOption options = 2;
+}
+
+// Defines a single channel-set.
+message ChannelSetOption {
+  string id = 1;
+  string name = 2;
+  string reservation_token = 3;
+}
+
+enum ReservationStatus {
+  ReservationStatus_UNKNOWN = 0;
+  ReservationStatus_AVAILABLE = 1;
+  ReservationStatus_RESERVED = 2;
+  ReservationStatus_EXECUTING = 3;
+  ReservationStatus_COMPLETED = 4;
+  ReservationStatus_FAILED = 5;
+  ReservationStatus_CANCELLED = 6;
+}
+
+// message Plan {
+//   // The organization name of the satellite to be tracked in the plan.
+//   string satellite_organization_name = 17;
+//
+//   // A description of the status of a plan.
+//   enum Status {
+//     // The plan is reserved for execution in the future at `aos_time`.
+//     RESERVED = 0;
+//
+//     // The plan is currently executing and will end in the future at
+//     `los_time`. EXECUTING = 1;
+//
+//     // The plan already finished executing successfully.
+//     SUCCEEDED = 2;
+//
+//     // The plan failed to execute correctly.
+//     FAILED = 3;
+//
+//     // The plan was canceled. This can be explicitly by calling `CancelPlan`
+//     or implicit due to
+//     // cancellation by the ground station in the plan (e.g., due to bad
+//     weather). CANCELED = 4;
+//
+//     // The plan completed execution and telemetry data is being processed.
+//     PROCESSING = 5;
+//   }
+//   // The status of this plan.
+//   Status status = 3;
+//
+//   // The start of the time window reserved for the plan. This value does not
+//   change over time. google.protobuf.Timestamp start_time = 14;
+//
+//   // The end of the time window reserved for the plan. This value does not
+//   change over time. google.protobuf.Timestamp end_time = 15;
+//
+//   // The time of Acquisition of Signal (AOS) between the ground station and
+//   satellite in this plan.
+//   //
+//   // This value is never before 'start_time'. It may change over time (for
+//   example, if updated
+//   // TLE becomes available).
+//   google.protobuf.Timestamp aos_time = 4;
+//
+//   // The time of Loss of Signal (LOS) between the ground station and
+//   satellite in this plan.
+//   //
+//   // This value is never after 'end_time'. It may change over time (for
+//   example, if updated
+//   // TLE becomes available).
+//   google.protobuf.Timestamp los_time = 5;
+//
+//   // The latitude, in degrees, of the ground station's location.
+//   double ground_station_latitude = 6;
+//
+//   // The longitude, in degrees, of the ground station's location.
+//   double ground_station_longitude = 7;
+//
+//   // The ISO 3166-1 alpha-2 2-letter country code for the ground station's
+//   location.
+//   // See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+//   string ground_station_country_code = 8;
+//
+//   // The organization name of the ground station.
+//   string ground_station_organization_name = 18;
+//
+//   // The max elevation during the plan, in degrees.
+//   double max_elevation_degrees = 9;
+//
+//   // The time of the max elevation during the plan.
+//   google.protobuf.Timestamp max_elevation_time = 10;
+//
+//   // Metadata for telemetry received during the pass. Only populated when the
+//   pass has completed
+//   // successfully and data processing is complete.
+//   repeated TelemetryMetadata telemetry_metadata = 13;
+//
+//   // The channel set used to reserve this plan.
+//   ChannelSet channel_set = 16;
+//
+//   // The price per minute (USD) for this plan set by the ground station owner
+//   at the time of reservation. double unit_price = 19;
+//
+//   // The priority of the plan.
+//   Priority priority = 21;
+// }
+
+message ReservationPass {}

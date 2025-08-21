@@ -19,6 +19,7 @@ import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
+import "stellarstation/api/v1/reservations/reservations.proto";
 
 package stellarstation.api.v1;
 
@@ -163,6 +164,12 @@ service StellarStationService {
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
   rpc SetPlanMetadata(SetPlanMetadataRequest) returns (SetPlanMetadataResponse);
+
+  rpc ListReservations(reservations.ListReservationsRequest) returns (reservations.ListReservationsResponse);
+
+  rpc GetReservation(reservations.GetReservationRequest) returns (reservations.GetReservationResponse);
+
+  rpc UpdateReservation(reservations.UpdateReservationRequest) returns (reservations.UpdateReservationResponse);
 }
 
 //----------------------------------------------------------------------------------------------
@@ -250,8 +257,8 @@ message SatelliteStreamRequest {
   string resume_stream_message_ack_id = 8;
 
   // Whether flow control is enabled on the client side. If set to true, client must respond to each
-  // ReceiveTelemetryResponse received with a corresponding ReceiveTelemetryAck message. 
-  // 
+  // ReceiveTelemetryResponse received with a corresponding ReceiveTelemetryAck message.
+  //
   // Status: ALPHA This API is under development and may not work correctly or be changed in backwards
   //         incompatible ways in the future.
   bool enable_flow_control = 10;
