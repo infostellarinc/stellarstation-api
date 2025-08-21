@@ -38,6 +38,9 @@ pub mod api {
     pub mod groundstation {
         tonic::include_proto!("stellarstation.api.v1.groundstation");
     }
+    pub mod reservations {
+        tonic::include_proto!("stellarstation.api.v1.reservations");
+    }
 }
 use api::{
     satellite_stream_response::Response,
