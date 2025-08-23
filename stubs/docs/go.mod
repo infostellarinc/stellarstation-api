@@ -8,9 +8,12 @@ require (
 	github.com/google/uuid v1.1.0 // indirect
 	github.com/huandu/xstrings v1.2.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
-	github.com/pseudomuto/protoc-gen-doc v1.1.0 // indirect
+	github.com/pseudomuto/protoc-gen-doc v1.1.0
 	github.com/pseudomuto/protokit v0.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
+	github.com/square/goprotowrap v0.0.0-20220325193554-9257bb483144
+	github.com/stretchr/testify v1.8.1 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 replace github.com/pseudomuto/protoc-gen-doc => github.com/pseudomuto/protoc-gen-doc v1.1.1-0.20180827150444-c35c0525c468
