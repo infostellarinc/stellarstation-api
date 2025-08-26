@@ -1,4 +1,4 @@
-use crate::{stream::api::stream_event::Event, Args};
+use crate::{stream::api::stream_event::Event, token_source, Args};
 
 use google_cloud_auth::{
     credentials::CredentialsFile,
@@ -115,19 +115,6 @@ pub async fn stream(args: Args) -> anyhow::Result<()> {
     }
 
     Ok(())
-}
-
-/// Generate a new OAuth2 token source from a StellarStation API key file
-async fn token_source(key: String, url: &str) -> anyhow::Result<Box<dyn TokenSource>> {
-    let creds = CredentialsFile::new_from_file(key).await?;
-
-    let config = Config {
-        audience: Some(url),
-        scopes: None,
-        sub: None,
-    };
-
-    Ok(create_token_source_from_credentials(&creds, &config).await?)
 }
 
 /// Open a new stream with reconnection attempts.

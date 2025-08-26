@@ -1,6 +1,13 @@
+mod reservations;
 mod stream;
 
 use clap::Parser;
+use google_cloud_auth::{
+    credentials::CredentialsFile,
+    project::{create_token_source_from_credentials, Config},
+    token_source::TokenSource,
+};
+use reservations::list_reservations_demo;
 use stream::stream;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -57,7 +64,21 @@ async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     info!(?args, "got args");
 
-    stream(args).await?;
+    // stream(args).await?;
+    list_reservations_demo(args).await?;
 
     Ok(())
+}
+
+/// Generate a new OAuth2 token source from a StellarStation API key file
+pub async fn token_source(key: String, url: &str) -> anyhow::Result<Box<dyn TokenSource>> {
+    let creds = CredentialsFile::new_from_file(key).await?;
+
+    let config = Config {
+        audience: Some(url),
+        scopes: None,
+        sub: None,
+    };
+
+    Ok(create_token_source_from_credentials(&creds, &config).await?)
 }
