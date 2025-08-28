@@ -1,161 +1,265 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
 import "stellarstation/api/v1/orbit/orbit.proto";
 import "stellarstation/api/v1/radio/radio.proto";
 import "stellarstation/api/v1/transport.proto";
 import "stellarstation/api/v1/stellarstation.proto";
 
-package stellarstation.api.v1.reservations;
-
 option go_package = "github.com/infostellarinc/go-stellarstation/api/v1";
-
 option java_multiple_files = true;
 option java_outer_classname = "Reservations";
 option java_package = "com.stellarstation.api.v1.reservations";
 
+package stellarstation.api.v1.reservations;
+
 service ReservationService {
+  // See StellarStationService.OpenSatelliteStream documentation.
   rpc OpenStream(stream SatelliteStreamRequest) returns (stream SatelliteStreamResponse);
 
+  // Fetch predicted satellite passes and their available channel sets for scheduling.
+  // Call this method to find passes, and receive channel set tokens which can be used for scheduling with CreateReservation.
   rpc ListPasses(ListPassesRequest) returns (ListPassesResponse);
 
+  // Fetch details for a single reservation.
   rpc GetReservation(GetReservationRequest) returns (GetReservationResponse);
+  // List all reservations (past or future) for a given satellite and time range.
   rpc ListReservations(ListReservationsRequest) returns (ListReservationsResponse);
+  // Create a new reservation using channel set tokens obtained from ListPasses.
   rpc CreateReservation(CreateReservationRequest) returns (CreateReservationResponse);
+  // Update the channel sets of an existing reservation using tokens obtained from ListReservations or GetReservation.
   rpc UpdateReservation(UpdateReservationRequest) returns (UpdateReservationResponse);
+  // Cancel an existing reservation.
+  // This is non-reversible. To re-schedule a reservation, use the normal flow of ListPasses then CreateReservation again.
   rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse);
 
+  // See StellarStationService.AddTle documentation.
   rpc AddTle(AddTleRequest) returns (AddTleResponse);
+  // See StellarStationService.GetTle documentation.
   rpc GetTle(GetTleRequest) returns (GetTleResponse);
+  // See StellarStationService.SetTleSource documentation.
   rpc SetTleSource(SetTleSourceRequest) returns (SetTleSourceResponse);
 }
 
 message ListPassesRequest {
+  // Filters passes to only those for this requested satellite id.
   string satellite_id = 1;
+
+  // Filters passes to only those which have a visibility starts within this requested visibility time range.
+  TimeRange visibility = 2;
 }
 
 message ListPassesResponse {
+  // List of available passes, sorted by visibility start.
   repeated Pass passes = 1;
 }
 
 message CreateReservationRequest {
+  // The list of channel sets for the reservation.
+  //  - Channel sets must include both id and token fields. Other field are not required.
+  //  - Only 1 channel set per slot is allowed.
+  //  - The create is atomic. Either the full list of channel sets is accepted, or the request fails.
   repeated ChannelSetToken channel_sets = 1;
 }
 
 message CreateReservationResponse {
+  // The reservation that was created.
   Reservation reservation = 1;
 }
 
 message UpdateReservationRequest {
+  // The id of the reservation to update.
   string reservation_id = 1;
+
+  // Complete list of channel sets to update the reservation to.
+  //  - To add, include ChannelSetToken with at least {id, token}.
+  //  - To retain, include ChannelSetToken with at least {id}.
+  //  - To remove, omit the ChannelSetToken.
+  //  - At most 1 channel set per slot can be scheduled.
+  //  - Atomic operation, either the full list of channel sets is accepted, or the request is rejected.
   repeated ChannelSetToken channel_sets = 2;
 }
 
 message UpdateReservationResponse {
+  // The reservation after update.
   Reservation reservation = 1;
 }
 
 message CancelReservationRequest {
+  // The id of the reservation to cancel.
   string reservation_id = 1;
 }
 
 message CancelReservationResponse {
+  // The reservation that was cancelled.
+  // Only the id and status fields will be set.
   Reservation reservation = 1;
 }
 
 message GetReservationRequest {
+  // The reservation matching this reservation identifier will be returned.
   string reservation_id = 1;
 }
 
 message GetReservationResponse {
+  // The reservation matching the request.
   Reservation reservation = 1;
 }
 
 message ListReservationsRequest {
+  // Only reservations for this satellite identifier will be returned.
   string satellite_id = 1;
+
+  // Only reservations which start within this time range will be returned.
   TimeRange visibility = 2;
 }
 
 message ListReservationsResponse {
+  // List of reservations matching the request and sorted by visibility start time.
   repeated Reservation reservations = 1;
 }
 
 message Reservation {
+  // Unique identifier for the reservation.
+  // The format is a numeric, however this should not be relied on and may be changed in the future.
   string id = 1;
 
+  // The satellite of the reservation.
   Satellite satellite = 2;
+
+  // The ground station where the reservation will execute.
   GroundStation ground_station = 3;
 
+  // The current lifecycle state of the reservation.
   Status status = 4;
+
+  // The predicted AOS-LOS visibility window of the satellite after horizon/mask rules are applied.
   TimeRange visibility = 5;
+
+  // The scheduled execution window. Derived from the visibility plus a configured buffer.
+  // If visibility shifts outside of this window, the reservation becomes non-executable.
   TimeRange operation = 6;
-  double max_elevation = 7;
+
+  // Maximum elevation angle (in degrees) of the satellite during the pass.
+  double max_elevation_degrees = 7;
+
+  // If the visibility time range no longer fits entirely within the operation time range, this flag will be true.
+  // Drifted reservations will not execute until updated (manually or automatically, if enabled).
   bool drifted = 8;
 
+  // List of available and scheduled channel sets for the reservation.
+  //  - scheduled=true => currently schedule channel sets (will not contain a token).
+  //  - scheduled=false => available channel sets (will contain a token).
+  //  - Unavailable channel sets will not be listed.
   repeated ChannelSetToken channel_sets = 9;
 
   enum Status {
+    // Unspecified or unrecognized status.
     Status_UNKNOWN = 0;
+    // Reservation successfully created and scheduled.
     Status_RESERVED = 1;
+    // Reservation is currently preparing or executing.
     Status_EXECUTING = 2;
+    // Reservation has finished execution.
+    // This does not guarantee success, just that there was no clear issues flagged automatically.
     Status_COMPLETED = 3;
+    // Reservation was not executed successfully due to observed issues.
     Status_FAILED = 4;
+    // Reservation was cancelled prior to execution.
     Status_CANCELLED = 5;
   }
 }
 
+// Represents a predicted satellite pass a ground station and includes the reservable channel set options.
 message Pass {
-  // The visibility time (AOS-LOS) between the ground station and the satellite.
-  // - visibility.start = AOS (Aquisitation Of Signal)
-  // - visibility.end = LOS (Loss Of Signal)
+  // The window when the satellite is visible to the ground station.
+  // This is widely known as AOS and LOS (Acquisition of Signal and Loss of Signal respectively).
+  // However, this also takes into account any elevation masking at the ground station and also any minimum elevation for the satellite configuration.
   TimeRange visibility = 1;
 
+  // The satellite of the pass.
   Satellite satellite = 2;
 
-  // Information about the ground station of the pass.
+  // The ground station where the pass occurs.
   GroundStation ground_station = 3;
 
-  // The available and reservable channel set options.
-  // Channel sets are divided into slots for compatibility. You cannot schedule 2 channel sets from the same slot. The request will be rejected.
+  // The reservable channel sets. Should be used when creating a new reservation.
+  //  - Channel sets contain a signed token. This token must be used when creating a new reservation and is valid for 1 hour.
+  //  - Channel sets are grouped into slots. At most 1 channel set per slot may be scheduled for compatibility reasons.
   repeated ChannelSetToken channel_sets = 4;
 
-  // The max elevation during the pass, in degrees.
+  // Maximum elevation angle (in degrees) of the satellite during the pass.
   double max_elevation_degrees = 5;
-  // The time of the max elevation during the pass.
+
+  // Time (in UTC) when the maximum elevation occurs during the pass.
   google.protobuf.Timestamp max_elevation_time = 6;
 }
 
+// Represents a reservable channel set configuration for a satellite pass.
+// Clients must obtain these tokens via ListPasses and present them when adding channel sets to reservations, either during CreateReservation or UpdateReservation.
 message ChannelSetToken {
+  // A stable identifier of the channel set configuration.
+  // Used to reference the channel set in passes and reservations.
   string id = 1;
+
+  // A human-readable display name for the channel set.
   string name = 2;
+
+  // A signed token which can be used to schedule or update reservations.
+  //  - Expiry is 1 hour.
+  //  - Can be obtained from ListPasses, ListReservations, or GetReservation.
+  //  - Can be used in CreateReservation, or UpdateReservation.
   string token = 3;
+
+  // A slot describes a group of channel sets which are incompatible with each other.
+  // - Only 1 channel set per slot can be scheduled for a reservation.
+  // - The server will enforce this constraint.
   string slot = 4;
+
+  // Indicates whether this channel set is already scheduled as part of the reservation.
+  //  - true => currently scheduled for the reservation.
+  //  - false => available to be scheduled for the reservation.
   bool scheduled = 5;
 }
 
+// Represents a time range/interval.
 message TimeRange {
+  // Start of the range/interval.
   google.protobuf.Timestamp start = 1;
+
+  // End of the range/interval.
   google.protobuf.Timestamp end = 2;
 }
 
 message Satellite {
+  // Unique identifier for the satellite.
+  // The format is a numeric integer. However, this should not be relied upon and may change at any time.
   string id = 1;
+
+  // A human-readable name to identify the satellite.
   string name = 2;
+
+  // The name of the organization which owns/operates the satellite.
   string organization = 3;
 }
 
 message GroundStation {
-  // The unique ID of the ground station.
+  // Unique identifier for the ground station.
+  // The format is a numeric integer. However, this should not be relied upon and may change at any time.
   string id = 1;
-  // A descriptive name for the ground station.
+
+  // A human-readable name to identify the ground station.
   string name = 2;
-  // The owning organization of the ground station.
+
+  // The name of the organization which owns the ground station.
   string organization = 3;
-  // The latitude of the ground station.
+
+  // Geographic (WGS-84) latitude of the ground station in decimal degrees.
   double latitude = 4;
-  // The longitude of the ground station.
+
+  // Geographic (WGS-84) longitude of the ground station in decimal degrees.
   double longitude = 5;
-  // The altitude of the ground station.
+
+  // Altitude of the ground station above mean sea level (MSL) in decimal meters.
   double altitude = 6;
 }
