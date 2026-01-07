@@ -171,7 +171,7 @@ service StellarStationService {
 
 // Request for the `OpenSatelliteStream` method.
 //
-// Next ID: 12
+// Next ID: 15
 message SatelliteStreamRequest {
   // The ID of the satellite to open a stream with. The ID of a satellite can be found on the
   // StellarStation Console page for the satellite.
@@ -210,6 +210,19 @@ message SatelliteStreamRequest {
   // command number in a downstream system. For simple cases, it is often simplest to set this to a
   // standard UUID.
   string request_id = 6;
+
+  // If set, the stream will be filtered to only receive telemetry data related to this reservation.
+  //
+  // Streams do not support multi-plexing telemetry from multiple channel-sets in the reservation.
+  // If there are multiple channel-sets in the reservation, it is required to open a separate stream
+  // for each channel-set and specify the channel_set_id in each stream.
+  string reservation_id = 13;
+
+  // If set, the stream will be filtered to only receive telemetry data related to this channel-set.
+  //
+  // This only affects telemetry (for now). Each command can be individually set with a specific channel-set.
+  // This is also primarily intended for use with reservation_id as a way to avoid multi-plexing the stream.
+  string channel_set_id = 14;
 
   // A request to send on the satellite stream. Currently only command sending to the satellite is
   // supported. The request does not need to be filled on the first request to
