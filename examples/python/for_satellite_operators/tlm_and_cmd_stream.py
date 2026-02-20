@@ -113,7 +113,7 @@ def run():
                 satellite_id=STELLARSTATION_API_SATELLITE_ID,
                 send_satellite_commands_request=stellarstation_pb2.SendSatelliteCommandsRequest(
                     command=[bytes.fromhex("AABBCCDDEEFF")] * 10,
-                    channel_set_id=STELLARSTATION_API_SATELLITE_ID))
+                    channel_set_id=STELLARSTATION_API_CHANNEL_ID))
 
             request_queue.put(command_request)
             command_request_count += 1
@@ -128,6 +128,7 @@ def run():
             # all messages we want to send go through request_queue and request_generator
             for response in client.OpenSatelliteStream(request_generator):
                 total_responses += 1
+                stream_attempts = 0
 
                 # stream_id allows you to attempt a stream recovery, but
                 # also provides a useful identifier for the Stellarstation
