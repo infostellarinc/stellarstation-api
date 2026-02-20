@@ -113,7 +113,7 @@ def run():
                 satellite_id=STELLARSTATION_API_SATELLITE_ID,
                 send_satellite_commands_request=stellarstation_pb2.SendSatelliteCommandsRequest(
                     command=[bytes.fromhex("AABBCCDDEEFF")] * 10,
-                    channel_set_id=STELLARSTATION_API_SATELLITE_ID))
+                    channel_set_id=STELLARSTATION_API_CHANNEL_ID))
 
             request_queue.put(command_request)
             command_request_count += 1
